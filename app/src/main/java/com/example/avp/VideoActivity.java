@@ -15,9 +15,7 @@ public class VideoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
-        // Получаем объект Intent, который запустил данную activity
         Intent intent = getIntent();
-        // Получаем сообщение из объекта intent
         String message = intent.getStringExtra("message");
 
         videoPlayer =  (VideoView)findViewById(R.id.videoPlayer);
