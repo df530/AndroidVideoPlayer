@@ -12,10 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidVideoPlayer">
         <activity
-            android:name=".VideoActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name=".player.ExoPlayerActivity"
             android:configChanges="orientation|screenSize"
-            android:rotation="180.0"/>
+
+            />
+        <activity
+            android:name=".VideoViewActivity"
+            android:configChanges="orientation|screenSize"
+            android:rotation="180.0"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
