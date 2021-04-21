@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_video_from_device">
 
     <fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_video_from_device"
         android:name="com.example.videoplayertest.ui.fragments.VideoFromDeviceFragment"
         android:label="@string/title_home"
         tools:layout="@layout/video_from_device_fragment" />
@@ -18,8 +18,8 @@
         tools:layout="@layout/dashboard_fragment" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.videoplayertest.ui.fragments.NotificationsFragment"
+        android:id="@+id/navigation_video_by_link"
+        android:name="com.example.videoplayertest.ui.fragments.VideoByLinkFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/notifications_fragment" />
+        tools:layout="@layout/video_by_link_fragment" />
 </navigation>

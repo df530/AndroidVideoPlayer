@@ -4,27 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.videoplayertest.R;
 import com.example.videoplayertest.ui.fragments.DashboardFragment;
-import com.example.videoplayertest.ui.fragments.NotificationsFragment;
+import com.example.videoplayertest.ui.fragments.VideoByLinkFragment;
 import com.example.videoplayertest.ui.fragments.VideoFromDeviceFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.ArrayList;
-
-import Adapter.VideoAdapter;
-import Model.VideoModel;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -56,13 +45,13 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment fragment = null;
         switch (item.getItemId()) {
-            case R.id.navigation_home:
+            case R.id.navigation_video_from_device:
                 fragment = new VideoFromDeviceFragment();
                 //Toast.makeText(getApplicationContext(),
                 // "Пора покормить кота!", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.navigation_notifications:
-                fragment = new NotificationsFragment();
+            case R.id.navigation_video_by_link:
+                fragment = new VideoByLinkFragment();
                 //Toast.makeText(getApplicationContext(),
                 //        "Пора покормить кота!!", Toast.LENGTH_SHORT).show();
                 break;

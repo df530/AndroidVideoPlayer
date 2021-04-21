@@ -2,6 +2,6 @@ package com.example.videoplayertest.ui.fragments;
 
 import androidx.lifecycle.ViewModel;
 
-public class NotificationsViewModel extends ViewModel {
+public class VideoByLinkViewModel extends ViewModel {
     // TODO: Implement the ViewModel
 }

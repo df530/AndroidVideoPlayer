@@ -12,24 +12,24 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.videoplayertest.R;
 
-public class NotificationsFragment extends Fragment {
+public class VideoByLinkFragment extends Fragment {
 
-    private NotificationsViewModel mViewModel;
+    private VideoByLinkViewModel mViewModel;
 
-    public static NotificationsFragment newInstance() {
-        return new NotificationsFragment();
+    public static VideoByLinkFragment newInstance() {
+        return new VideoByLinkFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.notifications_fragment, container, false);
+        return inflater.inflate(R.layout.video_by_link_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(NotificationsViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(VideoByLinkViewModel.class);
         // TODO: Use the ViewModel
     }
 
