@@ -1,4 +1,4 @@
-package com.example.videoplayertest;
+package com.example.videoplayertest.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.VideoView;
+
+import com.example.videoplayertest.R;
 
 public class VideoPlayerActivity extends AppCompatActivity {
 
