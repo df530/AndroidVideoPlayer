@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.videoplayertest.R;
-import com.example.videoplayertest.ui.fragments.DashboardFragment;
+import com.example.videoplayertest.ui.fragments.LoginFragment;
 import com.example.videoplayertest.ui.fragments.VideoByLinkFragment;
 import com.example.videoplayertest.ui.fragments.VideoFromDeviceFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
                 //        "Пора покормить кота!!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.navigation_dashboard:
-                fragment = new DashboardFragment();
+                fragment = new LoginFragment();
                 //Toast.makeText(getApplicationContext(),
                 //        "Пора покормить кота!!!", Toast.LENGTH_SHORT).show();
                 break;

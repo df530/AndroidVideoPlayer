@@ -12,24 +12,24 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.videoplayertest.R;
 
-public class DashboardFragment extends Fragment {
+public class LoginFragment extends Fragment {
 
-    private DashboardViewModel mViewModel;
+    private LoginViewModel mViewModel;
 
-    public static DashboardFragment newInstance() {
-        return new DashboardFragment();
+    public static LoginFragment newInstance() {
+        return new LoginFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dashboard_fragment, container, false);
+        return inflater.inflate(R.layout.login_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         // TODO: Use the ViewModel
     }
 
