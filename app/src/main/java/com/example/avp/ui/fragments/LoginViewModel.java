@@ -1,4 +1,4 @@
-package com.example.videoplayertest.ui.fragments;
+package com.example.avp.ui.fragments;
 
 import androidx.lifecycle.ViewModel;
 

@@ -1,4 +1,4 @@
-package com.example.videoplayertest.ui.fragments;
+package com.example.avp.ui.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.videoplayertest.R;
+import com.example.avp.R;
 
 public class LoginFragment extends Fragment {
 

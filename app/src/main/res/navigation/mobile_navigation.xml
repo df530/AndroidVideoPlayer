@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_video_from_device"
-        android:name="com.example.videoplayertest.ui.fragments.VideoFromDeviceFragment"
+        android:name="com.example.avp.ui.fragments.VideoFromDeviceFragment"
         android:label="@string/title_home"
         tools:layout="@layout/video_from_device_fragment" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.example.videoplayertest.ui.fragments.LoginFragment"
+        android:name="com.example.avp.ui.fragments.LoginFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/dashboard_fragment" />
 
     <fragment
         android:id="@+id/navigation_video_by_link"
-        android:name="com.example.videoplayertest.ui.fragments.VideoByLinkFragment"
+        android:name="com.example.avp.ui.fragments.VideoByLinkFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/video_by_link_fragment" />
 </navigation>

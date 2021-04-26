@@ -1,4 +1,4 @@
-package com.example.videoplayertest.ui.fragments;
+package com.example.avp.ui.fragments;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.videoplayertest.R;
+import com.example.avp.R;
 
 import java.util.ArrayList;
 

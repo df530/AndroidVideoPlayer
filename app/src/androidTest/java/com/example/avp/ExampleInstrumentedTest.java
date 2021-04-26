@@ -1,4 +1,4 @@
-package com.example.videoplayertest;
+package com.example.avp;
 
 import android.content.Context;
 

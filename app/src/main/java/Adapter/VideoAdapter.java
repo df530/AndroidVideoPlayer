@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.videoplayertest.R;
-import com.example.videoplayertest.ui.VideoPlayerActivity;
+import com.example.avp.R;
+import com.example.avp.ui.VideoPlayerActivity;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.videoplayertest.ui;
+package com.example.avp.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -9,10 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.example.videoplayertest.R;
-import com.example.videoplayertest.ui.fragments.LoginFragment;
-import com.example.videoplayertest.ui.fragments.VideoByLinkFragment;
-import com.example.videoplayertest.ui.fragments.VideoFromDeviceFragment;
+import com.example.avp.R;
+import com.example.avp.ui.fragments.LoginFragment;
+import com.example.avp.ui.fragments.VideoByLinkFragment;
+import com.example.avp.ui.fragments.VideoFromDeviceFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity
