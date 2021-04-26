@@ -1,5 +1,6 @@
 package com.example.avp.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.avp.R;
+import com.example.avp.player.ExoPlayerActivity;
 
 public class VideoByLinkFragment extends Fragment {
 
@@ -35,13 +37,13 @@ public class VideoByLinkFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //TODO:
-                /*
+
                 Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
                 String linkOnVideo = link.getText().toString();
 
                 intent.putExtra("linkOnVideo", linkOnVideo);
                 startActivity(intent);
-                 */
+
             }
         });
 
