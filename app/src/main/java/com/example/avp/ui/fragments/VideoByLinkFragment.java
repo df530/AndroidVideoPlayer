@@ -36,14 +36,11 @@ public class VideoByLinkFragment extends Fragment {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO:
-
                 Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
                 String linkOnVideo = link.getText().toString();
 
                 intent.putExtra("linkOnVideo", linkOnVideo);
                 startActivity(intent);
-
             }
         });
 
