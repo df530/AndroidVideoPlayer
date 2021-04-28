@@ -47,11 +47,4 @@ public class VideoByLinkFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(VideoByLinkViewModel.class);
-        // TODO: Use the ViewModel
-    }
-
 }
