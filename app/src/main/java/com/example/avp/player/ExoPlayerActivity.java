@@ -39,15 +39,10 @@ public class ExoPlayerActivity extends AppCompatActivity {
         playerView = (PlayerView) findViewById(R.id.playerView);
 
         playerView.setPlayer(player);
-        MediaItem mediaItem = null;
-        try {
-            mediaItem = MediaItem.fromUri(String.valueOf((new URL(linkOnVideo)).toURI()));
-        } catch (URISyntaxException | MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(linkOnVideo));
 
         // hide title bar
-        if (getSupportActionBar()!=null) {
+        if (getSupportActionBar()!= null) {
             getSupportActionBar().hide();
         }
 
