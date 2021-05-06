@@ -13,12 +13,12 @@ import com.example.avp.R;
 
 public class VideoPlayerActivity extends AppCompatActivity {
 
-    VideoView videoView;
-    ImageView imageView;
-    SeekBar seekBar;
-    String str_video_url;
-    boolean isPlaying = false;
-    Handler handler;
+    private VideoView videoView;
+    private ImageView imageView;
+    private SeekBar seekBar;
+    private String strVideoUrl;
+    private boolean isPlaying = false;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +31,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
         videoView = findViewById(R.id.videoView);
         imageView = findViewById(R.id.toggleButton);
         seekBar = findViewById(R.id.seekBar);
-        str_video_url = getIntent().getStringExtra("video");
-        videoView.setVideoPath(str_video_url);
+        strVideoUrl = getIntent().getStringExtra("video");
+        videoView.setVideoPath(strVideoUrl);
         handler = new Handler();
 
         videoView.start();

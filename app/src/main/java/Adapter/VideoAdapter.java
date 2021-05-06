@@ -23,9 +23,9 @@ import Model.VideoModel;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> {
 
-    Context context;
-    ArrayList<VideoModel> arrayListVideos;
-    Activity activity;
+    private final Context context;
+    private ArrayList<VideoModel> arrayListVideos;
+    private Activity activity;
 
     public VideoAdapter(Context context, ArrayList<VideoModel> arrayListVideos, Activity activity) {
         this.context = context;
@@ -44,10 +44,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Glide.with(context).load("file://" + arrayListVideos.get(position).getStr_thumb())
                 .skipMemoryCache(false).into(holder.imageView);
-        holder.rl_select.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        holder.rl_select.setAlpha(0);
+        holder.rlSelect.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        holder.rlSelect.setAlpha(0);
 
-        holder.rl_select.setOnClickListener(new View.OnClickListener() {
+        holder.rlSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, VideoPlayerActivity.class);
@@ -65,14 +65,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageView;
-        RelativeLayout rl_select;
+        private ImageView imageView;
+        private RelativeLayout rlSelect;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imageView = itemView.findViewById(R.id.iv_image);
-            rl_select = itemView.findViewById(R.id.rl_select);
+            rlSelect = itemView.findViewById(R.id.rl_select);
         }
     }
 }

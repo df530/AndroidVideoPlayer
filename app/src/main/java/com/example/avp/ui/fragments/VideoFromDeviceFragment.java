@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.ui.VideoListSettings;
 
 import java.util.ArrayList;
 
@@ -27,12 +28,17 @@ import Model.VideoModel;
 public class VideoFromDeviceFragment extends Fragment {
 
     private VideoFromDeviceViewModel mViewModel;
-    RecyclerView recyclerView;
-    RecyclerView.LayoutManager recyclerViewLayoutManager;
-    ArrayList<VideoModel> arrayListVideos;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager recyclerViewLayoutManager;
+    private ArrayList<VideoModel> arrayListVideos;
+    private static VideoListSettings currentSettings;
+
+    public VideoFromDeviceFragment(VideoListSettings settings) {
+        currentSettings = settings;
+    }
 
     public static VideoFromDeviceFragment newInstance() {
-        return new VideoFromDeviceFragment();
+        return new VideoFromDeviceFragment(currentSettings);
     }
 
     @Override
@@ -55,7 +61,7 @@ public class VideoFromDeviceFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void init() {
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recyclerviewVideo);
-        recyclerViewLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), 2);
+        recyclerViewLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), currentSettings.columnsNum);
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
         arrayListVideos = new ArrayList<>();
         fetchVideosFromGallery();
@@ -74,7 +80,8 @@ public class VideoFromDeviceFragment extends Fragment {
                 MediaStore.Video.Media._ID,
                 MediaStore.Video.Thumbnails.DATA
         };
-        String sortOrder = MediaStore.Images.Media.DATE_TAKEN;
+        //String sortOrder = MediaStore.Images.Media.DATE_TAKEN;
+        String sortOrder = currentSettings.sortedBy;
 
         Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(
                 uri,

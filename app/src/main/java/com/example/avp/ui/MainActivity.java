@@ -13,8 +13,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.avp.R;
@@ -29,6 +32,8 @@ public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private static final int PERMISSION_REQUEST_CODE = 123;
+    private Menu menu;
+    private VideoListSettings videoListSettings = new VideoListSettings();
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -40,7 +45,7 @@ public class MainActivity extends AppCompatActivity
         navigation.setOnNavigationItemSelectedListener(this);
 
         if (hasPermissions()) {
-            loadFragment(new VideoFromDeviceFragment());
+            loadFragment(new VideoFromDeviceFragment(videoListSettings));
         } else {
             requestPermissionWithRationale();
             if (hasPermissions()) {
@@ -49,6 +54,28 @@ public class MainActivity extends AppCompatActivity
                 loadFragment(new NoStoragePermissionFragment());
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        this.menu = menu;
+
+        MenuInflater inflater = new MenuInflater(getApplicationContext());
+        inflater.inflate(R.menu.menu_main, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case (R.id.action_settings):
+                MenuItem item1 = menu.findItem(R.id.action_settings);
+                item1.setTitle("new title");
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private boolean hasPermissions() {
@@ -68,10 +95,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void requestPerms(){
+    private void requestPerms() {
         String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            requestPermissions(permissions,PERMISSION_REQUEST_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -79,46 +106,49 @@ public class MainActivity extends AppCompatActivity
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
             final String message = "Storage permission is needed to show videos";
-            Snackbar.make(MainActivity.this.findViewById(R.id.activity_view), message, Snackbar.LENGTH_LONG)
-                    .setAction("GRANT", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            requestPerms();
-                        }
-                    })
-                    .show();
+            Snackbar snackbar = Snackbar.make(MainActivity.this.findViewById(R.id.activity_view), message, Snackbar.LENGTH_LONG).setAction("GRANT", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestPerms();
+                }
+            });
+            View snackbarLayout = snackbar.getView();
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            lp.setMargins(0, 0, 0, 0);
+            snackbarLayout.setLayoutParams(lp);
+            snackbar.show();
         } else {
             requestPerms();
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    private boolean checkPermissions(int requestCode, @NonNull int[] grantResults) {
         boolean allowed = true;
 
-        switch (requestCode){
-            case PERMISSION_REQUEST_CODE:
-
-                for (int res : grantResults){
-                    // if user granted all permissions.
-                    allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
-                }
-
-                break;
-            default:
-                // if user not granted permissions.
-                allowed = false;
-                break;
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            for (int res : grantResults) {
+                // if user granted all permissions.
+                allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
+            }
+            return allowed;
         }
+        return false;
+    }
 
-        if (allowed){
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean allowed = checkPermissions(requestCode, grantResults);
+
+        if (allowed) {
             //user granted all permissions we can perform our task.
-            loadFragment(new VideoFromDeviceFragment());
-        }
-        else {
+            loadFragment(new VideoFromDeviceFragment(videoListSettings));
+        } else {
             // we will give warning to user that they haven't granted permissions.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     Toast.makeText(this, "Storage Permissions denied.", Toast.LENGTH_SHORT).show();
 
                 } else {
@@ -130,7 +160,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void showNoStoragePermissionSnackbar() {
-        Snackbar.make(MainActivity.this.findViewById(R.id.activity_view), "Storage permission isn't granted" , Snackbar.LENGTH_LONG)
+        Snackbar.make(MainActivity.this.findViewById(R.id.activity_view), "Storage permission isn't granted", Snackbar.LENGTH_LONG)
                 .setAction("SETTINGS", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -168,7 +198,7 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.navigation_video_from_device:
                 if (hasPermissions()) {
-                    fragment = new VideoFromDeviceFragment();
+                    fragment = new VideoFromDeviceFragment(videoListSettings);
                 } else {
                     requestPermissionWithRationale();
                     if (hasPermissions()) {
