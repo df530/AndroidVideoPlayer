@@ -70,9 +70,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case (R.id.action_settings):
-                MenuItem item1 = menu.findItem(R.id.action_settings);
-                item1.setTitle("new title");
+            case (R.id.action_view):
+                MenuItem itemView = menu.findItem(R.id.action_view);
+                if (itemView.getTitle() == "gallery") {
+                    itemView.setTitle("list");
+                    videoListSettings.columnsNum = 1;
+                } else {
+                    itemView.setTitle("gallery");
+                    videoListSettings.columnsNum = 2;
+                }
+                loadFragment(new VideoFromDeviceFragment(videoListSettings));
+                break;
+            case (R.id.action_sorted_by):
+                MenuItem itemSortedBy = menu.findItem(R.id.action_sorted_by);
                 break;
         }
         return super.onOptionsItemSelected(item);

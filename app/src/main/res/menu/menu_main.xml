@@ -3,8 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_view"
         android:orderInCategory="100"
-        android:title="settings"
+        android:title="gallery"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_sorted_by"
+        android:orderInCategory="100"
+        android:title="sorted by"
         app:showAsAction="never" />
 </menu>
