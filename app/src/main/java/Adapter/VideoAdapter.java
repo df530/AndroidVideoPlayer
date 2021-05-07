@@ -51,11 +51,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         holder.rlSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                Intent intent = new Intent(context, VideoPlayerActivity.class);
-                intent.putExtra("video", arrayListVideos.get(position).getStr_path());
-                activity.startActivity(intent);
-                */
+
                 Intent intent = new Intent(context, ExoPlayerActivity.class);
                 intent.putExtra("linkOnVideo", arrayListVideos.get(position).getStr_path());
                 activity.startActivity(intent);

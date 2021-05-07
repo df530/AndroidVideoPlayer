@@ -5,13 +5,16 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.tv.TvView;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     private static final int PERMISSION_REQUEST_CODE = 123;
     private Menu menu;
     private VideoListSettings videoListSettings = new VideoListSettings();
+    private String currentFragment;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -67,22 +71,32 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void updateVideoListSettings(int newColumnsNum, String newSortedBy) {
+        if (newColumnsNum == videoListSettings.columnsNum && newSortedBy.equals(videoListSettings.sortedBy)) {
+            return;
+        }
+        videoListSettings.columnsNum = newColumnsNum;
+        videoListSettings.sortedBy = newSortedBy;
+
+        if (currentFragment.equals(VideoFromDeviceFragment.class.getSimpleName())) {
+            loadFragment(new VideoFromDeviceFragment(videoListSettings));
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case (R.id.action_view):
-                MenuItem itemView = menu.findItem(R.id.action_view);
-                if (itemView.getTitle() == "gallery") {
-                    itemView.setTitle("list");
-                    videoListSettings.columnsNum = 1;
-                } else {
-                    itemView.setTitle("gallery");
-                    videoListSettings.columnsNum = 2;
-                }
-                loadFragment(new VideoFromDeviceFragment(videoListSettings));
+            case (R.id.list_view):
+                updateVideoListSettings(1, videoListSettings.sortedBy);
                 break;
-            case (R.id.action_sorted_by):
-                MenuItem itemSortedBy = menu.findItem(R.id.action_sorted_by);
+            case (R.id.gallery_view):
+                updateVideoListSettings(2, videoListSettings.sortedBy);
+                break;
+            case (R.id.date_taken_sorted_by):
+                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DATE_TAKEN);
+                break;
+            case (R.id.display_name_sorted_by):
+                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DISPLAY_NAME);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -148,6 +162,16 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
+    private void giveWarning() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(this, "Storage Permissions denied.", Toast.LENGTH_SHORT).show();
+            } else {
+                showNoStoragePermissionSnackbar();
+            }
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         boolean allowed = checkPermissions(requestCode, grantResults);
@@ -157,14 +181,7 @@ public class MainActivity extends AppCompatActivity
             loadFragment(new VideoFromDeviceFragment(videoListSettings));
         } else {
             // we will give warning to user that they haven't granted permissions.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    Toast.makeText(this, "Storage Permissions denied.", Toast.LENGTH_SHORT).show();
-
-                } else {
-                    showNoStoragePermissionSnackbar();
-                }
-            }
+            giveWarning();
         }
 
     }
@@ -191,10 +208,15 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(appSettingsIntent, PERMISSION_REQUEST_CODE);
     }
 
+    private void updateCurrentFragment(Fragment fragment) {
+        currentFragment = fragment.getClass().getSimpleName();
+    }
+
     private boolean loadFragment(Fragment fragment) {
         if (fragment == null) {
             return false;
         }
+        updateCurrentFragment(fragment);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)

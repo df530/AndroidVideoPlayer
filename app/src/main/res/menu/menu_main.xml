@@ -4,13 +4,24 @@
     tools:context=".MainActivity">
     <item
         android:id="@+id/action_view"
-        android:orderInCategory="100"
-        android:title="gallery"
-        app:showAsAction="never" />
+        android:title="view">
+        <menu>
+            <item android:id="@+id/gallery_view"
+                android:title="gallery" />
+            <item android:id="@+id/list_view"
+                android:title="list" />
+        </menu>
 
+    </item>
     <item
         android:id="@+id/action_sorted_by"
-        android:orderInCategory="100"
-        android:title="sorted by"
-        app:showAsAction="never" />
+        android:title="sorted by">
+        <menu>
+            <item android:id="@+id/date_taken_sorted_by"
+                android:title="date taken" />
+            <item android:id="@+id/display_name_sorted_by"
+                android:title="name" />
+        </menu>
+
+    </item>
 </menu>
