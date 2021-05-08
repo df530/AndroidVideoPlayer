@@ -26,7 +26,6 @@ public class ExoPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exo_player);
 
-        // this code is copied from VideoViewActivity, but we will VideoViewActivity in the future
         Intent intent = getIntent();
         String linkOnVideo = intent.getStringExtra("linkOnVideo");
         if (linkOnVideo.isEmpty()) {
@@ -48,7 +47,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
         }
 
         // hide notification bar and set full screen
-        ExoPlayerActivity.this.getWindow().getDecorView().setSystemUiVisibility(
+        playerView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | // hide navigation line on the bottom of screen (that helps go home)
                 View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY /* hide notification bar and show it only after sliding down,
                                                                                          and hide again in some seconds */
@@ -63,6 +62,19 @@ public class ExoPlayerActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         Objects.requireNonNull(playerView.getPlayer()).pause();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        /* hide notification bar and set full screen. Make it again, because this settings reset
+         * after switching apps
+         */
+        playerView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | // hide navigation line on the bottom of screen (that helps go home)
+                View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY /* hide notification bar and show it only after sliding down,
+                                                                                         and hide again in some seconds */
+        );
     }
 
     @Override
