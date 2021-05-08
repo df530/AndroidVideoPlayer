@@ -71,12 +71,15 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void updateVideoListSettings(int newColumnsNum, String newSortedBy) {
-        if (newColumnsNum == videoListSettings.columnsNum && newSortedBy.equals(videoListSettings.sortedBy)) {
+    private void updateVideoListSettings(int newColumnsNum, String newSortedBy, boolean newReversedOrder) {
+        if (newColumnsNum == videoListSettings.columnsNum
+                && newSortedBy.equals(videoListSettings.sortedBy)
+                && newReversedOrder == videoListSettings.reversedOrder) {
             return;
         }
         videoListSettings.columnsNum = newColumnsNum;
         videoListSettings.sortedBy = newSortedBy;
+        videoListSettings.reversedOrder = newReversedOrder;
 
         if (currentFragment.equals(VideoFromDeviceFragment.class.getSimpleName())) {
             loadFragment(new VideoFromDeviceFragment(videoListSettings));
@@ -87,20 +90,23 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case (R.id.list_view):
-                updateVideoListSettings(1, videoListSettings.sortedBy);
+                updateVideoListSettings(1, videoListSettings.sortedBy, videoListSettings.reversedOrder);
                 //item.setChecked(true);
                 break;
             case (R.id.gallery_view):
-                updateVideoListSettings(2, videoListSettings.sortedBy);
+                updateVideoListSettings(2, videoListSettings.sortedBy, videoListSettings.reversedOrder);
                 //item.setChecked(true);
                 break;
             case (R.id.date_taken_sorted_by):
-                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DATE_TAKEN);
+                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DATE_TAKEN, videoListSettings.reversedOrder);
                 //item.setChecked(true);
                 break;
             case (R.id.display_name_sorted_by):
-                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DISPLAY_NAME);
+                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DISPLAY_NAME, videoListSettings.reversedOrder);
                 //item.setChecked(true);
+                break;
+            case (R.id.reversed_order_sorted_by):
+                updateVideoListSettings(videoListSettings.columnsNum, videoListSettings.sortedBy, !videoListSettings.reversedOrder);
                 break;
         }
         return super.onOptionsItemSelected(item);

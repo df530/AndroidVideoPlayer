@@ -8,6 +8,8 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +23,7 @@ import com.example.avp.R;
 import com.example.avp.ui.VideoListSettings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import Adapter.VideoAdapter;
 import Model.VideoModel;
@@ -58,6 +61,15 @@ public class VideoFromDeviceFragment extends Fragment {
         init();
     }
 
+    private void reverseVideoList() {
+        ArrayList<VideoModel> newVideoList = new ArrayList<>();
+        for (int i = arrayListVideos.size() - 1; i >= 0; i--) {
+            newVideoList.add(arrayListVideos.get(i));
+        }
+        arrayListVideos.clear();
+        arrayListVideos.addAll(newVideoList);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void init() {
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recyclerviewVideo);
@@ -65,8 +77,11 @@ public class VideoFromDeviceFragment extends Fragment {
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
         arrayListVideos = new ArrayList<>();
         fetchVideosFromGallery();
-    }
 
+        if (currentSettings.reversedOrder) {
+            reverseVideoList();
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void fetchVideosFromGallery() {
