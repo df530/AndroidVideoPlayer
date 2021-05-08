@@ -88,15 +88,19 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case (R.id.list_view):
                 updateVideoListSettings(1, videoListSettings.sortedBy);
+                //item.setChecked(true);
                 break;
             case (R.id.gallery_view):
                 updateVideoListSettings(2, videoListSettings.sortedBy);
+                //item.setChecked(true);
                 break;
             case (R.id.date_taken_sorted_by):
                 updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DATE_TAKEN);
+                //item.setChecked(true);
                 break;
             case (R.id.display_name_sorted_by):
                 updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DISPLAY_NAME);
+                //item.setChecked(true);
                 break;
         }
         return super.onOptionsItemSelected(item);
