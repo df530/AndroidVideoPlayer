@@ -8,12 +8,13 @@
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/playerView"
+        android:background="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:resize_mode="fill"/>
+        app:layout_constraintTop_toTopOf="parent"/>
+        <!--app:resize_mode="fill" then video fill whole screen-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
