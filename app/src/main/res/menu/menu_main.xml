@@ -5,35 +5,46 @@
 
     <item
         android:id="@+id/action_view"
-        android:title="view">
+        android:title="view"
+        app:showAsAction="never">
+
         <menu>
             <group android:checkableBehavior="single">
                 <item android:id="@+id/gallery_view"
                     android:title="gallery"
                     android:checked="true"
+                    app:showAsAction="never"
                 />
 
                 <item android:id="@+id/list_view"
-                    android:title="list" />
+                    android:title="list"
+                    app:showAsAction="never"/>
             </group>
         </menu>
 
     </item>
     <item
         android:id="@+id/action_sorted_by"
-        android:title="sorted by">
+        android:title="sorted by"
+        app:showAsAction="never">
         <menu>
-            <item android:id="@+id/reversed_order_sorted_by"
-                android:title="reversed" />
+            <group android:checkableBehavior="all">
+                <item android:id="@+id/reversed_order_sorted_by"
+                    android:title="reversed"
+                    app:showAsAction="never" />
+            </group>
             <group android:checkableBehavior="single">
                 <item android:id="@+id/date_taken_sorted_by"
                     android:title="date taken"
                     android:checked="true"
+                    app:showAsAction="never"
                     />
                 <item android:id="@+id/display_name_sorted_by"
-                    android:title="name" />
+                    android:title="name"
+                    app:showAsAction="never"/>
             </group>
         </menu>
 
     </item>
+
 </menu>

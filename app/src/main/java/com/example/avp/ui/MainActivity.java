@@ -65,10 +65,9 @@ public class MainActivity extends AppCompatActivity
 
         this.menu = menu;
 
-        MenuInflater inflater = new MenuInflater(getApplicationContext());
-        inflater.inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     private void updateVideoListSettings(int newColumnsNum, String newSortedBy, boolean newReversedOrder) {
@@ -91,22 +90,23 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case (R.id.list_view):
                 updateVideoListSettings(1, videoListSettings.sortedBy, videoListSettings.reversedOrder);
-                //item.setChecked(true);
+                item.setChecked(true);
                 break;
             case (R.id.gallery_view):
                 updateVideoListSettings(2, videoListSettings.sortedBy, videoListSettings.reversedOrder);
-                //item.setChecked(true);
-                break;
+                item.setChecked(true);
+            break;
             case (R.id.date_taken_sorted_by):
                 updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DATE_TAKEN, videoListSettings.reversedOrder);
-                //item.setChecked(true);
+                item.setChecked(true);
                 break;
             case (R.id.display_name_sorted_by):
                 updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DISPLAY_NAME, videoListSettings.reversedOrder);
-                //item.setChecked(true);
+                item.setChecked(true);
                 break;
             case (R.id.reversed_order_sorted_by):
                 updateVideoListSettings(videoListSettings.columnsNum, videoListSettings.sortedBy, !videoListSettings.reversedOrder);
+                item.setChecked(videoListSettings.reversedOrder);
                 break;
         }
         return super.onOptionsItemSelected(item);
