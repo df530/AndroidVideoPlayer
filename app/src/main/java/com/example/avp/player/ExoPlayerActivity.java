@@ -17,6 +17,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
 
 public class ExoPlayerActivity extends AppCompatActivity {
     PlayerView playerView;
@@ -56,6 +57,12 @@ public class ExoPlayerActivity extends AppCompatActivity {
         player.setMediaItem(mediaItem);
         player.prepare();
         player.play();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Objects.requireNonNull(playerView.getPlayer()).pause();
     }
 
     @Override
