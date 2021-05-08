@@ -8,6 +8,4 @@ public class VideoListSettings {
     public int columnsNum = 2;
     public boolean reversedOrder = false;
     public String displayMode = "gallery";
-
-    //TODO: field for template
 }

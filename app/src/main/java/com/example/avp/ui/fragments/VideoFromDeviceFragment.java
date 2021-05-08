@@ -95,7 +95,7 @@ public class VideoFromDeviceFragment extends Fragment {
                 MediaStore.Video.Media._ID,
                 MediaStore.Video.Thumbnails.DATA
         };
-        //String sortOrder = MediaStore.Images.Media.DATE_TAKEN;
+
         String sortOrder = currentSettings.sortedBy;
 
         Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(
@@ -122,7 +122,8 @@ public class VideoFromDeviceFragment extends Fragment {
 
         //call the adapter class and set it to recyclerview
 
-        VideoAdapter videoAdapter = new VideoAdapter(getActivity().getApplicationContext(), arrayListVideos, getActivity());
+        VideoAdapter videoAdapter = new VideoAdapter(getActivity().getApplicationContext(),
+                arrayListVideos, getActivity(), currentSettings.displayMode);
         recyclerView.setAdapter(videoAdapter);
     }
 

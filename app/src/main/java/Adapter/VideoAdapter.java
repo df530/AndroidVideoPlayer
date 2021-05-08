@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,17 +28,24 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     private final Context context;
     private ArrayList<VideoModel> arrayListVideos;
     private Activity activity;
+    private static String displayMode;
 
-    public VideoAdapter(Context context, ArrayList<VideoModel> arrayListVideos, Activity activity) {
+    public VideoAdapter(Context context, ArrayList<VideoModel> arrayListVideos, Activity activity, String displayMode) {
         this.context = context;
         this.arrayListVideos = arrayListVideos;
         this.activity = activity;
+        VideoAdapter.displayMode = displayMode;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_video, parent, false);
+        View view;
+        if (displayMode.equals("gallery")) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_video, parent, false);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_video_list_mode, parent, false);
+        }
         return new VideoAdapter.ViewHolder(view);
     }
 
@@ -59,6 +67,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
             }
         });
 
+        if ("list".equals(displayMode)) {
+            holder.textView.setText(arrayListVideos.get(position).getStr_path());
+        }
     }
 
     @Override
@@ -70,12 +81,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
         private ImageView imageView;
         private RelativeLayout rlSelect;
+        private TextView textView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             imageView = itemView.findViewById(R.id.iv_image);
             rlSelect = itemView.findViewById(R.id.rl_select);
+            if (displayMode.equals("list")) {
+                textView = itemView.findViewById(R.id.tv_text);
+            }
         }
     }
 }

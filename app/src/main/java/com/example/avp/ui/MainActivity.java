@@ -91,10 +91,12 @@ public class MainActivity extends AppCompatActivity
             case (R.id.list_view):
                 updateVideoListSettings(1, videoListSettings.sortedBy, videoListSettings.reversedOrder);
                 item.setChecked(true);
+                videoListSettings.displayMode = "list";
                 break;
             case (R.id.gallery_view):
                 updateVideoListSettings(2, videoListSettings.sortedBy, videoListSettings.reversedOrder);
                 item.setChecked(true);
+                videoListSettings.displayMode = "gallery";
             break;
             case (R.id.date_taken_sorted_by):
                 updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DATE_TAKEN, videoListSettings.reversedOrder);
