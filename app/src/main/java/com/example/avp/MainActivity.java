@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.avp.player.ExoPlayerActivity;
+
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,11 +17,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendMessage(View view) {
-        Intent intent = new Intent(this, VideoActivity.class);
+        //Intent intent = new Intent(this, VideoViewActivity.class);
+        Intent intent = new Intent(this, ExoPlayerActivity.class);
         EditText editText = (EditText) findViewById(R.id.editText);
-        String message = editText.getText().toString();
+        String linkOnVideo = editText.getText().toString();
 
-        intent.putExtra("message", message);
+        intent.putExtra("linkOnVideo", linkOnVideo);
         startActivity(intent);
     }
 }
