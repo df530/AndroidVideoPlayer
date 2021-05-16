@@ -18,6 +18,7 @@
             android:id="@+id/edit_text_link"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
             android:ems="10"
             android:hint="@string/search_by_link"
             android:inputType="textWebEditText" />
@@ -33,6 +34,23 @@
             android:textColor="@color/black"
             app:backgroundTint="#CCCBCB" />
 
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerviewLastSeen"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="10dp"
+            android:scrollbars="vertical" />
+
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="recyclerview end"
+            android:textColor="@color/black"
+            />
+            -->
 
     </LinearLayout>
 

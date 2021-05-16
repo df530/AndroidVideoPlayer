@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="140dp">
+    android:layout_height="100dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,13 +14,17 @@
         android:layout_marginRight="10dp"
         >
 
+        <!--
+
+        image for video by link
+
         <ImageView
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:id="@+id/iv_image"
             android:scaleType="fitXY"
             />
-
+        -->
 
     </LinearLayout>
 
@@ -35,22 +39,14 @@
         android:layout_marginRight="10dp"
         ></RelativeLayout>
 
-    <ImageView
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:src="@drawable/play"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="65dp"
-        />
-
     <TextView
-        android:id="@+id/tv_text"
+        android:id="@+id/tv_link"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
         android:textColor="@color/black"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
-        android:layout_marginLeft="150dp"/>
+        android:layout_marginLeft="10dp"/>
 
     <ImageButton
         android:id="@+id/iv_menu_button"
