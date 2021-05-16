@@ -1,5 +1,7 @@
 package Model;
 
+import androidx.annotation.Nullable;
+
 public class LastSeenLinkModel {
     private String link;
 
@@ -13,5 +15,13 @@ public class LastSeenLinkModel {
 
     public String getLink() {
         return link;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof LastSeenLinkModel) {
+            return ((LastSeenLinkModel)obj).link.equals(link);
+        }
+        return false;
     }
 }
