@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.example.avp.R;
+import com.github.vkay94.dtpv.DoubleTapPlayerView;
+import com.github.vkay94.dtpv.youtube.YouTubeOverlay;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -60,9 +62,24 @@ public class ExoPlayerActivity extends AppCompatActivity {
         // make activity full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-
         player = new SimpleExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
+
+        // activate double tap rewind and fast forward increment
+        YouTubeOverlay youTubeOverlay = findViewById(R.id.youtube_overlay);
+        youTubeOverlay
+                .performListener(new YouTubeOverlay.PerformListener() {
+                    @Override
+                    public void onAnimationStart() {
+                        youTubeOverlay.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationEnd() {
+                        youTubeOverlay.setVisibility(View.GONE);
+                    }
+                });
+        youTubeOverlay.player(player);
 
         // hide title bar
         if (getSupportActionBar() != null) {

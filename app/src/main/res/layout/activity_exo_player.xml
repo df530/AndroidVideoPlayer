@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".player.ExoPlayerActivity">
 
-    <com.google.android.exoplayer2.ui.PlayerView
+    <com.github.vkay94.dtpv.DoubleTapPlayerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/player_view"
@@ -20,8 +20,16 @@
         android:keepScreenOn="true"
         app:player_layout_id="@layout/exo_player_view"
         app:controller_layout_id="@layout/custom_controller"
+        app:dtpv_controller="@+id/youtube_overlay"
         />
 
-        <!--app:resize_mode="fill" then video fill whole screen-->
+    <com.github.vkay94.dtpv.youtube.YouTubeOverlay
+        android:id="@+id/youtube_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
 
-</RelativeLayout>
+        app:yt_playerView="@+id/player_view"
+        app:yt_tapCircleColor="#22222222"/>
+
+</FrameLayout>
