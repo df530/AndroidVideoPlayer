@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,15 +7,21 @@
     tools:context=".player.ExoPlayerActivity">
 
     <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/playerView"
-        android:background="@android:color/black"
-        android:keepScreenOn="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:id="@+id/player_view"
+        app:resize_mode="fit"
+        app:hide_on_touch="true"
+        app:show_timeout="2000"
+        app:fastforward_increment="10000"
+        app:rewind_increment="10000"
+        app:use_controller="true"
+        android:background="@android:color/background_dark"
+        android:keepScreenOn="true"
+        app:player_layout_id="@layout/exo_player_view"
+        app:controller_layout_id="@layout/custom_controller"
+        />
+
         <!--app:resize_mode="fill" then video fill whole screen-->
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
