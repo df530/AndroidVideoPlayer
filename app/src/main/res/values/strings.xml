@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">AndroidVideoPlayer</string>
+    <string name="title_activity_main2">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="search_by_link">search by link</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="email_address">Email address</string>
+    <string name="play">Play</string>
 </resources>
