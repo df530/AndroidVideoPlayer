@@ -35,10 +35,14 @@ public class VideoByLinkFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
 
-    private LastSeenVideosHolder linksHolder = new LastSeenVideosHolder();
+    private static LastSeenVideosHolder linksHolder;
+
+    public VideoByLinkFragment(LastSeenVideosHolder linksHolder) {
+        this.linksHolder = linksHolder;
+    }
 
     public static VideoByLinkFragment newInstance() {
-        return new VideoByLinkFragment();
+        return new VideoByLinkFragment(linksHolder);
     }
 
     @Override
@@ -55,10 +59,6 @@ public class VideoByLinkFragment extends Fragment {
                 String linkOnVideo = link.getText().toString();
 
                 linksHolder.addVideo(linkOnVideo);
-                //System.out.println("add link: " + linkOnVideo);
-                //System.out.println(linksHolder.getLastSeenLinkModelList().size());
-                //System.out.println("add link: " + linkOnVideo);
-                //TODO: add link to linksHolder and update video_by_link_fragment R.id.recyclerviewLastSeen
 
                 intent.putExtra("linkOnVideo", linkOnVideo);
                 startActivity(intent);

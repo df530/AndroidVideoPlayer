@@ -47,7 +47,7 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"/>
-
+    <!--
     <ImageButton
         android:id="@+id/iv_menu_button"
         android:layout_width="30dp"
@@ -56,4 +56,5 @@
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
         android:src="@drawable/vert_dots" />
+        -->
 </RelativeLayout>

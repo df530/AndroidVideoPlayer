@@ -36,8 +36,10 @@ public class MainActivity extends AppCompatActivity
 
     private static final int PERMISSION_REQUEST_CODE = 123;
     private Menu menu;
-    private VideoListSettings videoListSettings = new VideoListSettings();
     private String currentFragment;
+
+    private VideoListSettings videoListSettings = new VideoListSettings();
+    private LastSeenVideosHolder lastSeenVideosHolder = new LastSeenVideosHolder();
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             requestPermissionWithRationale();
             if (hasPermissions()) {
-                loadFragment(new VideoByLinkFragment());
+                loadFragment(new VideoByLinkFragment(lastSeenVideosHolder));
             } else {
                 loadFragment(new NoStoragePermissionFragment());
             }
@@ -246,7 +248,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     requestPermissionWithRationale();
                     if (hasPermissions()) {
-                        fragment = new VideoByLinkFragment();
+                        fragment = new VideoByLinkFragment(lastSeenVideosHolder);
                     } else {
                         fragment = new NoStoragePermissionFragment();
                     }
@@ -256,7 +258,7 @@ public class MainActivity extends AppCompatActivity
                 // "Пора покормить кота!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.navigation_video_by_link:
-                fragment = new VideoByLinkFragment();
+                fragment = new VideoByLinkFragment(lastSeenVideosHolder);
                 //Toast.makeText(getApplicationContext(),
                 //        "Пора покормить кота!!", Toast.LENGTH_SHORT).show();
                 break;

@@ -2,6 +2,7 @@ package Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.player.ExoPlayerActivity;
 
 import java.util.ArrayList;
 
@@ -42,19 +44,17 @@ public class LastSeenLinksAdapter extends RecyclerView.Adapter<LastSeenLinksAdap
         holder.rlSelect.setBackgroundColor(Color.parseColor("#FFFFFF"));
         holder.rlSelect.setAlpha(0);
         holder.textView.setText(arrayListLinks.get(position).getLink());
-/*
-        holder.rlSelect.setOnClickListener(new View.OnClickListener() {
+
+        holder.rlSelect.setOnClickListener(new View.OnClickListener()  {
             @Override
             public void onClick(View v) {
 
                 Intent intent = new Intent(context, ExoPlayerActivity.class);
-                intent.putExtra("linkOnVideo", arrayListVideos.get(position).getStr_path());
+                intent.putExtra("linkOnVideo", arrayListLinks.get(position).getLink());
                 activity.startActivity(intent);
 
             }
         });
-
- */
     }
 
     @Override
