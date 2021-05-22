@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -97,11 +98,6 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 });
         youTubeOverlay.player(player);
 
-        // hide title bar
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
-
         // hide notification bar and set full screen
         playerView.setSystemUiVisibility(hideBarsFlags);
 
@@ -136,7 +132,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isScreenLocked) {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                    lockRotationButton.setColorFilter(R.color.white);
+                    lockRotationButton.setColorFilter(Color.WHITE);
                 } else {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
                     lockRotationButton.setColorFilter(R.color.purple_200);
