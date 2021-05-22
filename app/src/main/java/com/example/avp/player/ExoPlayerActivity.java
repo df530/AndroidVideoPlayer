@@ -2,11 +2,13 @@ package com.example.avp.player;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -14,14 +16,23 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.example.avp.R;
-import com.github.vkay94.dtpv.DoubleTapPlayerView;
 import com.github.vkay94.dtpv.youtube.YouTubeOverlay;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MergingMediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+
+import at.huber.youtubeExtractor.VideoMeta;
+import at.huber.youtubeExtractor.YouTubeExtractor;
+import at.huber.youtubeExtractor.YtFile;
 
 public class ExoPlayerActivity extends AppCompatActivity {
     PlayerView playerView;
@@ -50,6 +61,11 @@ public class ExoPlayerActivity extends AppCompatActivity {
         }
 
         createSimpleExoPlayerAndPlayVideoByLink(linkOnVideo);
+    }
+
+    public static boolean isYoutubeUrl(String youTubeURl) {
+        String pattern = "^(http(s)?://)?((w){3}.)?youtu(be|.be)?(\\.com)?/.+";
+        return !youTubeURl.isEmpty() && youTubeURl.matches(pattern);
     }
 
     private void createSimpleExoPlayerAndPlayVideoByLink(String linkOnVideo) {
@@ -89,31 +105,22 @@ public class ExoPlayerActivity extends AppCompatActivity {
         // hide notification bar and set full screen
         playerView.setSystemUiVisibility(hideBarsFlags);
 
-        /* TODO
-         if (isLinkOnGoogleDrive(linkOnVideo)) {
-            create mediaSource or mediaItem
-            player.setMedia*(media*);
-         }
-         else {
-             player.setMediaItem(MediaItem.fromUri(Uri.parse(linkOnVideo)));
-         }
-         */
-        player.setMediaItem(MediaItem.fromUri(Uri.parse(linkOnVideo)));
+        setPlayerMediaByLink(linkOnVideo);
+
+        initControllerElements();
 
         player.prepare();
-
         player.setPlayWhenReady(true);
+    }
+
+    private void initControllerElements() {
         player.addListener(new Player.EventListener() {
             @Override
             public void onPlaybackStateChanged(int state) {
                 if (state == Player.STATE_BUFFERING) {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Do something after 5s = 5000ms
-                            if (player.getPlaybackState() == Player.STATE_BUFFERING) {
-                                progressBar.setVisibility(View.VISIBLE);
-                            }
+                    handler.postDelayed(() -> {
+                        if (player.getPlaybackState() == Player.STATE_BUFFERING) {
+                            progressBar.setVisibility(View.VISIBLE);
                         }
                     }, 500);
                 } else if (state == Player.STATE_READY) {
@@ -129,14 +136,73 @@ public class ExoPlayerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isScreenLocked) {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                    lockRotationButton.setColorFilter(getResources().getColor(R.color.white));
+                    lockRotationButton.setColorFilter(R.color.white);
                 } else {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-                    lockRotationButton.setColorFilter(getResources().getColor(R.color.purple_200));
+                    lockRotationButton.setColorFilter(R.color.purple_200);
                 }
                 isScreenLocked = !isScreenLocked;
             }
         });
+    }
+
+    private void setPlayerMediaByLink(String linkOnVideo) {
+        // check for youtube
+        if (isYoutubeUrl(linkOnVideo)) {
+            playVideoFromYouTube(linkOnVideo);
+        }
+        /* TODO
+         else if (isLinkOnGoogleDrive(linkOnVideo)) {
+            create mediaSource or mediaItem
+            player.setMedia*(media*);
+         }
+         */
+        else {
+            player.setMediaItem(MediaItem.fromUri(Uri.parse(linkOnVideo)));
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void playVideoFromYouTube(String linkOnVideo) {
+        new YouTubeExtractor(this) {
+            private int getBestPossibleVideoTag(SparseArray<YtFile> ytFiles) {
+                List<Integer> videoTags = Arrays.asList(
+                        266, // 2160p
+                        264, // 1440p
+                        299, // 1080p60
+                        137, // 1080p
+                        298, // 720p60
+                        136, // 720p
+                        135, // 480p
+                        134, // 360p
+                        133, // 240p
+                        160  // 144p
+                );
+                for (Integer videoTag : videoTags) {
+                    YtFile ytFile = ytFiles.get(videoTag);
+                    if (ytFile != null) {
+                        return videoTag;
+                    }
+                }
+                throw new RuntimeException("No video in ytFiles");
+            }
+
+            @Override
+            protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
+                if (ytFiles != null) {
+                    // 720, 1080, 480
+                    int videoTag = getBestPossibleVideoTag(ytFiles);
+                    int audioTag = 140; // audio tag for m4a
+                    MediaSource audioSource = new ProgressiveMediaSource
+                            .Factory(new DefaultHttpDataSource.Factory())
+                            .createMediaSource(MediaItem.fromUri(ytFiles.get(audioTag).getUrl()));
+                    MediaSource videoSource = new ProgressiveMediaSource
+                            .Factory(new DefaultHttpDataSource.Factory())
+                            .createMediaSource(MediaItem.fromUri(ytFiles.get(videoTag).getUrl()));
+                    player.setMediaSource(new MergingMediaSource(true, videoSource, audioSource), true);
+                }
+            }
+        }.extract(linkOnVideo, true, true);
     }
 
     @Override

@@ -28,8 +28,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"
-
         app:yt_playerView="@+id/player_view"
         app:yt_tapCircleColor="#22222222"/>
+
+
+    <ProgressBar
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/progress_bar"
+        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/purple_200"/>
 
 </FrameLayout>
