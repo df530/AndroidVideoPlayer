@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -69,7 +72,41 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
         if ("list".equals(displayMode)) {
             holder.textView.setText(arrayListVideos.get(position).getStr_path());
+            holder.imageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showPopupMenu(v);
+                }
+            });
         }
+    }
+
+    private boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.video_info_item:
+                //TODO: get info about video
+                return true;
+                    /*
+                    case R.id.video_rename_item:
+                        return true;
+                    case R.id.video_delete_item:
+                        return true;
+                     */
+            default:
+                return false;
+        }
+    }
+
+    private void showPopupMenu(View v) {
+        PopupMenu popupMenu = new PopupMenu(context, v);
+        popupMenu.inflate(R.menu.video_menu);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return onOptionsItemSelected(item);
+            }
+        });
+        popupMenu.show();
     }
 
     @Override
@@ -82,6 +119,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         private ImageView imageView;
         private RelativeLayout rlSelect;
         private TextView textView;
+        private ImageButton imageButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,6 +127,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
             rlSelect = itemView.findViewById(R.id.rl_select);
             if (displayMode.equals("list")) {
                 textView = itemView.findViewById(R.id.tv_text);
+                imageButton = itemView.findViewById(R.id.iv_menu_button);
             }
         }
     }
