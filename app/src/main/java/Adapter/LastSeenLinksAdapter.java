@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.avp.R;
 import com.example.avp.player.ExoPlayerActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import Model.LastSeenLinkModel;
@@ -43,7 +44,10 @@ public class LastSeenLinksAdapter extends RecyclerView.Adapter<LastSeenLinksAdap
     public void onBindViewHolder(@NonNull LastSeenLinksAdapter.ViewHolder holder, int position) {
         holder.rlSelect.setBackgroundColor(Color.parseColor("#FFFFFF"));
         holder.rlSelect.setAlpha(0);
-        holder.textView.setText(arrayListLinks.get(position).getLink());
+        String link = arrayListLinks.get(position).getLink();
+        holder.textView.setText(link);
+
+        holder.textViewVideoName.setText(getVideoName(link));
 
         holder.rlSelect.setOnClickListener(new View.OnClickListener()  {
             @Override
@@ -65,11 +69,18 @@ public class LastSeenLinksAdapter extends RecyclerView.Adapter<LastSeenLinksAdap
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private RelativeLayout rlSelect;
         private TextView textView;
+        private TextView textViewVideoName;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             rlSelect = itemView.findViewById(R.id.rl_select);
             textView = itemView.findViewById(R.id.tv_link);
+            textViewVideoName = itemView.findViewById(R.id.tv_video_name);
         }
+    }
+
+    private String getVideoName(String link) {
+        String[] parts = link.split(File.separator);
+        return parts[parts.length - 1];
     }
 }

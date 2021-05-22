@@ -22,6 +22,7 @@ import com.example.avp.R;
 import com.example.avp.player.ExoPlayerActivity;
 import com.example.avp.ui.VideoPlayerActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import Model.VideoModel;
@@ -71,7 +72,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         });
 
         if ("list".equals(displayMode)) {
-            holder.textView.setText(arrayListVideos.get(position).getStr_path());
+            String link = arrayListVideos.get(position).getStr_path();
+            holder.textView.setText(link);
+            holder.textViewVideoName.setText(getVideoName(link));
             holder.imageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -120,6 +123,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         private RelativeLayout rlSelect;
         private TextView textView;
         private ImageButton imageButton;
+        private TextView textViewVideoName;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -128,7 +132,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
             if (displayMode.equals("list")) {
                 textView = itemView.findViewById(R.id.tv_text);
                 imageButton = itemView.findViewById(R.id.iv_menu_button);
+                textViewVideoName = itemView.findViewById(R.id.tv_video_name);
             }
         }
+    }
+
+    private String getVideoName(String link) {
+        String[] parts = link.split(File.separator);
+        return parts[parts.length - 1];
     }
 }
