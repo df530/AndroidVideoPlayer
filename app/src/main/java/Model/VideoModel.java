@@ -1,7 +1,5 @@
 package Model;
 
-import java.io.File;
-
 public class VideoModel {
     private String str_path, str_thumb;
     private boolean boolean_selected;
@@ -30,13 +28,4 @@ public class VideoModel {
         this.boolean_selected = boolean_selected;
     }
 
-    public String getFileSizeMegaBytes() {
-        File file = new File(str_path);
-        return (double) file.length() / (1024 * 1024) + " mb";
-    }
-
-    public int getVideoDuration() {
-        //TODO
-        return 0;
-    }
 }

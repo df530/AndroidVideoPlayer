@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import com.example.avp.ui.VideoPlayerActivity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import Model.VideoModel;
 
@@ -81,16 +84,26 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
             holder.imageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showPopupMenu(v);
+                    showPopupMenu(v, link);
                 }
             });
         }
     }
 
-    private boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    private boolean onOptionsItemSelected(@NonNull MenuItem item, @NonNull String currentVideoLink) {
         switch (item.getItemId()) {
             case R.id.video_info_item:
                 View popupView = LayoutInflater.from(activity).inflate(R.layout.popup_info, null);
+
+                TextView videoNameTextView = popupView.findViewById(R.id.video_name);
+                videoNameTextView.setText(getVideoName(currentVideoLink));
+
+                TextView videoSizeTextView = popupView.findViewById(R.id.video_size);
+                videoSizeTextView.setText(getFileSizeMegaBytes(currentVideoLink));
+
+                TextView videoDurationTextView = popupView.findViewById(R.id.video_duration);
+                videoDurationTextView.setText(getVideoDuration(currentVideoLink));
+
                 PopupWindow popupWindow = new PopupWindow(
                         popupView,
                         WindowManager.LayoutParams.MATCH_PARENT,
@@ -110,13 +123,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         }
     }
 
-    private void showPopupMenu(View v) {
+    private void showPopupMenu(View v, String currentVideoLink) {
         PopupMenu popupMenu = new PopupMenu(context, v);
         popupMenu.inflate(R.menu.video_menu);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                return onOptionsItemSelected(item);
+                return onOptionsItemSelected(item, currentVideoLink);
             }
         });
         popupMenu.show();
@@ -150,5 +163,23 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     private String getVideoName(String link) {
         String[] parts = link.split(File.separator);
         return parts[parts.length - 1];
+    }
+
+
+    private String getFileSizeMegaBytes(String path) {
+        File file = new File(path);
+        return (double) file.length() / (1024 * 1024) + " mb";
+    }
+
+    private String getVideoDuration(String path) {
+        Uri uri =  Uri.parse(path);
+        MediaPlayer mp = MediaPlayer.create(context, uri);
+        int duration = mp.getDuration();
+        mp.release();
+        return String.format("%d min, %d sec",
+                TimeUnit.MILLISECONDS.toMinutes(duration),
+                TimeUnit.MILLISECONDS.toSeconds(duration) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
+        );
     }
 }
