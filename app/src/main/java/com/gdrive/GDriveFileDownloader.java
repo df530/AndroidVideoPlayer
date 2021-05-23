@@ -1,5 +1,6 @@
 package com.gdrive;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.services.drive.Drive;
 
@@ -14,8 +15,8 @@ public class GDriveFileDownloader implements FileDownloader {
 
     final Drive driveService;
 
-    public GDriveFileDownloader() throws GeneralSecurityException, IOException {
-        driveService = GDriveServiceFactory.getGDriveService();
+    public GDriveFileDownloader(GoogleSignInAccount account) throws GeneralSecurityException, IOException {
+        driveService = GDriveServiceFactory.getGDriveService(account);
     }
 
     @Override

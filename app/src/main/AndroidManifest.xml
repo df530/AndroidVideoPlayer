@@ -3,6 +3,8 @@
     package="com.example.avp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +15,7 @@
         android:theme="@style/Theme.AndroidVideoPlayer">
         <activity android:name=".VideoActivity" android:theme="@android:style/Theme.NoTitleBar" />
         <activity android:name=".MainActivity">
+            <meta-data android:name="com.google.android.apps.drive.APP_ID" android:value="id=androidvideoplayer-310315" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
