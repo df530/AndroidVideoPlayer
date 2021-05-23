@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -93,7 +94,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     private boolean onOptionsItemSelected(@NonNull MenuItem item, @NonNull String currentVideoLink) {
         switch (item.getItemId()) {
             case R.id.video_info_item:
+                //TODO: move to a separate function
                 View popupView = LayoutInflater.from(activity).inflate(R.layout.popup_info, null);
+                popupView.setFocusable(true);
 
                 TextView videoNameTextView = popupView.findViewById(R.id.video_name);
                 videoNameTextView.setText(getVideoName(currentVideoLink));
@@ -109,6 +112,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
                         WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.WRAP_CONTENT
                 );
+
+                popupView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        popupWindow.dismiss();
+                        return true;
+                    }
+                });
+
                 popupWindow.showAsDropDown(popupView, 0, 0);
 
                 return true;
@@ -176,6 +188,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         MediaPlayer mp = MediaPlayer.create(context, uri);
         int duration = mp.getDuration();
         mp.release();
+        //TODO: move formating to a separate function, add hours
         return String.format("%d min, %d sec",
                 TimeUnit.MILLISECONDS.toMinutes(duration),
                 TimeUnit.MILLISECONDS.toSeconds(duration) -
