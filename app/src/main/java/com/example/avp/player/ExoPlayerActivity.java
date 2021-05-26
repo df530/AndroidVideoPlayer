@@ -11,14 +11,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
+import com.bosphere.verticalslider.VerticalSlider;
 import com.example.avp.R;
 import com.github.vkay94.dtpv.youtube.YouTubeOverlay;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -27,6 +32,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -36,11 +42,13 @@ import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YtFile;
 
 public class ExoPlayerActivity extends AppCompatActivity {
-    PlayerView playerView;
-    ProgressBar progressBar;
-    LinearLayout centerPlayerControl;            // pause, play buttons
-    ImageView lockRotationButton;
-    SimpleExoPlayer player;
+    private PlayerView playerView;
+    private ProgressBar progressBar;
+    private ImageView lockRotationButton;
+    private SimpleExoPlayer player;
+    private TextView speedValueTV;
+    private LinearLayout speedLL;
+    private VerticalSlider speedVS;
 
     static final Handler handler = new Handler(); // for making delay for set visibility of progressBar etc
     static final int hideBarsFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -73,8 +81,10 @@ public class ExoPlayerActivity extends AppCompatActivity {
         // assign variables
         playerView = findViewById(R.id.player_view);
         progressBar = findViewById(R.id.progress_bar);
-        centerPlayerControl = findViewById(R.id.center_player_control);
         lockRotationButton = findViewById(R.id.lock_rotation);
+        speedValueTV = findViewById(R.id.speed_value);
+        speedLL = findViewById(R.id.speed_linear_layout);
+        speedVS = findViewById(R.id.speed_vertical_slide);
 
         // make activity full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -140,7 +150,48 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 isScreenLocked = !isScreenLocked;
             }
         });
+
+        speedValueTV.setOnClickListener(new View.OnClickListener() {
+            //boolean isSpeedIncremented = false;
+            @Override
+            public void onClick(View v) {
+                if (speedLL.getVisibility() == View.INVISIBLE) {
+                    speedLL.setVisibility(View.VISIBLE);
+                }
+                else {
+                    speedLL.setVisibility(View.INVISIBLE);
+                }
+                /*
+                if (isSpeedIncremented) {
+                    player.setPlaybackParameters(new PlaybackParameters(1));
+                    speedIncrementButton.setColorFilter(Color.WHITE);
+                } else {
+                    player.setPlaybackParameters(new PlaybackParameters(2));
+                    speedIncrementButton.setColorFilter(R.color.purple_200);
+                }
+                isSpeedIncremented = !isSpeedIncremented;
+                */
+            }
+        });
+
+        speedVS.setProgress(0.5f);
+        speedValueTV.setText("1x");
+        speedVS.setOnSliderProgressChangeListener(new VerticalSlider.OnProgressChangeListener() {
+            @Override
+            public void onProgress(float progress) {
+                float curSpeed;
+                if (progress <= 0.5f) {
+                    curSpeed = 0.5f + progress / 0.5f * 0.5f;
+                }
+                else {
+                    curSpeed = 1f + (progress - 0.5f) / 0.5f;
+                }
+                speedValueTV.setText((new DecimalFormat("#.##x").format(curSpeed)));
+                player.setPlaybackParameters(new PlaybackParameters(curSpeed));
+            }
+        });
     }
+
 
     private void setPlayerMediaByLink(String linkOnVideo) {
         // check for youtube
@@ -207,9 +258,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
         /* hide notification bar and set full screen. Make it again, because this settings reset
          * after switching focus
          */
-        if (hasFocus) {
-            playerView.setSystemUiVisibility(hideBarsFlags);
-        }
+        playerView.setSystemUiVisibility(hideBarsFlags);
     }
 
     @Override
