@@ -51,12 +51,6 @@ public class ExoPlayerActivity extends AppCompatActivity {
     private VerticalSlider speedVS;
 
     static final Handler handler = new Handler(); // for making delay for set visibility of progressBar etc
-    static final int hideBarsFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +80,6 @@ public class ExoPlayerActivity extends AppCompatActivity {
         speedLL = findViewById(R.id.speed_linear_layout);
         speedVS = findViewById(R.id.speed_vertical_slide);
 
-        // make activity full screen
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         player = new SimpleExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
 
@@ -108,15 +99,24 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 });
         youTubeOverlay.player(player);
 
-        // hide notification bar and set full screen
-        playerView.setSystemUiVisibility(hideBarsFlags);
-
         setPlayerMediaByLink(linkOnVideo);
 
         initControllerElements();
 
         player.prepare();
         player.setPlayWhenReady(true);
+    }
+
+    private void hideAllSystemElements() {
+        // make activity full screen
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // hide notification bar and set full screen
+        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
     private void initControllerElements() {
@@ -258,7 +258,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
         /* hide notification bar and set full screen. Make it again, because this settings reset
          * after switching focus
          */
-        playerView.setSystemUiVisibility(hideBarsFlags);
+        hideAllSystemElements();
     }
 
     @Override

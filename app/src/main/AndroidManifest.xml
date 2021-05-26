@@ -18,7 +18,7 @@
         <activity
             android:name=".player.ExoPlayerActivity"
             android:configChanges="orientation|screenSize|layoutDirection"
-
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             />
         <activity android:name="com.example.avp.ui.VideoPlayerActivity"></activity>
         <activity android:name="com.example.avp.ui.MainActivity">
