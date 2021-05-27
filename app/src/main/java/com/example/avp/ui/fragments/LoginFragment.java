@@ -20,11 +20,6 @@ public class LoginFragment extends Fragment {
     private Button login;
     private EditText email, password;
 
-
-    public static LoginFragment newInstance() {
-        return new LoginFragment();
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -33,11 +28,8 @@ public class LoginFragment extends Fragment {
         email = view.findViewById(R.id.edit_text_email);
         password = view.findViewById(R.id.edit_text_password);
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO
-            }
+        login.setOnClickListener(v -> {
+            //TODO
         });
 
         return view;

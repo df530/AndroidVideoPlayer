@@ -5,24 +5,22 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.tv.TvView;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.avp.model.Model;
 import com.example.avp.R;
 import com.example.avp.ui.fragments.LoginFragment;
 import com.example.avp.ui.fragments.NoStoragePermissionFragment;
@@ -37,9 +35,7 @@ public class MainActivity extends AppCompatActivity
     private static final int PERMISSION_REQUEST_CODE = 123;
     private Menu menu;
     private String currentFragment;
-
-    private VideoListSettings videoListSettings = new VideoListSettings();
-    private LastSeenVideosHolder lastSeenVideosHolder = new LastSeenVideosHolder();
+    private Model model;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -49,42 +45,30 @@ public class MainActivity extends AppCompatActivity
 
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
+        model = new Model(this);
+        load();
+    }
 
+    private void load() {
+        Fragment fragment;
         if (hasPermissions()) {
-            loadFragment(new VideoFromDeviceFragment(videoListSettings));
+            fragment = new VideoFromDeviceFragment(model);
         } else {
             requestPermissionWithRationale();
             if (hasPermissions()) {
-                loadFragment(new VideoByLinkFragment(lastSeenVideosHolder));
+                fragment = new VideoByLinkFragment(model);
             } else {
-                loadFragment(new NoStoragePermissionFragment());
+                fragment = new NoStoragePermissionFragment();
             }
         }
+        loadFragment(fragment);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         this.menu = menu;
-
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
         return true;
-    }
-
-    private void updateVideoListSettings(int newColumnsNum, String newSortedBy, boolean newReversedOrder) {
-        if (newColumnsNum == videoListSettings.columnsNum
-                && newSortedBy.equals(videoListSettings.sortedBy)
-                && newReversedOrder == videoListSettings.reversedOrder) {
-            return;
-        }
-        videoListSettings.columnsNum = newColumnsNum;
-        videoListSettings.sortedBy = newSortedBy;
-        videoListSettings.reversedOrder = newReversedOrder;
-
-        if (currentFragment.equals(VideoFromDeviceFragment.class.getSimpleName())) {
-            loadFragment(new VideoFromDeviceFragment(videoListSettings));
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -92,29 +76,34 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case (R.id.list_view):
-                updateVideoListSettings(1, videoListSettings.sortedBy, videoListSettings.reversedOrder);
+                model.setVideoListViewList();
                 item.setChecked(true);
-                videoListSettings.displayMode = "list";
                 break;
             case (R.id.gallery_view):
-                updateVideoListSettings(2, videoListSettings.sortedBy, videoListSettings.reversedOrder);
+                model.setVideoListViewGallery();
                 item.setChecked(true);
-                videoListSettings.displayMode = "gallery";
-            break;
+                break;
             case (R.id.date_taken_sorted_by):
-                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DATE_TAKEN, videoListSettings.reversedOrder);
+                model.updateVideoListSortedBy(MediaStore.Images.Media.DATE_TAKEN);
                 item.setChecked(true);
                 break;
             case (R.id.display_name_sorted_by):
-                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DISPLAY_NAME, videoListSettings.reversedOrder);
+                model.updateVideoListSortedBy(MediaStore.Images.Media.DISPLAY_NAME);
                 item.setChecked(true);
                 break;
             case (R.id.reversed_order_sorted_by):
-                updateVideoListSettings(videoListSettings.columnsNum, videoListSettings.sortedBy, !videoListSettings.reversedOrder);
-                item.setChecked(videoListSettings.reversedOrder);
+                model.toggleVideoListOrder();
+                item.setChecked(model.getVideoListReversed());
                 break;
         }
+        reloadVideoFromDeviceFragmentIfCurrent();
         return super.onOptionsItemSelected(item);
+    }
+
+    private void reloadVideoFromDeviceFragmentIfCurrent() {
+        if (currentFragment.equals(VideoFromDeviceFragment.class.getSimpleName())) {
+            loadFragment(new VideoFromDeviceFragment(model));
+        }
     }
 
     private boolean hasPermissions() {
@@ -193,7 +182,7 @@ public class MainActivity extends AppCompatActivity
 
         if (allowed) {
             //user granted all permissions we can perform our task.
-            loadFragment(new VideoFromDeviceFragment(videoListSettings));
+            loadFragment(new VideoFromDeviceFragment(model));
         } else {
             // we will give warning to user that they haven't granted permissions.
             giveWarning();
@@ -245,11 +234,11 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.navigation_video_from_device:
                 if (hasPermissions()) {
-                    fragment = new VideoFromDeviceFragment(videoListSettings);
+                    fragment = new VideoFromDeviceFragment(model);
                 } else {
                     requestPermissionWithRationale();
                     if (hasPermissions()) {
-                        fragment = new VideoByLinkFragment(lastSeenVideosHolder);
+                        fragment = new VideoByLinkFragment(model);
                     } else {
                         fragment = new NoStoragePermissionFragment();
                     }
@@ -259,7 +248,7 @@ public class MainActivity extends AppCompatActivity
                 // "Пора покормить кота!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.navigation_video_by_link:
-                fragment = new VideoByLinkFragment(lastSeenVideosHolder);
+                fragment = new VideoByLinkFragment(model);
                 //Toast.makeText(getApplicationContext(),
                 //        "Пора покормить кота!!", Toast.LENGTH_SHORT).show();
                 break;

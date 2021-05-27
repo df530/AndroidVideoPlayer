@@ -1,4 +1,4 @@
-package Adapter;
+package com.example.avp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,22 +14,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.model.Model;
 import com.example.avp.player.ExoPlayerActivity;
 
 import java.io.File;
-import java.util.ArrayList;
-
-import Model.LastSeenLinkModel;
 
 public class LastSeenLinksAdapter extends RecyclerView.Adapter<LastSeenLinksAdapter.ViewHolder> {
 
-    private final Context context;
-    private ArrayList<LastSeenLinkModel> arrayListLinks;
-    private Activity activity;
+    private final Model model;
+    private final Activity activity;
 
-    public LastSeenLinksAdapter(Context context, @NonNull ArrayList<LastSeenLinkModel> arrayListLinks, Activity activity) {
-        this.context = context;
-        this.arrayListLinks = arrayListLinks;
+    public LastSeenLinksAdapter(Model model, Activity activity) {
+        this.model = model;
         this.activity = activity;
     }
 
@@ -44,26 +40,21 @@ public class LastSeenLinksAdapter extends RecyclerView.Adapter<LastSeenLinksAdap
     public void onBindViewHolder(@NonNull LastSeenLinksAdapter.ViewHolder holder, int position) {
         holder.rlSelect.setBackgroundColor(Color.parseColor("#FFFFFF"));
         holder.rlSelect.setAlpha(0);
-        String link = arrayListLinks.get(position).getLink();
+        String link = model.getRecentLink(position);
         holder.textView.setText(link);
 
         holder.textViewVideoName.setText(getVideoName(link));
 
-        holder.rlSelect.setOnClickListener(new View.OnClickListener()  {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(context, ExoPlayerActivity.class);
-                intent.putExtra("linkOnVideo", arrayListLinks.get(position).getLink());
-                activity.startActivity(intent);
-
-            }
+        holder.rlSelect.setOnClickListener(v -> {
+            Intent intent = new Intent(activity.getApplicationContext(), ExoPlayerActivity.class);
+            intent.putExtra("linkOnVideo", model.getRecentLink(position));
+            activity.startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
-        return arrayListLinks.size();
+        return model.getLastSeenLinksCount();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

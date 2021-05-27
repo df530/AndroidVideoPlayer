@@ -18,10 +18,6 @@ public class NoStoragePermissionFragment extends Fragment {
 
     private NoStoragePermissionViewModel mViewModel;
 
-    public static NoStoragePermissionFragment newInstance() {
-        return new NoStoragePermissionFragment();
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {

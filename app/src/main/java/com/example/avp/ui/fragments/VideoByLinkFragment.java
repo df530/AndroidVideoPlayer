@@ -17,16 +17,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.avp.model.Model;
 import com.example.avp.R;
 import com.example.avp.player.ExoPlayerActivity;
-import com.example.avp.ui.LastSeenVideosHolder;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import Adapter.LastSeenLinksAdapter;
-import Adapter.VideoAdapter;
-import Model.LastSeenLinkModel;
+import com.example.avp.adapter.LastSeenLinksAdapter;
 
 public class VideoByLinkFragment extends Fragment {
 
@@ -35,15 +30,10 @@ public class VideoByLinkFragment extends Fragment {
     private EditText link;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
+    private final Model model;
 
-    private static LastSeenVideosHolder linksHolder;
-
-    public VideoByLinkFragment(LastSeenVideosHolder linksHolder) {
-        this.linksHolder = linksHolder;
-    }
-
-    public static VideoByLinkFragment newInstance() {
-        return new VideoByLinkFragment(linksHolder);
+    public VideoByLinkFragment(Model model) {
+        this.model = model;
     }
 
     @Override
@@ -52,25 +42,20 @@ public class VideoByLinkFragment extends Fragment {
         View view = inflater.inflate(R.layout.video_by_link_fragment, container, false);
         playButton = view.findViewById(R.id.play_button);
         link = view.findViewById(R.id.edit_text_link);
-
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
-                String linkOnVideo = link.getText().toString();
-
-                linksHolder.addVideo(linkOnVideo);
-
-                intent.putExtra("linkOnVideo", linkOnVideo);
-                startActivity(intent);
-                update();
-            }
-        });
-
+        playButton.setOnClickListener(this::playVideo);
         return view;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void playVideo(View v) {
+        Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
+        String linkOnVideo = link.getText().toString();
+        model.addRecentVideo(linkOnVideo);
+        intent.putExtra("linkOnVideo", linkOnVideo);
+        startActivity(intent);
+        update();
+    }
+
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -79,17 +64,15 @@ public class VideoByLinkFragment extends Fragment {
         init();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void init() {
-        recyclerView = (RecyclerView) getActivity().findViewById(R.id.recyclerviewLastSeen);
+        recyclerView = getActivity().findViewById(R.id.recyclerviewLastSeen);
         recyclerViewLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), 1);
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
         update();
     }
 
     private void update() {
-        LastSeenLinksAdapter adapter = new LastSeenLinksAdapter(getActivity().getApplicationContext(),
-                linksHolder.getLastSeenLinkModelList(), getActivity());
+        LastSeenLinksAdapter adapter = new LastSeenLinksAdapter(model, getActivity());
         recyclerView.setAdapter(adapter);
     }
 }

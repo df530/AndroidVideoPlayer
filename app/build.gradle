@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.avp"
-        minSdkVersion 21
+        minSdkVersion 28
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -34,6 +34,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    implementation 'org.projectlombok:lombok'
     def nav_version = "2.3.5"
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -57,6 +58,10 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
     api ('com.google.api-client:google-api-client:1.23.0') {
         exclude group:'com.google.guava'
     }

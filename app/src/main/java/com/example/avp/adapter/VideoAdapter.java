@@ -1,15 +1,12 @@
-package Adapter;
+package com.example.avp.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -25,72 +22,52 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.avp.R;
+import com.example.avp.model.Model;
 import com.example.avp.player.ExoPlayerActivity;
-import com.example.avp.ui.VideoPlayerActivity;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
-import Model.VideoModel;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> {
 
-    private final Context context;
-    private ArrayList<VideoModel> arrayListVideos;
-    private Activity activity;
-    private static String displayMode;
+    private final Model model;
+    private final Activity activity;
 
     private boolean anyPopupOpened = false;
     private PopupWindow lastPopupOpened;
 
-    public VideoAdapter(Context context, ArrayList<VideoModel> arrayListVideos, Activity activity, String displayMode) {
-        this.context = context;
-        this.arrayListVideos = arrayListVideos;
+    public VideoAdapter(Model model, Activity activity) {
+        this.model = model;
         this.activity = activity;
-        VideoAdapter.displayMode = displayMode;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        if (displayMode.equals("gallery")) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_video, parent, false);
-        } else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_video_list_mode, parent, false);
-        }
+        int resource = model.getVideListDisplayMode().equals("gallery") ? R.layout.custom_video : R.layout.custom_video_list_mode;
+        view = LayoutInflater.from(parent.getContext()).inflate(resource, parent, false);
         return new VideoAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context).load("file://" + arrayListVideos.get(position).getStr_thumb())
+        Glide.with(activity.getApplicationContext()).load("file://" + model.getVideoThumb(position))
                 .skipMemoryCache(false).into(holder.imageView);
         holder.rlSelect.setBackgroundColor(Color.parseColor("#FFFFFF"));
         holder.rlSelect.setAlpha(0);
 
-        holder.rlSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(context, ExoPlayerActivity.class);
-                intent.putExtra("linkOnVideo", arrayListVideos.get(position).getStr_path());
-                activity.startActivity(intent);
-
-            }
+        holder.rlSelect.setOnClickListener(v -> {
+            Intent intent = new Intent(activity.getApplicationContext(), ExoPlayerActivity.class);
+            model.setCurrentVideFromList(position);
+            activity.startActivity(intent);
         });
 
-        if ("list".equals(displayMode)) {
-            String link = arrayListVideos.get(position).getStr_path();
+        if ("list".equals(model.getVideListDisplayMode())) {
+            String link = model.getVideoPath(position);
             holder.textView.setText(link);
             holder.textViewVideoName.setText(getVideoName(link));
-            holder.imageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showPopupMenu(v, link);
-                }
-            });
+            holder.imageButton.setOnClickListener(v -> showPopupMenu(v, link));
         }
     }
 
@@ -122,13 +99,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
                 WindowManager.LayoutParams.WRAP_CONTENT
         );
 
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.dismiss();
-                anyPopupOpened = false;
-                return true;
-            }
+        popupView.setOnTouchListener((v, event) -> {
+            popupWindow.dismiss();
+            anyPopupOpened = false;
+            return true;
         });
 
         showPopupWindow(popupWindow, popupView, 0, 0);
@@ -155,23 +129,18 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     }
 
     private void showPopupMenu(View v, String currentVideoLink) {
-        PopupMenu popupMenu = new PopupMenu(context, v);
+        PopupMenu popupMenu = new PopupMenu(activity.getApplicationContext(), v);
         popupMenu.inflate(R.menu.video_menu);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return onOptionsItemSelected(item, currentVideoLink);
-            }
-        });
+        popupMenu.setOnMenuItemClickListener(item -> onOptionsItemSelected(item, currentVideoLink));
         popupMenu.show();
     }
 
     @Override
     public int getItemCount() {
-        return arrayListVideos.size();
+        return model.getArrayListVideos().size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imageView;
         private RelativeLayout rlSelect;
@@ -183,7 +152,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
             super(itemView);
             imageView = itemView.findViewById(R.id.iv_image);
             rlSelect = itemView.findViewById(R.id.rl_select);
-            if (displayMode.equals("list")) {
+            if (model.getVideListDisplayMode().equals("list")) {
                 textView = itemView.findViewById(R.id.tv_text);
                 imageButton = itemView.findViewById(R.id.iv_menu_button);
                 textViewVideoName = itemView.findViewById(R.id.tv_video_name);
@@ -203,8 +172,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     }
 
     private String getVideoDuration(String path) {
-        Uri uri = Uri.parse(path);
-        MediaPlayer mp = MediaPlayer.create(context, uri);
+        Uri uri =  Uri.parse(path);
+        MediaPlayer mp = MediaPlayer.create(activity.getApplicationContext(), uri);
         int duration = mp.getDuration();
         mp.release();
         //TODO: move formating to a separate function, add hours

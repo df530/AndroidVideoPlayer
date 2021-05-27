@@ -8,8 +8,6 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,28 +18,23 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.model.Model;
 import com.example.avp.ui.VideoListSettings;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import Adapter.VideoAdapter;
-import Model.VideoModel;
+import com.example.avp.adapter.VideoAdapter;
+import com.example.avp.model.VideoModel;
 
 public class VideoFromDeviceFragment extends Fragment {
 
     private VideoFromDeviceViewModel mViewModel;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
-    private ArrayList<VideoModel> arrayListVideos;
-    private static VideoListSettings currentSettings;
+    private final Model model;
 
-    public VideoFromDeviceFragment(VideoListSettings settings) {
-        currentSettings = settings;
-    }
-
-    public static VideoFromDeviceFragment newInstance() {
-        return new VideoFromDeviceFragment(currentSettings);
+    public VideoFromDeviceFragment(Model model) {
+        this.model = model;
     }
 
     @Override
@@ -57,73 +50,17 @@ public class VideoFromDeviceFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(VideoFromDeviceViewModel.class);
         // TODO: Use the ViewModel
-
         init();
-    }
-
-    private void reverseVideoList() {
-        ArrayList<VideoModel> newVideoList = new ArrayList<>();
-        for (int i = arrayListVideos.size() - 1; i >= 0; i--) {
-            newVideoList.add(arrayListVideos.get(i));
-        }
-        arrayListVideos.clear();
-        arrayListVideos.addAll(newVideoList);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void init() {
-        recyclerView = (RecyclerView) getActivity().findViewById(R.id.recyclerviewVideo);
-        recyclerViewLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), currentSettings.columnsNum);
+        recyclerView = getActivity().findViewById(R.id.recyclerviewVideo);
+        recyclerViewLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(),
+                model.getVideoListColumnsNum());
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
-        arrayListVideos = new ArrayList<>();
-        fetchVideosFromGallery();
 
-        if (currentSettings.reversedOrder) {
-            reverseVideoList();
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    private void fetchVideosFromGallery() {
-        int column_index_data, thum;
-        String absolutePathImage;
-
-        Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {
-                MediaStore.MediaColumns.DATA,
-                MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Video.Media._ID,
-                MediaStore.Video.Thumbnails.DATA
-        };
-
-        String sortOrder = currentSettings.sortedBy;
-
-        Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(
-                uri,
-                projection,
-                null,
-                null,
-                sortOrder //+ "DESC"
-        );
-
-        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        thum = cursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails.DATA);
-
-        while (cursor.moveToNext()) {
-            absolutePathImage = cursor.getString(column_index_data);
-
-            VideoModel videoModel = new VideoModel();
-            videoModel.setBoolean_selected(false);
-            videoModel.setStr_path(absolutePathImage);
-            videoModel.setStr_thumb(cursor.getString(thum));
-
-            arrayListVideos.add(videoModel);
-        }
-
-        //call the adapter class and set it to recyclerview
-
-        VideoAdapter videoAdapter = new VideoAdapter(getActivity().getApplicationContext(),
-                arrayListVideos, getActivity(), currentSettings.displayMode);
+        VideoAdapter videoAdapter = new VideoAdapter(model, getActivity());
         recyclerView.setAdapter(videoAdapter);
     }
 
