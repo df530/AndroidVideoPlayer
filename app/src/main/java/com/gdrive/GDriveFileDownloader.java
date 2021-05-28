@@ -1,49 +1,37 @@
 package com.gdrive;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.services.drive.Drive;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.security.GeneralSecurityException;
+import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GDriveFileDownloader implements FileDownloader {
 
-    final Drive driveService;
+    private final GDriveWrapper driveService;
 
-    public GDriveFileDownloader(GoogleSignInAccount account) throws GeneralSecurityException, IOException {
-        driveService = GDriveServiceFactory.getGDriveService(account);
+    public GDriveFileDownloader(AppCompatActivity context, GoogleSignInAccount account) {
+        driveService = new GDriveWrapper(context, account);
     }
 
     @Override
-    public OutputStream downloadFullFile(String fileURL) throws IOException {
-        Drive.Files.Get request = getDriveGetRequest(fileURL);
-        OutputStream resultStream = new ByteArrayOutputStream();
-        request.executeMediaAndDownloadTo(resultStream);
-        return resultStream;
-    }
-
-    @Override
-    public OutputStream downloadPartOfFile(String fileURL, long leftByteBound, long rightByteBound) throws IOException {
-        Drive.Files.Get request = getDriveGetRequest(fileURL);
-        HttpHeaders rangeHeader = new HttpHeaders();
-        rangeHeader.setRange("bytes=" + leftByteBound + "-" + rightByteBound);
-        request.setRequestHeaders(rangeHeader);
-        OutputStream resultStream = new ByteArrayOutputStream();
-        request.executeMediaAndDownloadTo(resultStream);
-        return resultStream;
-    }
-
-    private Drive.Files.Get getDriveGetRequest(String fileURL) throws IOException {
+    public InputStream downloadFullFile(String fileURL) throws IOException {
         if (!validateGDriveURL(fileURL)) {
             throw new IllegalArgumentException("Illegal URL format.");
         }
         String fileID = getGDriveFileIDFromURL(fileURL);
-        return driveService.files().get(fileID);
+        return driveService.getFile(fileID);
+    }
+
+    @Override
+    public InputStream downloadPartOfFile(String fileURL, long leftByteBound, long rightByteBound) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     static public String getGDriveFileIDFromURL(String fileURL) {
