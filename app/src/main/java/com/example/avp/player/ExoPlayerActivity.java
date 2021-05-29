@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import com.example.avp.R;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.net.MalformedURLException;
@@ -37,9 +38,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
     private void createSimpleExoPlayerAndPlayVideoByLink(String linkOnVideo) {
         SimpleExoPlayer player = new SimpleExoPlayer.Builder(this).build();
         playerView = (PlayerView) findViewById(R.id.playerView);
-
         playerView.setPlayer(player);
-        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(linkOnVideo));
 
         // hide title bar
         if (getSupportActionBar()!= null) {
@@ -53,7 +52,17 @@ public class ExoPlayerActivity extends AppCompatActivity {
                                                                                          and hide again in some seconds */
         );
 
-        player.setMediaItem(mediaItem);
+        /* TODO
+         if (isLinkOnGoogleDrive(linkOnVideo)) {
+            create mediaSource or mediaItem
+            player.setMedia*(media*);
+         }
+         else {
+             player.setMediaItem(MediaItem.fromUri(Uri.parse(linkOnVideo)));
+         }
+         */
+        player.setMediaItem(MediaItem.fromUri(Uri.parse(linkOnVideo)));
+
         player.prepare();
         player.play();
     }
