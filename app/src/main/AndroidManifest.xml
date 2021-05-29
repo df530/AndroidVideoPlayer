@@ -14,7 +14,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidVideoPlayer">
-        <activity android:name=".VideoActivity" android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name=".player.ExoPlayerActivity"
+            android:configChanges="orientation|screenSize"
+
+            />
         <activity android:name=".MainActivity">
             <meta-data android:name="com.google.android.apps.drive.APP_ID" android:value="id=androidvideoplayer-310315" />
             <intent-filter>
