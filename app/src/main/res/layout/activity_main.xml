@@ -16,7 +16,6 @@
         android:hint="Введите ссылку"
         app:layout_constraintRight_toLeftOf="@+id/button"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/button"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
