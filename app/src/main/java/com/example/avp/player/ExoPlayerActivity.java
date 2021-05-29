@@ -3,9 +3,12 @@ package com.example.avp.player;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,15 +19,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bosphere.verticalslider.VerticalSlider;
 import com.example.avp.R;
 import com.github.vkay94.dtpv.youtube.YouTubeOverlay;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -72,7 +78,6 @@ public class ExoPlayerActivity extends AppCompatActivity {
     }
 
     private void createSimpleExoPlayer() {
-        // Change buffer parameters to decrease loading time
         /*
         //Minimum Video you want to buffer while Playing
         final int MIN_BUFFER_DURATION = 2000;
@@ -92,12 +97,23 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 .setTargetBufferBytes(-1)
                 .setPrioritizeTimeOverSizeThresholds(true).build();
         */
+        // Change buffer parameters to decrease loading time
         DefaultLoadControl loadControl = new DefaultLoadControl.Builder().setBufferDurationsMs(
                 32*1024, 64*1024, 1024, 1024).build();
 
-        player = new SimpleExoPlayer.Builder(this).setLoadControl(loadControl).build();
-        playerView.setPlayer(player);
+        // Set audio attributes to make pause when another app start sound (music, for example)
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(C.USAGE_MEDIA)
+                .setContentType(C.CONTENT_TYPE_MOVIE)
+                .build();
 
+        player = new SimpleExoPlayer.Builder(this)
+                .setLoadControl(loadControl)
+                .setHandleAudioBecomingNoisy(true) // make pause when headphones disconnected
+                .setAudioAttributes(audioAttributes, true)
+                .build();
+
+        playerView.setPlayer(player);
     }
 
     private void createSimpleExoPlayerAndPlayVideoByLink(String linkOnVideo) {
@@ -134,6 +150,20 @@ public class ExoPlayerActivity extends AppCompatActivity {
                     }
                 });
         youTubeOverlay.player(player);
+
+        // Creating broadcast receiver to making pause/play from headphones
+        HeadsetButtonReceiver hbr = new HeadsetButtonReceiver(this);
+        hbr.setOnHeadsetListener(new HeadsetButtonReceiver.onHeadsetListener() {
+            @Override
+            public void playOrPause() {
+                if (player.isPlaying()) {
+                    player.pause();
+                }
+                else {
+                    player.play();
+                }
+            }
+        });
 
         setPlayerMediaByLink(linkOnVideo);
 
