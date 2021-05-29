@@ -1,6 +1,5 @@
 package com.example.avp.player;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -12,12 +11,14 @@ import androidx.core.view.GestureDetectorCompat;
 
 import com.bosphere.verticalslider.VerticalSlider;
 import com.example.avp.R;
-import com.github.vkay94.dtpv.DoubleTapPlayerView;
-import com.google.android.exoplayer2.Player;
 
 import org.jetbrains.annotations.NotNull;
 
 public class ExoPlayerView extends com.github.vkay94.dtpv.DoubleTapPlayerView {
+    {
+        setControllerAutoShow(false);
+    }
+
     public ExoPlayerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }

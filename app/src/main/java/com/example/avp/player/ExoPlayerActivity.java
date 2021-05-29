@@ -11,12 +11,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bosphere.verticalslider.VerticalSlider;
@@ -29,6 +27,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 
@@ -50,7 +49,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
     private LinearLayout speedLL;
     private VerticalSlider speedVS;
 
-    static final Handler handler = new Handler(); // for making delay for set visibility of progressBar etc
+    private static final Handler handler = new Handler(); // for making delay for set visibility of progressBar etc
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +81,14 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
         player = new SimpleExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
+
+        // Make speed TextView visibility like controller visibility
+        playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
+            @Override
+            public void onVisibilityChange(int visibility) {
+                speedValueTV.setVisibility(visibility);
+            }
+        });
 
         // activate double tap rewind and fast forward increment
         YouTubeOverlay youTubeOverlay = findViewById(R.id.youtube_overlay);
@@ -133,6 +140,16 @@ public class ExoPlayerActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                 }
             }
+
+            @Override
+            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+                speedValueTV.setVisibility(View.VISIBLE);
+                handler.postDelayed(() -> {
+                    if (!playerView.isControllerVisible()) {
+                        speedValueTV.setVisibility(View.INVISIBLE);
+                    }
+                }, 1000);
+            }
         });
 
         lockRotationButton.setOnClickListener(new View.OnClickListener() {
@@ -152,7 +169,6 @@ public class ExoPlayerActivity extends AppCompatActivity {
         });
 
         speedValueTV.setOnClickListener(new View.OnClickListener() {
-            //boolean isSpeedIncremented = false;
             @Override
             public void onClick(View v) {
                 if (speedLL.getVisibility() == View.INVISIBLE) {
@@ -161,16 +177,6 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 else {
                     speedLL.setVisibility(View.INVISIBLE);
                 }
-                /*
-                if (isSpeedIncremented) {
-                    player.setPlaybackParameters(new PlaybackParameters(1));
-                    speedIncrementButton.setColorFilter(Color.WHITE);
-                } else {
-                    player.setPlaybackParameters(new PlaybackParameters(2));
-                    speedIncrementButton.setColorFilter(R.color.purple_200);
-                }
-                isSpeedIncremented = !isSpeedIncremented;
-                */
             }
         });
 

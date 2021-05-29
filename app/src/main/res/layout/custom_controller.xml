@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:id="@+id/controller"
     android:layout_height="match_parent"
     android:background="#80000000">
 
@@ -89,8 +90,10 @@
             android:layout_marginEnd="30dp"
             android:src="@drawable/ic_rotation_lock" />
 
+        <!--this is fake TextView, that helps align this linear layout.
+            Real text view is in activity_exo_player.xml-->
         <TextView
-            android:id="@+id/speed_value"
+            android:visibility="invisible"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"

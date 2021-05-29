@@ -40,4 +40,16 @@
         android:layout_gravity="center"
         android:indeterminateTint="@color/purple_200"/>
 
+    <TextView
+        android:id="@+id/speed_value"
+        android:layout_marginVertical="30dp"
+        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_gravity="end|center_horizontal"
+        android:visibility="invisible"
+        android:text="1x"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textAlignment="center"/>
 </FrameLayout>
