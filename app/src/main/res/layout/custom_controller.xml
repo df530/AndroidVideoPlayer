@@ -70,7 +70,7 @@
             android:layout_marginTop="-8dp"
             app:buffered_color="#FFFFFF"
             app:played_color="@color/purple_200"
-            app:unplayed_color="#44333333" />
+            app:unplayed_color="#66666666" />
     </LinearLayout>
 
     <LinearLayout
@@ -109,11 +109,11 @@
         android:layout_height="wrap_content"
         android:layout_alignEnd="@id/video_params"
         android:layout_alignBottom="@id/time_bar_layout"
-        android:layout_marginEnd="3dp"
+        android:layout_marginEnd="30dp"
         android:layout_marginTop="42dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="invisible">
+        android:visibility="visible">
 
         <TextView
             android:layout_width="wrap_content"
@@ -127,12 +127,12 @@
             android:id="@+id/speed_vertical_slide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-30dp"
-            android:layout_marginBottom="-30dp"
-            android:padding="32dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp"
+            android:padding="0dp"
             app:vs_thumb_color="@color/purple_200"
             app:vs_thumb_radius="10dp"
-            app:vs_track_bg_color="#AA333333"
+            app:vs_track_bg_color="#66666666"
             app:vs_track_bg_thickness="6dp"
             app:vs_track_fg_color="@color/purple_200"
             app:vs_track_fg_thickness="2dp" />

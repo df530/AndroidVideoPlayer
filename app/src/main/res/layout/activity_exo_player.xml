@@ -38,6 +38,7 @@
         android:id="@+id/progress_bar"
         android:visibility="invisible"
         android:layout_gravity="center"
+        android:animateLayoutChanges="true"
         android:indeterminateTint="@color/purple_200"/>
 
     <TextView

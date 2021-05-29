@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.bosphere.verticalslider.VerticalSlider;
 import com.example.avp.R;
 import com.github.vkay94.dtpv.youtube.YouTubeOverlay;
+import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
@@ -70,6 +71,35 @@ public class ExoPlayerActivity extends AppCompatActivity {
         return !youTubeURl.isEmpty() && youTubeURl.matches(pattern);
     }
 
+    private void createSimpleExoPlayer() {
+        // Change buffer parameters to decrease loading time
+        /*
+        //Minimum Video you want to buffer while Playing
+        final int MIN_BUFFER_DURATION = 2000;
+        //Max Video you want to buffer during PlayBack
+        final int MAX_BUFFER_DURATION = 5000;
+        //Min Video you want to buffer before start Playing it
+        final int MIN_PLAYBACK_START_BUFFER = 1500;
+        //Min video You want to buffer when user resumes video
+        final int MIN_PLAYBACK_RESUME_BUFFER = 2000;
+
+        LoadControl loadControl = new DefaultLoadControl.Builder()
+                .setAllocator(new DefaultAllocator(true, 16))
+                .setBufferDurationsMs(MIN_BUFFER_DURATION,
+                        MAX_BUFFER_DURATION,
+                        MIN_PLAYBACK_START_BUFFER,
+                        MIN_PLAYBACK_RESUME_BUFFER)
+                .setTargetBufferBytes(-1)
+                .setPrioritizeTimeOverSizeThresholds(true).build();
+        */
+        DefaultLoadControl loadControl = new DefaultLoadControl.Builder().setBufferDurationsMs(
+                32*1024, 64*1024, 1024, 1024).build();
+
+        player = new SimpleExoPlayer.Builder(this).setLoadControl(loadControl).build();
+        playerView.setPlayer(player);
+
+    }
+
     private void createSimpleExoPlayerAndPlayVideoByLink(String linkOnVideo) {
         // assign variables
         playerView = findViewById(R.id.player_view);
@@ -79,8 +109,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
         speedLL = findViewById(R.id.speed_linear_layout);
         speedVS = findViewById(R.id.speed_vertical_slide);
 
-        player = new SimpleExoPlayer.Builder(this).build();
-        playerView.setPlayer(player);
+        createSimpleExoPlayer();
 
         // Make speed TextView visibility like controller visibility
         playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
