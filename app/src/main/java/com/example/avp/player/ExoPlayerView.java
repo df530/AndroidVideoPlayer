@@ -31,16 +31,18 @@ public class ExoPlayerView extends com.github.vkay94.dtpv.DoubleTapPlayerView {
         super(context);
     }
 
-    private final GestureDetectorCompat
-            gestureDetector = new GestureDetectorCompat(this.getContext(), new GestureDetector.SimpleOnGestureListener() {
+    private final GestureDetectorCompat gestureDetector = new GestureDetectorCompat(
+            this.getContext(),
+            new GestureDetector.SimpleOnGestureListener() {
 
-    private float curVSProgress = 0.5f;
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            ((VerticalSlider)findViewById(R.id.speed_vertical_slide)).setProgress(curVSProgress = 1.5f - curVSProgress, true);
-            return true;
-        }
-    });
+                private float curVSProgress = 0.5f;
+
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    ((VerticalSlider) findViewById(R.id.speed_vertical_slide)).setProgress(curVSProgress = 1.5f - curVSProgress, true);
+                    return true;
+                }
+            });
 
     //@SuppressLint("ClickableViewAccessibility")
     @Override
@@ -55,7 +57,7 @@ public class ExoPlayerView extends com.github.vkay94.dtpv.DoubleTapPlayerView {
         if (ev.getX() >= this.getWidth() * 0.35 && ev.getX() <= this.getWidth() * 0.65) {
             touchHandled |= gestureDetector.onTouchEvent(ev);
         }
-        return  touchHandled;
+        return touchHandled;
     }
 
     @Override

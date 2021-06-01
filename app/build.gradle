@@ -55,12 +55,15 @@ dependencies {
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
 
     implementation 'com.google.android.exoplayer:exoplayer:2.13.2'
+    implementation 'com.github.bosphere:android-verticalslider:1.0.3'
+    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
+    implementation "io.reactivex.rxjava3:rxjava:3.x.y"
+    implementation 'com.github.vkay94:DoubleTapPlayerView:1.0.0'
+    implementation "io.reactivex.rxjava3:rxjava:3.0.13"
+
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.github.vkay94:DoubleTapPlayerView:1.0.0'
-    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
-    compile 'com.github.bosphere:android-verticalslider:1.0.3'
     api ('com.google.api-client:google-api-client:1.23.0') {
         exclude group:'com.google.guava'
     }

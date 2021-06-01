@@ -2,52 +2,38 @@ package com.example.avp.player;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bosphere.verticalslider.VerticalSlider;
 import com.example.avp.R;
 import com.github.vkay94.dtpv.youtube.YouTubeOverlay;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.MergingMediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
-import at.huber.youtubeExtractor.VideoMeta;
-import at.huber.youtubeExtractor.YouTubeExtractor;
-import at.huber.youtubeExtractor.YtFile;
-
 public class ExoPlayerActivity extends AppCompatActivity {
+    private ExoPlayerModel playerModel;
+
     private PlayerView playerView;
     private ProgressBar progressBar;
     private ImageView lockRotationButton;
@@ -64,42 +50,15 @@ public class ExoPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_exo_player);
 
         Intent intent = getIntent();
-        String linkOnVideo = intent.getStringExtra("linkOnVideo");
-        if (linkOnVideo.isEmpty()) {
-            linkOnVideo = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-        }
+        playerModel = new ExoPlayerModel(this, intent.getStringExtra("linkOnVideo"));
 
-        createSimpleExoPlayerAndPlayVideoByLink(linkOnVideo);
-    }
-
-    public static boolean isYoutubeUrl(String youTubeURl) {
-        String pattern = "^(http(s)?://)?((w){3}.)?youtu(be|.be)?(\\.com)?/.+";
-        return !youTubeURl.isEmpty() && youTubeURl.matches(pattern);
+        createSimpleExoPlayerAndPlayVideoByLink();
     }
 
     private void createSimpleExoPlayer() {
-        /*
-        //Minimum Video you want to buffer while Playing
-        final int MIN_BUFFER_DURATION = 2000;
-        //Max Video you want to buffer during PlayBack
-        final int MAX_BUFFER_DURATION = 5000;
-        //Min Video you want to buffer before start Playing it
-        final int MIN_PLAYBACK_START_BUFFER = 1500;
-        //Min video You want to buffer when user resumes video
-        final int MIN_PLAYBACK_RESUME_BUFFER = 2000;
-
-        LoadControl loadControl = new DefaultLoadControl.Builder()
-                .setAllocator(new DefaultAllocator(true, 16))
-                .setBufferDurationsMs(MIN_BUFFER_DURATION,
-                        MAX_BUFFER_DURATION,
-                        MIN_PLAYBACK_START_BUFFER,
-                        MIN_PLAYBACK_RESUME_BUFFER)
-                .setTargetBufferBytes(-1)
-                .setPrioritizeTimeOverSizeThresholds(true).build();
-        */
         // Change buffer parameters to decrease loading time
         DefaultLoadControl loadControl = new DefaultLoadControl.Builder().setBufferDurationsMs(
-                32*1024, 64*1024, 1024, 1024).build();
+                15000, 50000, 2500, 5000).build();
 
         // Set audio attributes to make pause when another app start sound (music, for example)
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
@@ -116,7 +75,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
         playerView.setPlayer(player);
     }
 
-    private void createSimpleExoPlayerAndPlayVideoByLink(String linkOnVideo) {
+    private void createSimpleExoPlayerAndPlayVideoByLink() {
         // assign variables
         playerView = findViewById(R.id.player_view);
         progressBar = findViewById(R.id.progress_bar);
@@ -128,12 +87,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
         createSimpleExoPlayer();
 
         // Make speed TextView visibility like controller visibility
-        playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
-            @Override
-            public void onVisibilityChange(int visibility) {
-                speedValueTV.setVisibility(visibility);
-            }
-        });
+        playerView.setControllerVisibilityListener(visibility -> speedValueTV.setVisibility(visibility));
 
         // activate double tap rewind and fast forward increment
         YouTubeOverlay youTubeOverlay = findViewById(R.id.youtube_overlay);
@@ -153,22 +107,18 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
         // Creating broadcast receiver to making pause/play from headphones
         HeadsetButtonReceiver hbr = new HeadsetButtonReceiver(this);
-        hbr.setOnHeadsetListener(new HeadsetButtonReceiver.onHeadsetListener() {
-            @Override
-            public void playOrPause() {
-                if (player.isPlaying()) {
-                    player.pause();
-                }
-                else {
-                    player.play();
-                }
+        hbr.setOnHeadsetListener(() -> {
+            if (player.isPlaying()) {
+                player.pause();
+            }
+            else {
+                player.play();
             }
         });
 
-        setPlayerMediaByLink(linkOnVideo);
-
         initControllerElements();
 
+        playerModel.getMediaSource().subscribe(player::setMediaSource);
         player.prepare();
         player.setPlayWhenReady(true);
     }
@@ -201,7 +151,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+            public void onPlaybackParametersChanged(@NotNull PlaybackParameters playbackParameters) {
                 speedValueTV.setVisibility(View.VISIBLE);
                 handler.postDelayed(() -> {
                     if (!playerView.isControllerVisible()) {
@@ -227,94 +177,28 @@ public class ExoPlayerActivity extends AppCompatActivity {
             }
         });
 
-        speedValueTV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (speedLL.getVisibility() == View.INVISIBLE) {
-                    speedLL.setVisibility(View.VISIBLE);
-                }
-                else {
-                    speedLL.setVisibility(View.INVISIBLE);
-                }
+        speedValueTV.setOnClickListener(v -> {
+            if (speedLL.getVisibility() == View.INVISIBLE) {
+                speedLL.setVisibility(View.VISIBLE);
+            }
+            else {
+                speedLL.setVisibility(View.INVISIBLE);
             }
         });
 
         speedVS.setProgress(0.5f);
         speedValueTV.setText("1x");
-        speedVS.setOnSliderProgressChangeListener(new VerticalSlider.OnProgressChangeListener() {
-            @Override
-            public void onProgress(float progress) {
-                float curSpeed;
-                if (progress <= 0.5f) {
-                    curSpeed = 0.5f + progress / 0.5f * 0.5f;
-                }
-                else {
-                    curSpeed = 1f + (progress - 0.5f) / 0.5f;
-                }
-                speedValueTV.setText((new DecimalFormat("#.##x").format(curSpeed)));
-                player.setPlaybackParameters(new PlaybackParameters(curSpeed));
+        speedVS.setOnSliderProgressChangeListener(progress -> {
+            float curSpeed;
+            if (progress <= 0.5f) {
+                curSpeed = 0.5f + progress / 0.5f * 0.5f;
             }
+            else {
+                curSpeed = 1f + (progress - 0.5f) / 0.5f;
+            }
+            speedValueTV.setText((new DecimalFormat("#.##x").format(curSpeed)));
+            player.setPlaybackParameters(new PlaybackParameters(curSpeed));
         });
-    }
-
-
-    private void setPlayerMediaByLink(String linkOnVideo) {
-        // check for youtube
-        if (isYoutubeUrl(linkOnVideo)) {
-            playVideoFromYouTube(linkOnVideo);
-        }
-        /* TODO
-         else if (isLinkOnGoogleDrive(linkOnVideo)) {
-            create mediaSource or mediaItem
-            player.setMedia*(media*);
-         }
-         */
-        else {
-            player.setMediaItem(MediaItem.fromUri(Uri.parse(linkOnVideo)));
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private void playVideoFromYouTube(String linkOnVideo) {
-        new YouTubeExtractor(this) {
-            private int getBestPossibleVideoTag(SparseArray<YtFile> ytFiles) {
-                List<Integer> videoTags = Arrays.asList(
-                        266, // 2160p
-                        264, // 1440p
-                        299, // 1080p60
-                        137, // 1080p
-                        298, // 720p60
-                        136, // 720p
-                        135, // 480p
-                        134, // 360p
-                        133, // 240p
-                        160  // 144p
-                );
-                for (Integer videoTag : videoTags) {
-                    YtFile ytFile = ytFiles.get(videoTag);
-                    if (ytFile != null) {
-                        return videoTag;
-                    }
-                }
-                throw new RuntimeException("No video in ytFiles");
-            }
-
-            @Override
-            protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
-                if (ytFiles != null) {
-                    // 720, 1080, 480
-                    int videoTag = getBestPossibleVideoTag(ytFiles);
-                    int audioTag = 140; // audio tag for m4a
-                    MediaSource audioSource = new ProgressiveMediaSource
-                            .Factory(new DefaultHttpDataSource.Factory())
-                            .createMediaSource(MediaItem.fromUri(ytFiles.get(audioTag).getUrl()));
-                    MediaSource videoSource = new ProgressiveMediaSource
-                            .Factory(new DefaultHttpDataSource.Factory())
-                            .createMediaSource(MediaItem.fromUri(ytFiles.get(videoTag).getUrl()));
-                    player.setMediaSource(new MergingMediaSource(true, videoSource, audioSource), true);
-                }
-            }
-        }.extract(linkOnVideo, true, true);
     }
 
     @Override
@@ -348,6 +232,6 @@ public class ExoPlayerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        playerView.getPlayer().release();
+        Objects.requireNonNull(playerView.getPlayer()).release();
     }
 }
