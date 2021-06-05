@@ -6,12 +6,14 @@ import android.net.Uri;
 import android.util.SparseArray;
 
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class ExoPlayerModel {
     public Observable<MediaSource> getMediaSource() {
         Observable<MediaSource> res;
         if (isYoutubeUrl(linkOnVideo)) {
-            res = getMediaSourceFromYouTube();
+            res = getObservableMediaSourceFromYouTube();
         }
         /*
         else if (isGoogleDriveLink(linkOnVideo)) {
@@ -44,13 +46,22 @@ public class ExoPlayerModel {
         }
          */
         else {
-            res = Observable.fromCallable(() ->
-                    new DefaultMediaSourceFactory(context).createMediaSource(MediaItem.fromUri(Uri.parse(linkOnVideo))));
+            res = getObservableMediaSourceFromUri();
         }
 
         return res.doOnError(e -> {
             // TODO: send message to the application, that link is incorrect
         });
+    }
+
+    private Observable<MediaSource> getObservableMediaSourceFromUri() {
+        AVPMediaMetaData meta = new AVPMediaMetaData(new File(linkOnVideo).getName(), null, linkOnVideo, null);
+        return Observable.fromCallable(() ->
+                new DefaultMediaSourceFactory(context)
+                        .createMediaSource(new MediaItem.Builder()
+                                .setUri(Uri.parse(linkOnVideo))
+                                .setTag(meta)
+                                .build()));
     }
 
     private static boolean isYoutubeUrl(String youTubeURl) {
@@ -59,8 +70,8 @@ public class ExoPlayerModel {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private Observable<MediaSource> getMediaSourceFromYouTube() {
-        PublishSubject<MediaSource> res = PublishSubject.create(); // create a list to save result MediaSource
+    private Observable<MediaSource> getObservableMediaSourceFromYouTube() {
+        PublishSubject<MediaSource> resObservable = PublishSubject.create(); // create a list to save result MediaSource
         new YouTubeExtractor(context) {
             private int getBestPossibleVideoTag(SparseArray<YtFile> ytFiles) {
                 List<Integer> videoTags = Arrays.asList(
@@ -87,20 +98,31 @@ public class ExoPlayerModel {
             @Override
             protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
                 if (ytFiles != null) {
-                    // 720, 1080, 480
                     int videoTag = getBestPossibleVideoTag(ytFiles);
                     int audioTag = 140; // audio tag for m4a
+
+                    AVPMediaMetaData mediaMetadata = new AVPMediaMetaData(videoMeta.getTitle(), videoMeta.getAuthor(), linkOnVideo,
+                            videoMeta.getThumbUrl());
+
                     MediaSource audioSource = new ProgressiveMediaSource
                             .Factory(new DefaultHttpDataSource.Factory())
-                            .createMediaSource(MediaItem.fromUri(ytFiles.get(audioTag).getUrl()));
+                            .createMediaSource(new MediaItem.Builder()
+                                    .setUri(ytFiles.get(audioTag).getUrl())
+                                    .setTag(mediaMetadata)
+                                    .build());
+
                     MediaSource videoSource = new ProgressiveMediaSource
                             .Factory(new DefaultHttpDataSource.Factory())
-                            .createMediaSource(MediaItem.fromUri(ytFiles.get(videoTag).getUrl()));
-                    res.onNext(new MergingMediaSource(true, videoSource, audioSource));
+                            .createMediaSource(new MediaItem.Builder()
+                                    .setUri(ytFiles.get(videoTag).getUrl())
+                                    .setTag(mediaMetadata)
+                                    .build());
+                    MediaSource resMediaSource = new MergingMediaSource(true, videoSource, audioSource);
+                    resObservable.onNext(resMediaSource);
                 }
             }
         }.extract(linkOnVideo, true, true);
 
-        return res;
+        return resObservable;
     }
 }

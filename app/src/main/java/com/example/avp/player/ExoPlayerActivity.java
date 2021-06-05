@@ -1,9 +1,13 @@
 package com.example.avp.player;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,21 +27,26 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
-import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.util.Util;
+import com.google.common.util.concurrent.Service;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.Objects;
 
+import static com.google.android.exoplayer2.C.WAKE_MODE_NETWORK;
+
 public class ExoPlayerActivity extends AppCompatActivity {
     private ExoPlayerModel playerModel;
+
+    public static SimpleExoPlayer player;
 
     private PlayerView playerView;
     private ProgressBar progressBar;
     private ImageView lockRotationButton;
-    private SimpleExoPlayer player;
     private TextView speedValueTV;
     private LinearLayout speedLL;
     private VerticalSlider speedVS;
@@ -67,12 +76,14 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 .build();
 
         player = new SimpleExoPlayer.Builder(this)
-                .setLoadControl(loadControl)
+                //.setLoadControl(loadControl)
                 .setHandleAudioBecomingNoisy(true) // make pause when headphones disconnected
                 .setAudioAttributes(audioAttributes, true)
                 .build();
 
         playerView.setPlayer(player);
+
+        player.setWakeMode(WAKE_MODE_NETWORK);
     }
 
     private void createSimpleExoPlayerAndPlayVideoByLink() {
@@ -121,6 +132,8 @@ public class ExoPlayerActivity extends AppCompatActivity {
         playerModel.getMediaSource().subscribe(player::setMediaSource);
         player.prepare();
         player.setPlayWhenReady(true);
+
+        startService(new Intent(this, ExoPlayerService.class));
     }
 
     private void hideAllSystemElements() {
@@ -211,27 +224,11 @@ public class ExoPlayerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        Objects.requireNonNull(playerView.getPlayer()).pause();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        player.setPlayWhenReady(false);
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        player.setPlayWhenReady(true);
-    }
-
-
-    @Override
     protected void onDestroy() {
+        player.release();
+        player = null;
+        stopService(new Intent(this, ExoPlayerService.class));
+
         super.onDestroy();
-        Objects.requireNonNull(playerView.getPlayer()).release();
     }
 }
