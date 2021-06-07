@@ -102,7 +102,7 @@ public class ExoPlayerModel {
                     int audioTag = 140; // audio tag for m4a
 
                     AVPMediaMetaData mediaMetadata = new AVPMediaMetaData(videoMeta.getTitle(), videoMeta.getAuthor(), linkOnVideo,
-                            videoMeta.getThumbUrl());
+                            videoMeta.getMqImageUrl());
 
                     MediaSource audioSource = new ProgressiveMediaSource
                             .Factory(new DefaultHttpDataSource.Factory())

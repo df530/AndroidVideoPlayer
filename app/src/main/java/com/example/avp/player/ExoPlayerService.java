@@ -6,10 +6,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.example.avp.R;
 import com.google.android.exoplayer2.Player;
@@ -29,46 +31,6 @@ public class ExoPlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-    }
-
-    public static Bitmap getBitmapFromURL(String src) {
-        /*
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            // Log exception
-            return null;
-        }
-        */
-        return null;
-    }
-
-    public static  InputStream getHttpConnection(String urlString)  throws IOException {
-
-        InputStream stream = null;
-        URL url = new URL(urlString);
-        URLConnection connection = url.openConnection();
-
-        try {
-            HttpURLConnection httpConnection = (HttpURLConnection) connection;
-            httpConnection.setRequestMethod("GET");
-            httpConnection.connect();
-
-            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                stream = httpConnection.getInputStream();
-            }
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("downloadImage" + ex.toString());
-        }
-        return stream;
     }
 
     @Override
@@ -123,9 +85,11 @@ public class ExoPlayerService extends Service {
                             if (player.getCurrentMediaItem() == null)
                                 return null;
                             AVPMediaMetaData meta = (AVPMediaMetaData)player.getCurrentMediaItem().playbackProperties.tag;
-                            if (meta == null || meta.getPreviewURL() == null)
+                            if (meta == null || meta.getPreviewBM() == null)
                                 return null;
-                            return getBitmapFromURL(meta.getPreviewURL());
+                            Bitmap previewBM = meta.getPreviewBM();
+                            callback.onBitmap(previewBM);
+                            return previewBM;
                         }
                     },
                     new PlayerNotificationManager.NotificationListener() {
@@ -159,6 +123,7 @@ public class ExoPlayerService extends Service {
             // Customization
             playerNotificationManager.setUsePreviousAction(false);
             playerNotificationManager.setUseNextAction(false);
+            playerNotificationManager.setColor(Color.TRANSPARENT);
             playerNotificationManager.setColorized(true);
             playerNotificationManager.setUseChronometer(true);
         }
