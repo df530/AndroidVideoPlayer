@@ -3,6 +3,7 @@ package com.example.avp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,11 +33,10 @@ public class SignInWithDrive extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_signin);
+        setContentView(R.layout.login_fragment);
 
-        statusText = findViewById(R.id.textView);
-        findViewById(R.id.button2).setOnClickListener(view -> signIn());
-        findViewById(R.id.button3).setOnClickListener(view -> testGoogleDrive());
+        statusText = findViewById(R.id.login_status_textview);
+        findViewById(R.id.google_login_button).setOnClickListener(v -> signIn());
 
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(driveScope)
@@ -91,9 +91,9 @@ public class SignInWithDrive extends AppCompatActivity {
 
     private void updateUI(GoogleSignInAccount account) {
         if (account != null) {
-            statusText.setText(account.getDisplayName());
+            statusText.setText("Login with " + account.getDisplayName());
         } else {
-            statusText.setText("Account is null.");
+            statusText.setText("Not login");
         }
     }
 

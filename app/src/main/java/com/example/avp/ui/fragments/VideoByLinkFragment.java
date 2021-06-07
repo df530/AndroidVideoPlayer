@@ -48,22 +48,19 @@ public class VideoByLinkFragment extends Fragment {
         playButton = view.findViewById(R.id.play_button);
         link = view.findViewById(R.id.edit_text_link);
 
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
-                String linkOnVideo = link.getText().toString();
+        playButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
+            String linkOnVideo = link.getText().toString();
 
-                linksHolder.addVideo(linkOnVideo);
-                //System.out.println("add link: " + linkOnVideo);
-                //System.out.println(linksHolder.getLastSeenLinkModelList().size());
-                //System.out.println("add link: " + linkOnVideo);
-                //TODO: add link to linksHolder and update video_by_link_fragment R.id.recyclerviewLastSeen
+            linksHolder.addVideo(linkOnVideo);
+            //System.out.println("add link: " + linkOnVideo);
+            //System.out.println(linksHolder.getLastSeenLinkModelList().size());
+            //System.out.println("add link: " + linkOnVideo);
+            //TODO: add link to linksHolder and update video_by_link_fragment R.id.recyclerviewLastSeen
 
-                intent.putExtra("linkOnVideo", linkOnVideo);
-                startActivity(intent);
-                update();
-            }
+            intent.putExtra("linkOnVideo", linkOnVideo);
+            startActivity(intent);
+            update();
         });
 
         return view;

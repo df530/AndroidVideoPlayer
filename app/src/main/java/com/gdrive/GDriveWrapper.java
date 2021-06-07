@@ -39,10 +39,12 @@ public class GDriveWrapper {
                 .build();
     }
 
-    public InputStream getFile(String fileID) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        driveService.files().get(fileID).executeMediaAndDownloadTo(outputStream);
-        return new ByteArrayInputStream(outputStream.toByteArray());
+    public Task<byte[]> getFile(final String fileID) {
+        return Tasks.call(mExecutor, () -> {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            driveService.files().get(fileID).executeMediaAndDownloadTo(outputStream);
+            return outputStream.toByteArray();
+        });
     }
 
     public Task<String> testWrapper(String fileId) {

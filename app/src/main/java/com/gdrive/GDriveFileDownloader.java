@@ -3,6 +3,7 @@ package com.gdrive;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.services.drive.Drive;
 
@@ -21,8 +22,8 @@ public class GDriveFileDownloader implements FileDownloader {
     }
 
     @Override
-    public InputStream downloadFullFile(String fileURL) throws IOException {
-        if (!validateGDriveURL(fileURL)) {
+    public Task<byte[]> downloadFullFile(String fileURL) {
+        if (!isGDriveURL(fileURL)) {
             throw new IllegalArgumentException("Illegal URL format.");
         }
         String fileID = getGDriveFileIDFromURL(fileURL);
@@ -30,20 +31,21 @@ public class GDriveFileDownloader implements FileDownloader {
     }
 
     @Override
-    public InputStream downloadPartOfFile(String fileURL, long leftByteBound, long rightByteBound) throws IOException {
+    public Task<InputStream> downloadPartOfFile(String fileURL, long leftByteBound, long rightByteBound) {
         throw new UnsupportedOperationException();
     }
 
     static public String getGDriveFileIDFromURL(String fileURL) {
         Pattern pattern = Pattern.compile("/d/(.+)?/", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(fileURL);
+        System.out.println(fileURL);
         if (!matcher.find()) {
             throw new IllegalArgumentException("It's not GDrive file URL format.");
         }
         return matcher.group(1);
     }
 
-    static public boolean validateGDriveURL(String fileURL) {
+    static public boolean isGDriveURL(String fileURL) {
         Pattern pattern = Pattern.compile("(https?://)?(www.)?drive.google.com/file/d/(.+)", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(fileURL).matches();
     }
