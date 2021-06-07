@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.avp.R;
+import com.example.avp.model.Model;
 import com.example.avp.ui.fragments.LoginFragment;
 import com.example.avp.ui.fragments.NoStoragePermissionFragment;
 import com.example.avp.ui.fragments.VideoByLinkFragment;
@@ -37,8 +38,9 @@ public class MainActivity extends AppCompatActivity
     private static final int PERMISSION_REQUEST_CODE = 123;
     private Menu menu;
     private String currentFragment;
+    private Model model;
 
-    private VideoListSettings videoListSettings = new VideoListSettings();
+    //private VideoListSettings videoListSettings = new VideoListSettings();
     private LastSeenVideosHolder lastSeenVideosHolder = new LastSeenVideosHolder();
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -47,11 +49,13 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        model = new Model();
+
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
 
         if (hasPermissions()) {
-            loadFragment(new VideoFromDeviceFragment(videoListSettings));
+            loadFragment(new VideoFromDeviceFragment(model));
         } else {
             requestPermissionWithRationale();
             if (hasPermissions()) {
@@ -73,17 +77,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateVideoListSettings(int newColumnsNum, String newSortedBy, boolean newReversedOrder) {
-        if (newColumnsNum == videoListSettings.columnsNum
-                && newSortedBy.equals(videoListSettings.sortedBy)
-                && newReversedOrder == videoListSettings.reversedOrder) {
+        if (newColumnsNum == model.getVideoListSettings().columnsNum
+                && newSortedBy.equals(model.getVideoListSettings().sortedBy)
+                && newReversedOrder == model.getVideoListSettings().reversedOrder) {
             return;
         }
-        videoListSettings.columnsNum = newColumnsNum;
-        videoListSettings.sortedBy = newSortedBy;
-        videoListSettings.reversedOrder = newReversedOrder;
+
+        model.videoListSettings.columnsNum = newColumnsNum;
+        model.videoListSettings.sortedBy = newSortedBy;
+        model.videoListSettings.reversedOrder = newReversedOrder;
 
         if (currentFragment.equals(VideoFromDeviceFragment.class.getSimpleName())) {
-            loadFragment(new VideoFromDeviceFragment(videoListSettings));
+            loadFragment(new VideoFromDeviceFragment(model));
         }
     }
 
@@ -92,26 +97,26 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case (R.id.list_view):
-                updateVideoListSettings(1, videoListSettings.sortedBy, videoListSettings.reversedOrder);
+                updateVideoListSettings(1, model.getVideoListSettings().sortedBy, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
-                videoListSettings.displayMode = "list";
+                model.getVideoListSettings().displayMode = "list";
                 break;
             case (R.id.gallery_view):
-                updateVideoListSettings(2, videoListSettings.sortedBy, videoListSettings.reversedOrder);
+                updateVideoListSettings(2, model.getVideoListSettings().sortedBy, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
-                videoListSettings.displayMode = "gallery";
+                model.getVideoListSettings().displayMode = "gallery";
             break;
             case (R.id.date_taken_sorted_by):
-                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DATE_TAKEN, videoListSettings.reversedOrder);
+                updateVideoListSettings(model.getVideoListSettings().columnsNum, MediaStore.Images.Media.DATE_TAKEN, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
                 break;
             case (R.id.display_name_sorted_by):
-                updateVideoListSettings(videoListSettings.columnsNum, MediaStore.Images.Media.DISPLAY_NAME, videoListSettings.reversedOrder);
+                updateVideoListSettings(model.getVideoListSettings().columnsNum, MediaStore.Images.Media.DISPLAY_NAME, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
                 break;
             case (R.id.reversed_order_sorted_by):
-                updateVideoListSettings(videoListSettings.columnsNum, videoListSettings.sortedBy, !videoListSettings.reversedOrder);
-                item.setChecked(videoListSettings.reversedOrder);
+                updateVideoListSettings(model.getVideoListSettings().columnsNum, model.getVideoListSettings().sortedBy, !model.getVideoListSettings().reversedOrder);
+                item.setChecked(model.getVideoListSettings().reversedOrder);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -193,7 +198,7 @@ public class MainActivity extends AppCompatActivity
 
         if (allowed) {
             //user granted all permissions we can perform our task.
-            loadFragment(new VideoFromDeviceFragment(videoListSettings));
+            loadFragment(new VideoFromDeviceFragment(model));
         } else {
             // we will give warning to user that they haven't granted permissions.
             giveWarning();
@@ -245,7 +250,7 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.navigation_video_from_device:
                 if (hasPermissions()) {
-                    fragment = new VideoFromDeviceFragment(videoListSettings);
+                    fragment = new VideoFromDeviceFragment(model);
                 } else {
                     requestPermissionWithRationale();
                     if (hasPermissions()) {

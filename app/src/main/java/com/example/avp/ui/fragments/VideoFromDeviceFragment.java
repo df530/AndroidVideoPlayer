@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.model.Model;
 import com.example.avp.ui.VideoListSettings;
 
 import java.util.ArrayList;
@@ -34,14 +35,17 @@ public class VideoFromDeviceFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
     private ArrayList<VideoModel> arrayListVideos;
-    private static VideoListSettings currentSettings;
+    //private static VideoListSettings currentSettings;
+    private static Model model;
 
-    public VideoFromDeviceFragment(VideoListSettings settings) {
-        currentSettings = settings;
+    public VideoFromDeviceFragment(Model model) {
+        //currentSettings = settings;
+        this.model = model;
     }
 
     public static VideoFromDeviceFragment newInstance() {
-        return new VideoFromDeviceFragment(currentSettings);
+        //return new VideoFromDeviceFragment(currentSettings);
+        return new VideoFromDeviceFragment(model);
     }
 
     @Override
@@ -73,12 +77,12 @@ public class VideoFromDeviceFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void init() {
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recyclerviewVideo);
-        recyclerViewLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), currentSettings.columnsNum);
+        recyclerViewLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), model.getVideoListSettings().columnsNum);
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
         arrayListVideos = new ArrayList<>();
         fetchVideosFromGallery();
 
-        if (currentSettings.reversedOrder) {
+        if (model.getVideoListSettings().reversedOrder) {
             reverseVideoList();
         }
     }
@@ -96,7 +100,7 @@ public class VideoFromDeviceFragment extends Fragment {
                 MediaStore.Video.Thumbnails.DATA
         };
 
-        String sortOrder = currentSettings.sortedBy;
+        String sortOrder = model.getVideoListSettings().sortedBy;
 
         Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(
                 uri,
@@ -123,7 +127,7 @@ public class VideoFromDeviceFragment extends Fragment {
         //call the adapter class and set it to recyclerview
 
         VideoAdapter videoAdapter = new VideoAdapter(getActivity().getApplicationContext(),
-                arrayListVideos, getActivity(), currentSettings.displayMode);
+                arrayListVideos, getActivity(), model.getVideoListSettings().displayMode);
         recyclerView.setAdapter(videoAdapter);
     }
 
