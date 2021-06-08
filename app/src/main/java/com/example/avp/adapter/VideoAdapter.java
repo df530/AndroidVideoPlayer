@@ -126,12 +126,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     private void showPopupMenu(View v, String currentVideoLink) {
         PopupMenu popupMenu = new PopupMenu(model.getContext(), v);
         popupMenu.inflate(R.menu.video_menu);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return onOptionsItemSelected(item, currentVideoLink);
-            }
-        });
+        popupMenu.setOnMenuItemClickListener(item -> onOptionsItemSelected(item, currentVideoLink));
         popupMenu.show();
     }
 
