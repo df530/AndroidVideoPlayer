@@ -121,16 +121,17 @@ public class ExoPlayerActivity extends AppCompatActivity {
         hbr.setOnHeadsetListener(() -> {
             if (player.isPlaying()) {
                 player.pause();
-            }
-            else {
+            } else {
                 player.play();
             }
         });
 
         initControllerElements();
 
-        playerModel.getMediaSource().subscribe(player::setMediaSource);
-        player.prepare();
+        playerModel.getMediaSource().subscribe(ms -> {
+            player.setMediaSource(ms);
+            player.prepare();
+        });
         player.setPlayWhenReady(true);
 
         startService(new Intent(this, ExoPlayerService.class));
@@ -148,70 +149,82 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
-    private void initControllerElements() {
-        player.addListener(new Player.EventListener() {
-            @Override
-            public void onPlaybackStateChanged(int state) {
-                if (state == Player.STATE_BUFFERING) {
-                    handler.postDelayed(() -> {
-                        if (player.getPlaybackState() == Player.STATE_BUFFERING) {
-                            progressBar.setVisibility(View.VISIBLE);
-                        }
-                    }, 500);
-                } else if (state == Player.STATE_READY) {
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onPlaybackParametersChanged(@NotNull PlaybackParameters playbackParameters) {
-                speedValueTV.setVisibility(View.VISIBLE);
+    private class ExoPlayerEventListener implements Player.EventListener {
+        @Override
+        public void onPlaybackStateChanged(int state) {
+            if (state == Player.STATE_BUFFERING) {
                 handler.postDelayed(() -> {
-                    if (!playerView.isControllerVisible()) {
-                        speedValueTV.setVisibility(View.INVISIBLE);
+                    if (player.getPlaybackState() == Player.STATE_BUFFERING) {
+                        progressBar.setVisibility(View.VISIBLE);
                     }
-                }, 1000);
+                }, 500);
+            } else if (state == Player.STATE_READY) {
+                progressBar.setVisibility(View.GONE);
             }
-        });
+        }
 
-        lockRotationButton.setOnClickListener(new View.OnClickListener() {
-            boolean isScreenLocked = false;
-
-            @Override
-            public void onClick(View v) {
-                if (isScreenLocked) {
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                    lockRotationButton.setColorFilter(Color.WHITE);
-                } else {
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-                    lockRotationButton.setColorFilter(R.color.purple_200);
+        @Override
+        public void onPlaybackParametersChanged(@NotNull PlaybackParameters playbackParameters) {
+            speedValueTV.setVisibility(View.VISIBLE);
+            handler.postDelayed(() -> {
+                if (!playerView.isControllerVisible()) {
+                    speedValueTV.setVisibility(View.INVISIBLE);
                 }
-                isScreenLocked = !isScreenLocked;
-            }
-        });
+            }, 1000);
+        }
+    }
 
-        speedValueTV.setOnClickListener(v -> {
+    private class LockRotationClickListner implements View.OnClickListener {
+        boolean isScreenLocked = false;
+
+        @Override
+        public void onClick(View v) {
+            if (isScreenLocked) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                lockRotationButton.setColorFilter(Color.WHITE);
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+                lockRotationButton.setColorFilter(R.color.purple_200);
+            }
+            isScreenLocked = !isScreenLocked;
+        }
+    }
+
+    private class SpeedValueTextViewClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
             if (speedLL.getVisibility() == View.INVISIBLE) {
                 speedLL.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 speedLL.setVisibility(View.INVISIBLE);
             }
-        });
+        }
+    }
 
-        speedVS.setProgress(0.5f);
-        speedValueTV.setText("1x");
-        speedVS.setOnSliderProgressChangeListener(progress -> {
+    private class VerticalSliderProgressChangeListener implements VerticalSlider.OnProgressChangeListener {
+        @Override
+        public void onProgress(float progress) {
             float curSpeed;
             if (progress <= 0.5f) {
                 curSpeed = 0.5f + progress / 0.5f * 0.5f;
-            }
-            else {
+            } else {
                 curSpeed = 1f + (progress - 0.5f) / 0.5f;
             }
             speedValueTV.setText((new DecimalFormat("#.##x").format(curSpeed)));
             player.setPlaybackParameters(new PlaybackParameters(curSpeed));
-        });
+        }
+    }
+
+    private void initControllerElements() {
+        player.addListener(new ExoPlayerEventListener());
+
+        lockRotationButton.setOnClickListener(new LockRotationClickListner());
+
+        speedValueTV.setText("1x");
+        speedValueTV.setOnClickListener(new SpeedValueTextViewClickListener());
+
+        speedVS.setProgress(0.5f);
+        speedVS.setOnSliderProgressChangeListener(new VerticalSliderProgressChangeListener());
     }
 
     @Override

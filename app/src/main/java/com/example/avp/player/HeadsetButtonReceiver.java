@@ -14,13 +14,13 @@ import android.view.KeyEvent;
 public class HeadsetButtonReceiver extends BroadcastReceiver {
     private static int clickCount = 0;
     private Context context;
-    private static onHeadsetListener headsetListener;
+    private static OnHeadsetListener headsetListener;
 
     public HeadsetButtonReceiver() {
         super();
     }
 
-    public HeadsetButtonReceiver(Context context){
+    public HeadsetButtonReceiver(Context context) {
         super();
         this.context = context;
         headsetListener = null;
@@ -29,11 +29,11 @@ public class HeadsetButtonReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+        if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
             KeyEvent keyEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
             if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PAUSE || keyEvent.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PLAY) {
                 clickCount = clickCount + 1;
-                if(clickCount == 2) {
+                if (clickCount == 2) {
                     handler.sendEmptyMessage(1);
                     clickCount = 0;
                 }
@@ -50,17 +50,17 @@ public class HeadsetButtonReceiver extends BroadcastReceiver {
                 if (msg.what == 1) {
                     headsetListener.playOrPause();
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     };
 
-    interface onHeadsetListener{
+    interface OnHeadsetListener {
         void playOrPause();
     }
 
-    public void setOnHeadsetListener(onHeadsetListener newHeadsetListener){
+    public void setOnHeadsetListener(OnHeadsetListener newHeadsetListener) {
         headsetListener = newHeadsetListener;
     }
 
@@ -70,7 +70,7 @@ public class HeadsetButtonReceiver extends BroadcastReceiver {
         audioManager.registerMediaButtonEventReceiver(name);
     }
 
-    public void unregisterHeadsetReceiver(){
+    public void unregisterHeadsetReceiver() {
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         ComponentName name = new ComponentName(context.getPackageName(), HeadsetButtonReceiver.class.getName());
         audioManager.unregisterMediaButtonEventReceiver(name);

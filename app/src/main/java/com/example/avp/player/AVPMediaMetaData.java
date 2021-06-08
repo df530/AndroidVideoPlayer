@@ -12,10 +12,16 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
+import lombok.Getter;
+
 public class AVPMediaMetaData {
+    @Getter
     private final String title;
+    @Getter
     private final String author;
+    @Getter
     private final String uri;
+    @Getter
     private final Bitmap previewBM;
 
     public AVPMediaMetaData(String title, String author, String uri, String previewURL) {
@@ -67,21 +73,5 @@ public class AVPMediaMetaData {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public Bitmap getPreviewBM() {
-        return previewBM;
     }
 }

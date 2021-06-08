@@ -56,12 +56,11 @@ public class ExoPlayerModel {
 
     private Observable<MediaSource> getObservableMediaSourceFromUri() {
         AVPMediaMetaData meta = new AVPMediaMetaData(new File(linkOnVideo).getName(), null, linkOnVideo, null);
-        return Observable.fromCallable(() ->
-                new DefaultMediaSourceFactory(context)
-                        .createMediaSource(new MediaItem.Builder()
-                                .setUri(Uri.parse(linkOnVideo))
-                                .setTag(meta)
-                                .build()));
+        return Observable.just(new DefaultMediaSourceFactory(context)
+                .createMediaSource(new MediaItem.Builder()
+                        .setUri(Uri.parse(linkOnVideo))
+                        .setTag(meta)
+                        .build()));
     }
 
     private static boolean isYoutubeUrl(String youTubeURl) {
