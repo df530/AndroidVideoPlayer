@@ -53,7 +53,7 @@ public class VideoFromDeviceFragment extends Fragment {
     private void init() {
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recyclerviewVideo);
         recyclerViewLayoutManager = new GridLayoutManager(
-                getActivity().getApplicationContext(), model.getVideoListSettings().columnsNum
+                getActivity().getApplicationContext(), model.getVideoListColumnsNum()
         );
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
 

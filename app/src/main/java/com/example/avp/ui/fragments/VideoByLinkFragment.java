@@ -32,7 +32,6 @@ public class VideoByLinkFragment extends Fragment {
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
 
     private static Model model;
-//    private static LastSeenVideosHolder linksHolder;
 
     public VideoByLinkFragment(Model model) {
         this.model = model;
@@ -49,19 +48,15 @@ public class VideoByLinkFragment extends Fragment {
         playButton = view.findViewById(R.id.play_button);
         link = view.findViewById(R.id.edit_text_link);
 
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
-                String linkOnVideo = link.getText().toString();
+        playButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
+            String linkOnVideo = link.getText().toString();
 
-                //model.getLastSeenVideosHolder().addVideo(linkOnVideo);
-                model.addRecentVideo(linkOnVideo);
+            model.addRecentVideo(linkOnVideo);
 
-                intent.putExtra("linkOnVideo", linkOnVideo);
-                startActivity(intent);
-                update();
-            }
+            intent.putExtra("linkOnVideo", linkOnVideo);
+            startActivity(intent);
+            update();
         });
 
         return view;
@@ -85,8 +80,7 @@ public class VideoByLinkFragment extends Fragment {
     }
 
     private void update() {
-        LastSeenLinksAdapter adapter = new LastSeenLinksAdapter(getActivity().getApplicationContext(),
-                model.getLastSeenVideosHolder().getLastSeenLinkModelList(), getActivity());
+        LastSeenLinksAdapter adapter = new LastSeenLinksAdapter(model);
         recyclerView.setAdapter(adapter);
     }
 }
