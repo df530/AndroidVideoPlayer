@@ -5,19 +5,16 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.tv.TvView;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -40,16 +37,13 @@ public class MainActivity extends AppCompatActivity
     private String currentFragment;
     private Model model;
 
-    //private VideoListSettings videoListSettings = new VideoListSettings();
-    private LastSeenVideosHolder lastSeenVideosHolder = new LastSeenVideosHolder();
-
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        model = new Model();
+        model = new Model(this);
 
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -68,7 +62,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         this.menu = menu;
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -77,12 +70,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateVideoListSettings(int newColumnsNum, String newSortedBy, boolean newReversedOrder) {
-        if (newColumnsNum == model.getVideoListSettings().columnsNum
-                && newSortedBy.equals(model.getVideoListSettings().sortedBy)
-                && newReversedOrder == model.getVideoListSettings().reversedOrder) {
-            return;
-        }
-
         model.updateVideoListSettings(newColumnsNum, newSortedBy, newReversedOrder);
 
         if (currentFragment.equals(VideoFromDeviceFragment.class.getSimpleName())) {
@@ -257,19 +244,12 @@ public class MainActivity extends AppCompatActivity
                         fragment = new NoStoragePermissionFragment();
                     }
                 }
-                //fragment = new VideoFromDeviceFragment();
-                //Toast.makeText(getApplicationContext(),
-                // "Пора покормить кота!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.navigation_video_by_link:
                 fragment = new VideoByLinkFragment(model);
-                //Toast.makeText(getApplicationContext(),
-                //        "Пора покормить кота!!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.navigation_dashboard:
                 fragment = new LoginFragment();
-                //Toast.makeText(getApplicationContext(),
-                //        "Пора покормить кота!!!", Toast.LENGTH_SHORT).show();
                 break;
         }
         return loadFragment(fragment);

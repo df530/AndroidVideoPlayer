@@ -2,19 +2,15 @@ package com.example.avp.model;
 
 import androidx.annotation.Nullable;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class LastSeenLinkModel {
+    @Getter @Setter
     private String link;
 
     public LastSeenLinkModel(String link) {
         this.link = link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public String getLink() {
-        return link;
     }
 
     @Override

@@ -64,7 +64,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context).load("file://" + arrayListVideos.get(position).getStr_thumb())
+        Glide.with(context).load("file://" + arrayListVideos.get(position).getStrThumb())
                 .skipMemoryCache(false).into(holder.imageView);
         holder.rlSelect.setBackgroundColor(Color.parseColor("#FFFFFF"));
         holder.rlSelect.setAlpha(0);
@@ -74,14 +74,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
             public void onClick(View v) {
 
                 Intent intent = new Intent(context, ExoPlayerActivity.class);
-                intent.putExtra("linkOnVideo", arrayListVideos.get(position).getStr_path());
+                intent.putExtra("linkOnVideo", arrayListVideos.get(position).getStrPath());
                 activity.startActivity(intent);
 
             }
         });
 
         if ("list".equals(displayMode)) {
-            String link = arrayListVideos.get(position).getStr_path();
+            String link = arrayListVideos.get(position).getStrPath();
             holder.textView.setText(link);
             holder.textViewVideoName.setText(getVideoName(link));
             holder.imageButton.setOnClickListener(new View.OnClickListener() {
