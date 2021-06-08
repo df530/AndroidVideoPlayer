@@ -22,10 +22,14 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 
 import java.util.Objects;
 
+import lombok.Getter;
+
 public class ExoPlayerService extends Service {
     public static final String CHANNEL_ID = "player_channel";
     public static final int NOTIFICATION_ID = 1;
     private PlayerNotificationManager playerNotificationManager;
+    @Getter
+    private static boolean notificationServiceDestroyed = false;
 
     private static class NotificationMediaDescriptionAdapter implements PlayerNotificationManager.MediaDescriptionAdapter {
         @NonNull
@@ -152,6 +156,8 @@ public class ExoPlayerService extends Service {
         MediaSessionConnector mediaSessionConnector =
                 new MediaSessionConnector(mediaSession);
         mediaSessionConnector.setPlayer(ExoPlayerActivity.player);
+
+        notificationServiceDestroyed = false;
     }
 
     @Override
@@ -165,6 +171,7 @@ public class ExoPlayerService extends Service {
             playerNotificationManager.setPlayer(null);
             playerNotificationManager = null;
         }
+        notificationServiceDestroyed = true;
         super.onDestroy();
     }
 

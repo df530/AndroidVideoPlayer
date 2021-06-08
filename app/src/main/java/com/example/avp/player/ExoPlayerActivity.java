@@ -1,13 +1,9 @@
 package com.example.avp.player;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,15 +23,11 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
-import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.util.Util;
-import com.google.common.util.concurrent.Service;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
-import java.util.Objects;
 
 import static com.google.android.exoplayer2.C.WAKE_MODE_NETWORK;
 
@@ -67,7 +59,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
     private void createSimpleExoPlayer() {
         // Change buffer parameters to decrease loading time
         DefaultLoadControl loadControl = new DefaultLoadControl.Builder().setBufferDurationsMs(
-                15000, 50000, 2500, 5000).build();
+                15000, 120000, 2500, 5000).build();
 
         // Set audio attributes to make pause when another app start sound (music, for example)
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
@@ -76,7 +68,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 .build();
 
         player = new SimpleExoPlayer.Builder(this)
-                //.setLoadControl(loadControl)
+                .setLoadControl(loadControl)
                 .setHandleAudioBecomingNoisy(true) // make pause when headphones disconnected
                 .setAudioAttributes(audioAttributes, true)
                 .build();
@@ -172,9 +164,19 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 }
             }, 1000);
         }
+
+        @Override
+        public void onIsPlayingChanged(boolean isPlaying) {
+            if (isPlaying) {
+                // start service if it was destroyed
+                if (ExoPlayerService.isNotificationServiceDestroyed()) {
+                    startService(new Intent(ExoPlayerActivity.this, ExoPlayerService.class));
+                }
+            }
+        }
     }
 
-    private class LockRotationClickListner implements View.OnClickListener {
+    private class LockRotationClickListener implements View.OnClickListener {
         boolean isScreenLocked = false;
 
         @Override
@@ -218,7 +220,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
     private void initControllerElements() {
         player.addListener(new ExoPlayerEventListener());
 
-        lockRotationButton.setOnClickListener(new LockRotationClickListner());
+        lockRotationButton.setOnClickListener(new LockRotationClickListener());
 
         speedValueTV.setText("1x");
         speedValueTV.setOnClickListener(new SpeedValueTextViewClickListener());
@@ -235,6 +237,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
          */
         hideAllSystemElements();
     }
+
 
     @Override
     protected void onDestroy() {
