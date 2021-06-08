@@ -18,15 +18,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.model.Model;
 import com.example.avp.player.ExoPlayerActivity;
-import com.example.avp.ui.LastSeenVideosHolder;
-
-import java.io.File;
-import java.util.ArrayList;
 
 import Adapter.LastSeenLinksAdapter;
-import Adapter.VideoAdapter;
-import Model.LastSeenLinkModel;
 
 public class VideoByLinkFragment extends Fragment {
 
@@ -36,14 +31,15 @@ public class VideoByLinkFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
 
-    private static LastSeenVideosHolder linksHolder;
+    private static Model model;
+//    private static LastSeenVideosHolder linksHolder;
 
-    public VideoByLinkFragment(LastSeenVideosHolder linksHolder) {
-        this.linksHolder = linksHolder;
+    public VideoByLinkFragment(Model model) {
+        this.model = model;
     }
 
     public static VideoByLinkFragment newInstance() {
-        return new VideoByLinkFragment(linksHolder);
+        return new VideoByLinkFragment(model);
     }
 
     @Override
@@ -59,7 +55,8 @@ public class VideoByLinkFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
                 String linkOnVideo = link.getText().toString();
 
-                linksHolder.addVideo(linkOnVideo);
+                //model.getLastSeenVideosHolder().addVideo(linkOnVideo);
+                model.addRecentVideo(linkOnVideo);
 
                 intent.putExtra("linkOnVideo", linkOnVideo);
                 startActivity(intent);
@@ -89,7 +86,7 @@ public class VideoByLinkFragment extends Fragment {
 
     private void update() {
         LastSeenLinksAdapter adapter = new LastSeenLinksAdapter(getActivity().getApplicationContext(),
-                linksHolder.getLastSeenLinkModelList(), getActivity());
+                model.getLastSeenVideosHolder().getLastSeenLinkModelList(), getActivity());
         recyclerView.setAdapter(adapter);
     }
 }

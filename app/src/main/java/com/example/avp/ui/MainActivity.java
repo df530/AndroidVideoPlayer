@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             requestPermissionWithRationale();
             if (hasPermissions()) {
-                loadFragment(new VideoByLinkFragment(lastSeenVideosHolder));
+                loadFragment(new VideoByLinkFragment(model));
             } else {
                 loadFragment(new NoStoragePermissionFragment());
             }
@@ -83,9 +83,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        model.videoListSettings.columnsNum = newColumnsNum;
-        model.videoListSettings.sortedBy = newSortedBy;
-        model.videoListSettings.reversedOrder = newReversedOrder;
+        model.updateVideoListSettings(newColumnsNum, newSortedBy, newReversedOrder);
 
         if (currentFragment.equals(VideoFromDeviceFragment.class.getSimpleName())) {
             loadFragment(new VideoFromDeviceFragment(model));
@@ -254,7 +252,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     requestPermissionWithRationale();
                     if (hasPermissions()) {
-                        fragment = new VideoByLinkFragment(lastSeenVideosHolder);
+                        fragment = new VideoByLinkFragment(model);
                     } else {
                         fragment = new NoStoragePermissionFragment();
                     }
@@ -264,7 +262,7 @@ public class MainActivity extends AppCompatActivity
                 // "Пора покормить кота!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.navigation_video_by_link:
-                fragment = new VideoByLinkFragment(lastSeenVideosHolder);
+                fragment = new VideoByLinkFragment(model);
                 //Toast.makeText(getApplicationContext(),
                 //        "Пора покормить кота!!", Toast.LENGTH_SHORT).show();
                 break;
