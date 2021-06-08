@@ -8,8 +8,6 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,13 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
 import com.example.avp.model.Model;
-import com.example.avp.ui.VideoListSettings;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import Adapter.VideoAdapter;
-import Model.VideoModel;
+import com.example.avp.adapter.VideoAdapter;
+import com.example.avp.model.VideoModel;
 
 public class VideoFromDeviceFragment extends Fragment {
 
@@ -124,7 +120,7 @@ public class VideoFromDeviceFragment extends Fragment {
             arrayListVideos.add(videoModel);
         }
 
-        //call the adapter class and set it to recyclerview
+        //call the com.example.avp.adapter class and set it to recyclerview
 
         VideoAdapter videoAdapter = new VideoAdapter(getActivity().getApplicationContext(),
                 arrayListVideos, getActivity(), model.getVideoListSettings().displayMode);

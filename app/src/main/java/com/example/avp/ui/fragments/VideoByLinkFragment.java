@@ -21,7 +21,7 @@ import com.example.avp.R;
 import com.example.avp.model.Model;
 import com.example.avp.player.ExoPlayerActivity;
 
-import Adapter.LastSeenLinksAdapter;
+import com.example.avp.adapter.LastSeenLinksAdapter;
 
 public class VideoByLinkFragment extends Fragment {
 

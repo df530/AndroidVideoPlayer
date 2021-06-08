@@ -1,4 +1,4 @@
-package Model;
+package com.example.avp.model;
 
 public class VideoModel {
     private String str_path, str_thumb;

@@ -1,4 +1,4 @@
-package Adapter;
+package com.example.avp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,13 +26,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.avp.R;
 import com.example.avp.player.ExoPlayerActivity;
-import com.example.avp.ui.VideoPlayerActivity;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import Model.VideoModel;
+import com.example.avp.model.VideoModel;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> {
 

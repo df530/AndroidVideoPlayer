@@ -1,4 +1,4 @@
-package Adapter;
+package com.example.avp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,7 +19,7 @@ import com.example.avp.player.ExoPlayerActivity;
 import java.io.File;
 import java.util.ArrayList;
 
-import Model.LastSeenLinkModel;
+import com.example.avp.model.LastSeenLinkModel;
 
 public class LastSeenLinksAdapter extends RecyclerView.Adapter<LastSeenLinksAdapter.ViewHolder> {
 

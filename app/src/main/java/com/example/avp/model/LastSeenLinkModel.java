@@ -1,4 +1,4 @@
-package Model;
+package com.example.avp.model;
 
 import androidx.annotation.Nullable;
 
