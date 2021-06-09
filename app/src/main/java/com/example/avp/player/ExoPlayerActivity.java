@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.MediaDataSource;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -76,6 +77,11 @@ public class ExoPlayerActivity extends AppCompatActivity {
             fileTask.addOnSuccessListener(fileBytes -> {
                 System.out.println(fileBytes.length);
                 ByteArrayDataSource dataSource = new ByteArrayDataSource(fileBytes);
+                try {
+                    dataSource.open(new DataSpec(Uri.fromFile(Environment.getExternalStorageDirectory())));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 DataSource.Factory factory = () -> dataSource;
                 System.out.println(dataSource.getUri());
                 MediaSource fileSource = new ExtractorMediaSource(dataSource.getUri(),
