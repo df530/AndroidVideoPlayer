@@ -18,14 +18,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.model.Model;
 import com.example.avp.player.ExoPlayerActivity;
-import com.example.avp.ui.LastSeenVideosHolder;
 
-import java.util.ArrayList;
-
-import Adapter.LastSeenLinksAdapter;
-import Adapter.VideoAdapter;
-import Model.LastSeenLinkModel;
+import com.example.avp.adapter.LastSeenLinksAdapter;
 
 public class VideoByLinkFragment extends Fragment {
 
@@ -35,10 +31,14 @@ public class VideoByLinkFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
 
-    private LastSeenVideosHolder linksHolder = new LastSeenVideosHolder();
+    private static Model model;
+
+    public VideoByLinkFragment(Model model) {
+        this.model = model;
+    }
 
     public static VideoByLinkFragment newInstance() {
-        return new VideoByLinkFragment();
+        return new VideoByLinkFragment(model);
     }
 
     @Override
@@ -48,22 +48,15 @@ public class VideoByLinkFragment extends Fragment {
         playButton = view.findViewById(R.id.play_button);
         link = view.findViewById(R.id.edit_text_link);
 
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
-                String linkOnVideo = link.getText().toString();
+        playButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
+            String linkOnVideo = link.getText().toString();
 
-                linksHolder.addVideo(linkOnVideo);
-                //System.out.println("add link: " + linkOnVideo);
-                //System.out.println(linksHolder.getLastSeenLinkModelList().size());
-                //System.out.println("add link: " + linkOnVideo);
-                //TODO: add link to linksHolder and update video_by_link_fragment R.id.recyclerviewLastSeen
+            model.addRecentVideo(linkOnVideo);
 
-                intent.putExtra("linkOnVideo", linkOnVideo);
-                startActivity(intent);
-                update();
-            }
+            intent.putExtra("linkOnVideo", linkOnVideo);
+            startActivity(intent);
+            update();
         });
 
         return view;
@@ -87,8 +80,7 @@ public class VideoByLinkFragment extends Fragment {
     }
 
     private void update() {
-        LastSeenLinksAdapter adapter = new LastSeenLinksAdapter(getActivity().getApplicationContext(),
-                linksHolder.getLastSeenLinkModelList(), getActivity());
+        LastSeenLinksAdapter adapter = new LastSeenLinksAdapter(model);
         recyclerView.setAdapter(adapter);
     }
 }

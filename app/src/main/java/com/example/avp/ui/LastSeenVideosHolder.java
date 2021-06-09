@@ -5,10 +5,9 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
-import Model.LastSeenLinkModel;
+import com.example.avp.model.LastSeenLinkModel;
 
 public class LastSeenVideosHolder {
     private Set<String> lastSeenLinks = new HashSet<>();
