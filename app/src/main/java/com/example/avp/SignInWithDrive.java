@@ -89,20 +89,3 @@ public class SignInWithDrive extends AppCompatActivity {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
