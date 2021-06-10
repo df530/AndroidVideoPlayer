@@ -4,11 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
-import com.google.api.client.http.HttpHeaders;
-import com.google.api.services.drive.Drive;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,9 +32,8 @@ public class GDriveFileDownloader implements FileDownloader {
     }
 
     static public String getGDriveFileIDFromURL(String fileURL) {
-        Pattern pattern = Pattern.compile("/d/(.+)?/", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("/d/([^/]+)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(fileURL);
-        System.out.println(fileURL);
         if (!matcher.find()) {
             throw new IllegalArgumentException("It's not GDrive file URL format.");
         }
@@ -46,7 +41,7 @@ public class GDriveFileDownloader implements FileDownloader {
     }
 
     static public boolean isGDriveURL(String fileURL) {
-        Pattern pattern = Pattern.compile("(https?://)?(www.)?drive.google.com/file/d/(.+)", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("(https?://)?(www\\.)?drive\\.google\\.com/file/d/(.+)/?(.+)?", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(fileURL).matches();
     }
 

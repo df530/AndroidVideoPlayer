@@ -68,43 +68,36 @@ public class ExoPlayerActivity extends AppCompatActivity {
         );
 
         if (GDriveFileDownloader.isGDriveURL(linkOnVideo)) {
-            GoogleSignInAccount account = GoogleAccountHolder.getInstance().getAccount();
-            if (account == null) {
-                throw new IllegalStateException("User is not logged in to the google account.");
-            }
-            GDriveWrapper gDriveWrapper = new GDriveWrapper(this, account);
-            Task<byte[]> fileTask = gDriveWrapper.getFile(GDriveFileDownloader.getGDriveFileIDFromURL(linkOnVideo));
-            fileTask.addOnSuccessListener(fileBytes -> {
-                System.out.println(fileBytes.length);
-                ByteArrayDataSource dataSource = new ByteArrayDataSource(fileBytes);
-                try {
-                    dataSource.open(new DataSpec(Uri.fromFile(Environment.getExternalStorageDirectory())));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                DataSource.Factory factory = () -> dataSource;
-                System.out.println(dataSource.getUri());
-                MediaSource fileSource = new ExtractorMediaSource(dataSource.getUri(),
-                        factory, new DefaultExtractorsFactory(), null, null);
-                player.setMediaSource(fileSource);
-                /*final InputStreamDataSource inputStreamDataSource = new InputStreamDataSource(dataSpec, fileStream);
-                try {
-                    inputStreamDataSource.open(dataSpec);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                DataSource.Factory factory = () -> inputStreamDataSource;
-                MediaSource fileSource = new ExtractorMediaSource(inputStreamDataSource.getUri(),
-                        factory, new DefaultExtractorsFactory(), null, null);
-                player.setMediaSource(fileSource);*/
-                player.prepare();
-                player.play();
-            });
+            handleGDriveVideo(player, linkOnVideo);
         } else {
             player.setMediaItem(MediaItem.fromUri(Uri.parse(linkOnVideo)));
             player.prepare();
             player.play();
         }
+    }
+
+    private void handleGDriveVideo(SimpleExoPlayer player, String linkOnVideo) {
+        GoogleSignInAccount account = GoogleAccountHolder.getInstance().getAccount();
+        if (account == null) {
+            throw new IllegalStateException("User is not logged in to the google account.");
+        }
+        GDriveWrapper gDriveWrapper = new GDriveWrapper(this, account);
+        Task<byte[]> fileTask = gDriveWrapper.getFile(GDriveFileDownloader.getGDriveFileIDFromURL(linkOnVideo));
+
+        fileTask.addOnSuccessListener(fileBytes -> {
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(fileBytes);
+            try { // Magic part, exoplayer needs Uri :(
+                dataSource.open(new DataSpec(Uri.fromFile(Environment.getExternalStorageDirectory())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            DataSource.Factory factory = () -> dataSource;
+            MediaSource fileSource = new ExtractorMediaSource(dataSource.getUri(),
+                    factory, new DefaultExtractorsFactory(), null, null);
+            player.setMediaSource(fileSource);
+            player.prepare();
+            player.play();
+        });
     }
 
     @Override

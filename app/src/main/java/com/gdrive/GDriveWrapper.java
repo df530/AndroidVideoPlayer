@@ -10,19 +10,12 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-// Test File ID 1GIQTOuwn3E7_wUx8EiDz5Da0ogVDu6wj
 
 public class GDriveWrapper {
 
@@ -45,10 +38,6 @@ public class GDriveWrapper {
             driveService.files().get(fileID).executeMediaAndDownloadTo(outputStream);
             return outputStream.toByteArray();
         });
-    }
-
-    public Task<String> testWrapper(String fileId) {
-        return Tasks.call(mExecutor, () -> driveService.files().get(fileId).execute().getName());
     }
 
     public Task<FileList> queryFiles() {

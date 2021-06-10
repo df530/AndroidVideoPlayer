@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.gdrive.GDriveWrapper;
+import com.gdrive.GoogleAccountHolder;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -64,20 +65,10 @@ public class SignInWithDrive extends AppCompatActivity {
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> task) {
-        googleAccount = null;
-        try {
-            googleAccount = task.getResult(ApiException.class);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-        updateUI(googleAccount);
-    }
-
-    private void testGoogleDrive() {
-        GDriveWrapper drive = new GDriveWrapper(this, googleAccount);
-        drive.testWrapper("1GIQTOuwn3E7_wUx8EiDz5Da0ogVDu6wj")
-                .addOnSuccessListener(fileName -> statusText.setText(fileName))
-                .addOnFailureListener(e -> e.printStackTrace());
+        task.addOnSuccessListener(googleAccount -> {
+            GoogleAccountHolder.setAccount(googleAccount);
+            updateUI(googleAccount);
+        });
     }
 
     private void signIn() {
