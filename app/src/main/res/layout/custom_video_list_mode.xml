@@ -44,20 +44,30 @@
         />
 
     <TextView
+        android:id="@+id/tv_video_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="150dp"
+        />
+
+    <TextView
         android:id="@+id/tv_text"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:textColor="@color/black"
+        android:layout_height="wrap_content"
+        android:textColor="@color/grey"
+        android:layout_below="@+id/tv_video_name"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="150dp"/>
 
     <ImageButton
         android:id="@+id/iv_menu_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginLeft="380dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
         android:src="@drawable/vert_dots" />
 </RelativeLayout>
