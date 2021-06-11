@@ -1,7 +1,6 @@
-package Adapter;
+package com.example.avp.adapter;
 
-import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,21 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
-
-import java.util.ArrayList;
-
-import Model.LastSeenLinkModel;
+import com.example.avp.model.Model;
+import com.example.avp.player.ExoPlayerActivity;
 
 public class LastSeenLinksAdapter extends RecyclerView.Adapter<LastSeenLinksAdapter.ViewHolder> {
 
-    private final Context context;
-    private ArrayList<LastSeenLinkModel> arrayListLinks;
-    private Activity activity;
+    private final Model model;
 
-    public LastSeenLinksAdapter(Context context, @NonNull ArrayList<LastSeenLinkModel> arrayListLinks, Activity activity) {
-        this.context = context;
-        this.arrayListLinks = arrayListLinks;
-        this.activity = activity;
+    public LastSeenLinksAdapter(Model model) {
+        this.model = model;
     }
 
     @NonNull
@@ -41,35 +34,34 @@ public class LastSeenLinksAdapter extends RecyclerView.Adapter<LastSeenLinksAdap
     public void onBindViewHolder(@NonNull LastSeenLinksAdapter.ViewHolder holder, int position) {
         holder.rlSelect.setBackgroundColor(Color.parseColor("#FFFFFF"));
         holder.rlSelect.setAlpha(0);
-        holder.textView.setText(arrayListLinks.get(position).getLink());
-/*
-        holder.rlSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        String link = model.getRecentLink(position);
+        holder.textView.setText(link);
 
-                Intent intent = new Intent(context, ExoPlayerActivity.class);
-                intent.putExtra("linkOnVideo", arrayListVideos.get(position).getStr_path());
-                activity.startActivity(intent);
+        holder.textViewVideoName.setText(model.getVideoName(link));
 
-            }
+        holder.rlSelect.setOnClickListener(v -> {
+            Intent intent = new Intent(model.getContext(), ExoPlayerActivity.class);
+            intent.putExtra("linkOnVideo", model.getRecentLink(position));
+            model.getActivity().startActivity(intent);
+
         });
-
- */
     }
 
     @Override
     public int getItemCount() {
-        return arrayListLinks.size();
+        return model.getLastSeenVideosListSize();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private RelativeLayout rlSelect;
-        private TextView textView;
+        private final RelativeLayout rlSelect;
+        private final TextView textView;
+        private final TextView textViewVideoName;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             rlSelect = itemView.findViewById(R.id.rl_select);
             textView = itemView.findViewById(R.id.tv_link);
+            textViewVideoName = itemView.findViewById(R.id.tv_video_name);
         }
     }
 }

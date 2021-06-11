@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.media.MediaDataSource;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,15 +19,34 @@ import android.widget.TextView;
 
 import com.bosphere.verticalslider.VerticalSlider;
 import com.example.avp.R;
+import com.gdrive.GDriveFileDownloader;
+import com.gdrive.GDriveWrapper;
+import com.gdrive.GoogleAccountHolder;
+import com.google.android.exoplayer2.MediaItem;
 import com.github.vkay94.dtpv.youtube.YouTubeOverlay;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.ByteArrayDataSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
@@ -154,7 +176,23 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
             }
         }
+        /*if (GDriveFileDownloader.isGDriveURL(linkOnVideo)) {
+            handleGDriveVideo(player, linkOnVideo);
+        } else {
+            player.setMediaItem(MediaItem.fromUri(Uri.parse(linkOnVideo)));
+            player.prepare();
+            player.play();
+        }
+    }
 
+    private void handleGDriveVideo(SimpleExoPlayer player, String linkOnVideo) {
+        GoogleSignInAccount account = GoogleAccountHolder.getInstance().getAccount();
+        if (account == null) {
+            throw new IllegalStateException("User is not logged in to the google account.");
+        }
+        GDriveWrapper gDriveWrapper = new GDriveWrapper(this, account);
+        Task<byte[]> fileTask = gDriveWrapper.getFile(GDriveFileDownloader.getGDriveFileIDFromURL(linkOnVideo));
+*/
         @Override
         public void onPlaybackParametersChanged(@NotNull PlaybackParameters playbackParameters) {
             speedValueTV.setVisibility(View.VISIBLE);
@@ -164,6 +202,22 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 }
             }, 1000);
         }
+        /*
+        fileTask.addOnSuccessListener(fileBytes -> {
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(fileBytes);
+            try { // Magic part, exoplayer needs Uri :(
+                dataSource.open(new DataSpec(Uri.fromFile(Environment.getExternalStorageDirectory())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            DataSource.Factory factory = () -> dataSource;
+            MediaSource fileSource = new ExtractorMediaSource(dataSource.getUri(),
+                    factory, new DefaultExtractorsFactory(), null, null);
+            player.setMediaSource(fileSource);
+            player.prepare();
+            player.play();
+        });
+    }*/
 
         @Override
         public void onIsPlayingChanged(boolean isPlaying) {
