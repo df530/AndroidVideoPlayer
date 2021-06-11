@@ -1,6 +1,6 @@
 package com.gdrive;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
@@ -10,9 +10,12 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -22,7 +25,7 @@ public class GDriveWrapper {
     private final Drive driveService;
     private final Executor mExecutor = Executors.newSingleThreadExecutor();
 
-    public GDriveWrapper(AppCompatActivity context, GoogleSignInAccount account) {
+    public GDriveWrapper(Context context, GoogleSignInAccount account) {
         GoogleAccountCredential credential =
                 GoogleAccountCredential.usingOAuth2(context, Collections.singleton(DriveScopes.DRIVE));
         credential.setSelectedAccount(account.getAccount());
@@ -42,5 +45,18 @@ public class GDriveWrapper {
 
     public Task<FileList> queryFiles() {
         return Tasks.call(mExecutor, () -> driveService.files().list().setSpaces("drive").execute());
+    }
+
+    //TODO: implement this methods
+    public String getTitle(String fileID) {
+        return null;
+    }
+
+    public String getAuthor(String fileID) {
+        return null;
+    }
+
+    public String getPreviewURL(String fileID) {
+        return null;
     }
 }

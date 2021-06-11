@@ -3,17 +3,29 @@ package com.example.avp.player;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.SparseArray;
 
+import com.gdrive.GDriveFileDownloader;
+import com.gdrive.GDriveWrapper;
+import com.gdrive.GoogleAccountHolder;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.upstream.ByteArrayDataSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,13 +51,9 @@ public class ExoPlayerModel {
         Observable<MediaSource> res;
         if (isYoutubeUrl(linkOnVideo)) {
             res = getObservableMediaSourceFromYouTube();
-        }
-        /*
-        else if (isGoogleDriveLink(linkOnVideo)) {
-            ...
-        }
-         */
-        else {
+        } else if (GDriveFileDownloader.isGDriveURL(linkOnVideo)) {
+            res = getObservableMediaSourceFromGDrive();
+        } else {
             res = getObservableMediaSourceFromUri();
         }
 
@@ -66,6 +74,44 @@ public class ExoPlayerModel {
     private static boolean isYoutubeUrl(String youTubeURl) {
         String pattern = "^(http(s)?://)?((w){3}.)?youtu(be|.be)?(\\.com)?/.+";
         return !youTubeURl.isEmpty() && youTubeURl.matches(pattern);
+    }
+
+    private Observable<MediaSource> getObservableMediaSourceFromGDrive() {
+        PublishSubject<MediaSource> resObservable = PublishSubject.create(); // create a list to save result MediaSource
+
+        GoogleSignInAccount account = GoogleAccountHolder.getInstance().getAccount();
+        if (account == null) {
+            throw new IllegalStateException("User is not logged in to the google account.");
+        }
+        GDriveWrapper gDriveWrapper = new GDriveWrapper(context, account);
+
+        final String fileID = GDriveFileDownloader.getGDriveFileIDFromURL(linkOnVideo);
+        Task<byte[]> fileTask = gDriveWrapper.getFile(fileID);
+        fileTask.addOnSuccessListener(fileBytes -> {
+
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(fileBytes);
+            try { // Magic part, exoplayer needs Uri :(
+                dataSource.open(new DataSpec(Uri.fromFile(Environment.getExternalStorageDirectory())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            DataSource.Factory factory = () -> dataSource;
+
+            String title = gDriveWrapper.getTitle(fileID);
+            String author = gDriveWrapper.getAuthor(fileID);
+            String previewURL = gDriveWrapper.getPreviewURL(fileID);
+
+            //TODO: add metadata from gdrive
+            //AVPMediaMetaData meta = new AVPMediaMetaData(title, author, null, previewURL);
+            MediaSource fileSource = new ProgressiveMediaSource
+                    .Factory(factory)
+            //        .setTag(meta)
+                    .createMediaSource(MediaItem.fromUri(dataSource.getUri()));
+            resObservable.onNext(fileSource);
+        });
+
+        return resObservable;
     }
 
     @SuppressLint("StaticFieldLeak")
