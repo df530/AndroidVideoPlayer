@@ -20,7 +20,9 @@
 
             />
         <activity android:name="com.example.avp.ui.VideoPlayerActivity"></activity>
-        <activity android:name="com.example.avp.ui.MainActivity">
+        <activity
+            android:name="com.example.avp.ui.MainActivity"
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

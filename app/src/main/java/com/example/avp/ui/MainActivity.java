@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.avp.R;
 import com.example.avp.model.Model;
+import com.example.avp.model.VideoModel;
 import com.example.avp.ui.fragments.LoginFragment;
 import com.example.avp.ui.fragments.NoStoragePermissionFragment;
 import com.example.avp.ui.fragments.VideoByLinkFragment;
@@ -29,10 +30,16 @@ import com.example.avp.ui.fragments.VideoFromDeviceFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+
+
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private static final int PERMISSION_REQUEST_CODE = 123;
+    private final static String videoListSettingsVariableKey = "VARIABLE_VIDEO_LIST_SETTINGS";
+    private final static String lastSeenVideosHolderVariableKey = "VARIABLE_LAST_SEEN_VIDEOS_HOLDER";
+    private final static String arrayListVideosVariableKey = "VARIABLE_ARRAY_LIST_VIDEOS";
     private Menu menu;
     private String currentFragment;
     private Model model;
@@ -44,6 +51,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         model = new Model(this);
+
+        if (savedInstanceState != null) {
+            loadPreviousState(savedInstanceState);
+        }
 
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -58,6 +69,27 @@ public class MainActivity extends AppCompatActivity
                 loadFragment(new NoStoragePermissionFragment());
             }
         }
+    }
+
+    private void loadPreviousState(Bundle savedInstanceState) {
+        model.setArrayListVideos(
+                (ArrayList<VideoModel>)savedInstanceState.getSerializable(arrayListVideosVariableKey)
+        );
+        model.setLastSeenVideosHolder(
+                (LastSeenVideosHolder)savedInstanceState.getSerializable(lastSeenVideosHolderVariableKey)
+        );
+        model.setVideoListSettings(
+                (VideoListSettings)savedInstanceState.getSerializable(videoListSettingsVariableKey)
+        );
+    }
+
+    // сохранение состояния
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(videoListSettingsVariableKey, model.getVideoListSettings());
+        outState.putSerializable(lastSeenVideosHolderVariableKey, model.getLastSeenVideosHolder());
+        outState.putSerializable(arrayListVideosVariableKey, model.getArrayListVideos());
+        super.onSaveInstanceState(outState);
     }
 
     @Override

@@ -2,10 +2,12 @@ package com.example.avp.model;
 
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 
-public class LastSeenLinkModel {
+public class LastSeenLinkModel implements Serializable {
     @Getter @Setter
     private String link;
 
