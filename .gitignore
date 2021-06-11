@@ -10,3 +10,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+app/src/main/res/credentials.json

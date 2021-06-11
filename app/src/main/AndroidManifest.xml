@@ -2,9 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.avp">
 
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
 
     <application
         android:allowBackup="true"
@@ -21,6 +24,7 @@
             />
         <activity android:name="com.example.avp.ui.VideoPlayerActivity"></activity>
         <activity android:name="com.example.avp.ui.MainActivity">
+            <meta-data android:name="com.google.android.apps.drive.APP_ID" android:value="id=androidvideoplayer-310315" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SignInWithDrive" />
     </application>
 
 </manifest>
