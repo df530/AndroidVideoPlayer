@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 
+import static com.example.avp.player.ExoPlayerModel.LINK_INCORRECT;
 import static com.google.android.exoplayer2.C.WAKE_MODE_NETWORK;
 
 public class ExoPlayerActivity extends AppCompatActivity {
@@ -123,10 +124,12 @@ public class ExoPlayerActivity extends AppCompatActivity {
         playerModel.getMediaSource().subscribe(ms -> {
             player.setMediaSource(ms);
             player.prepare();
+            startService(new Intent(this, ExoPlayerService.class));
+        }, e -> {
+            setResult(LINK_INCORRECT, new Intent().putExtra("ErrorMsg", e.getMessage()));
+            finish();
         });
         player.setPlayWhenReady(true);
-
-        startService(new Intent(this, ExoPlayerService.class));
     }
 
     private void hideAllSystemElements() {
@@ -240,11 +243,17 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
 
     @Override
+    public void onBackPressed() {
+        AVPMediaMetaData metaData = (AVPMediaMetaData)player.getCurrentMediaItem().playbackProperties.tag;
+        setResult(RESULT_CANCELED, new Intent().putExtra("Metadata", metaData));
+        finish();
+    }
+
+    @Override
     protected void onDestroy() {
         player.release();
         player = null;
         stopService(new Intent(this, ExoPlayerService.class));
-
         super.onDestroy();
     }
 }

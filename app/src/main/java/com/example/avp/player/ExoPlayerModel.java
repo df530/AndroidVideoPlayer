@@ -10,13 +10,10 @@ import com.gdrive.GDriveFileDownloader;
 import com.gdrive.GDriveWrapper;
 import com.gdrive.GoogleAccountHolder;
 import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.ByteArrayDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
@@ -39,6 +36,8 @@ public class ExoPlayerModel {
     private final Context context;
     private final String linkOnVideo;
 
+    public static final int LINK_INCORRECT = 10;
+
     public ExoPlayerModel(Context context, String linkOnVideo) {
         this.context = context;
         this.linkOnVideo = linkOnVideo.isEmpty()
@@ -49,23 +48,28 @@ public class ExoPlayerModel {
 
     public Observable<MediaSource> getMediaSource() {
         Observable<MediaSource> res;
-        if (isYoutubeUrl(linkOnVideo)) {
-            res = getObservableMediaSourceFromYouTube();
-        } else if (GDriveFileDownloader.isGDriveURL(linkOnVideo)) {
-            res = getObservableMediaSourceFromGDrive();
-        } else {
-            res = getObservableMediaSourceFromUri();
+        try {
+            if (isYoutubeUrl(linkOnVideo)) {
+                res = getObservableMediaSourceFromYouTube();
+            } else if (GDriveFileDownloader.isGDriveURL(linkOnVideo)) {
+                res = getObservableMediaSourceFromGDrive();
+            } else {
+                res = getObservableMediaSourceFromUri();
+            }
+        }
+        catch (Throwable e) {
+            // I know, this is very big clutch, but this is the best solution, that I can do now.
+            e.printStackTrace();
+            res = Observable.fromCallable(()-> {throw e;});
         }
 
-        return res.doOnError(e -> {
-            // TODO: send message to the application, that link is incorrect
-        });
+        return res;
     }
 
     private Observable<MediaSource> getObservableMediaSourceFromUri() {
         AVPMediaMetaData meta = new AVPMediaMetaData(new File(linkOnVideo).getName(), null, linkOnVideo, null);
         return Observable.just(new DefaultMediaSourceFactory(context)
-                .createMediaSource(new MediaItem.Builder()
+                        .createMediaSource(new MediaItem.Builder()
                         .setUri(Uri.parse(linkOnVideo))
                         .setTag(meta)
                         .build()));
@@ -166,7 +170,7 @@ public class ExoPlayerModel {
                     resObservable.onNext(resMediaSource);
                 }
             }
-        }.extract(linkOnVideo, true, true);
+        }.extract(linkOnVideo, false, false);
 
         return resObservable;
     }

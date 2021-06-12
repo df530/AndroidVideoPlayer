@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 
@@ -13,11 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.avp.R;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 
 import java.util.Objects;
@@ -59,8 +55,8 @@ public class ExoPlayerService extends Service {
             if (meta == null)
                 return "No meta";
             if (meta.getAuthor() == null) {
-                if (meta.getUri() != null)
-                    return meta.getUri();
+                if (meta.getLink() != null)
+                    return meta.getLink();
                 return "No author and URI";
             }
             return meta.getAuthor();
