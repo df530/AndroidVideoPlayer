@@ -42,6 +42,7 @@ import static com.example.avp.ui.Constants.GALLERY_MODE;
 import static com.example.avp.ui.Constants.LIST_MODE;
 import static com.example.avp.ui.Constants.PERMISSION_REQUEST_CODE;
 import static com.example.avp.ui.Constants.arrayListVideosVariableKey;
+import static com.example.avp.ui.Constants.hasVisited;
 import static com.example.avp.ui.Constants.lastSeenVideosHolderVariableKey;
 import static com.example.avp.ui.Constants.videoListSettingsVariableKey;
 
@@ -68,11 +69,12 @@ public class MainActivity extends AppCompatActivity
         if (model == null) {
             model = new Model(this);
         }
+        else {
+            model.setActivity(this);
+        }
         if (savedInstanceState != null) {
             loadPreviousState(savedInstanceState);
         }
-
-        restoreMenuSettings();
 
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity
         outState.putSerializable(videoListSettingsVariableKey, model.getVideoListSettings());
         outState.putSerializable(lastSeenVideosHolderVariableKey, model.getLastSeenVideosHolder());
         outState.putSerializable(arrayListVideosVariableKey, model.getArrayListVideos());
+
         super.onSaveInstanceState(outState);
     }
 
@@ -118,18 +121,15 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor prefsEditor = preferences.edit();
         String jsonModel = gson.toJson(model);
         prefsEditor.putString(APP_PREFERENCES_MODEL, jsonModel);
+        prefsEditor.putBoolean(hasVisited, true);
 
         prefsEditor.apply();
     }
 
     private void restoreState() {
-        boolean hasVisited = preferences.getBoolean("hasVisited", false);
-        if (hasVisited) {
+        if (!preferences.getBoolean(hasVisited, false)) {
             return;
         }
-        SharedPreferences.Editor prefsEditor = preferences.edit();
-        prefsEditor.putBoolean("hasVisited", true);
-        prefsEditor.apply();
 
         if (preferences.contains(APP_PREFERENCES_MODEL)) {
             String jsonModel = preferences.getString(APP_PREFERENCES_MODEL, "");
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void restoreMenuSettings() {
-        MenuItem reversedOrderItem = this.findViewById(R.id.reversed_order_sorted_by);
+        MenuItem reversedOrderItem = menu.findItem(R.id.reversed_order_sorted_by);
         reversedOrderItem.setChecked(model.getVideoListSettings().reversedOrder);
     }
 
@@ -147,6 +147,8 @@ public class MainActivity extends AppCompatActivity
         this.menu = menu;
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        restoreMenuSettings();
 
         return true;
     }

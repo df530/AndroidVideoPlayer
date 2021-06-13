@@ -32,7 +32,7 @@ public class Model implements Serializable {
     @Getter
     @Setter
     private ArrayList<VideoModel> arrayListVideos;
-    @Getter
+    @Getter @Setter
     private transient Activity activity;
 
     public Model(Activity activity) {

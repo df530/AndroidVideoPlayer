@@ -16,6 +16,8 @@ public final class Constants {
     public static final @NotNull String lastSeenVideosHolderVariableKey = "VARIABLE_LAST_SEEN_VIDEOS_HOLDER";
     public static final @NotNull String arrayListVideosVariableKey = "VARIABLE_ARRAY_LIST_VIDEOS";
 
+    public static final @NotNull String hasVisited = "hasVisited";
+
     public static final @NotNull String APP_PREFERENCES = "settings";
     public static final @NotNull String APP_PREFERENCES_MODEL = "Model";
     public static final @NotNull String APP_PREFERENCES_MENU = "Menu";
