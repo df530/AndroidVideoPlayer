@@ -16,13 +16,17 @@
         android:theme="@style/Theme.AndroidVideoPlayer">
         <activity
             android:name=".player.ExoPlayerActivity"
-            android:configChanges="orientation|screenSize"
-
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:launchMode="singleTask"
             />
-        <activity android:name="com.example.avp.ui.VideoPlayerActivity"></activity>
+        <service android:name=".player.ExoPlayerService"
+            android:enabled="true">
+       </service>
         <activity
             android:name="com.example.avp.ui.MainActivity"
             android:screenOrientation="portrait">
+            <meta-data android:name="com.google.android.apps.drive.APP_ID" android:value="id=androidvideoplayer-310315" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,6 +34,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".player.HeadsetButtonReceiver">
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

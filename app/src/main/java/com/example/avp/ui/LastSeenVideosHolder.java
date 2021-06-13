@@ -2,30 +2,32 @@ package com.example.avp.ui;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import com.example.avp.model.LastSeenLinkModel;
+import com.example.avp.model.LastSeenMetaDataModel;
+import com.example.avp.player.AVPMediaMetaData;
 
-public class LastSeenVideosHolder implements Serializable {
-    private Set<String> lastSeenLinks = new HashSet<>();
-    private LinkedList<LastSeenLinkModel> lastSeenLinkModelList = new LinkedList<>();
+import lombok.Getter;
 
-    public void addVideo(String link) {
-        LastSeenLinkModel model = new LastSeenLinkModel(link);
-        if (lastSeenLinks.contains(link)) {
-            lastSeenLinkModelList.remove(model);
+public class LastSeenVideosHolder {
+    private final Set<AVPMediaMetaData> lastSeenLinks = new HashSet<>();
+    private final LinkedList<LastSeenMetaDataModel> lastSeenMetaDataModelList = new LinkedList<>();
+
+    public void addVideo(AVPMediaMetaData metaData) {
+        LastSeenMetaDataModel model = new LastSeenMetaDataModel(metaData);
+        if (lastSeenLinks.contains(metaData)) {
+            lastSeenMetaDataModelList.remove(model);
         } else {
-            lastSeenLinks.add(link);
+            lastSeenLinks.add(metaData);
         }
-        lastSeenLinkModelList.addFirst(model);
+        lastSeenMetaDataModelList.addFirst(model);
     }
 
     @NonNull
-    public ArrayList<LastSeenLinkModel> getLastSeenLinkModelList() {
-        return new ArrayList<>(lastSeenLinkModelList);
+    public ArrayList<LastSeenMetaDataModel> getLastSeenMetaDataModelList() {
+        return new ArrayList<>(lastSeenMetaDataModelList);
     }
 }

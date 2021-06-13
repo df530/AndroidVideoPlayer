@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.adapter.VideoAdapter;
+import com.example.avp.player.AVPMediaMetaData;
 import com.example.avp.ui.LastSeenVideosHolder;
 import com.example.avp.ui.VideoListSettings;
 
@@ -52,8 +53,8 @@ public class Model implements Serializable {
         videoListSettings.reversedOrder = newReversedOrder;
     }
 
-    public void addRecentVideo(String linkOnVideo) {
-        lastSeenVideosHolder.addVideo(linkOnVideo);
+    public void addRecentVideo(AVPMediaMetaData metaData) {
+        lastSeenVideosHolder.addVideo(metaData);
     }
 
     private void reverseVideoList() {
@@ -161,10 +162,10 @@ public class Model implements Serializable {
     }
 
     public int getLastSeenVideosListSize() {
-        return getLastSeenVideosHolder().getLastSeenLinkModelList().size();
+        return getLastSeenVideosHolder().getLastSeenMetaDataModelList().size();
     }
 
-    public String getRecentLink(int position) {
-        return lastSeenVideosHolder.getLastSeenLinkModelList().get(position).getLink();
+    public AVPMediaMetaData getRecentMetaData(int position) {
+        return lastSeenVideosHolder.getLastSeenMetaDataModelList().get(position).getMetaData();
     }
 }
