@@ -8,15 +8,23 @@
     android:orientation="vertical"
     tools:context=".ui.fragments.VideoByLinkFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerviewgdrive"
+        android:layout_width="match_parent"
+        android:layout_height="551dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:scrollbars="vertical" />
+
     <Button
         android:id="@+id/google_login_button"
-        android:layout_width="236dp"
+        android:layout_width="282dp"
         android:layout_height="wrap_content"
         android:text="Login in Google" />
 
     <TextView
         android:id="@+id/login_status_textview"
-        android:layout_width="235dp"
+        android:layout_width="278dp"
         android:layout_height="57dp"
         android:text="TextView" />
 </LinearLayout>

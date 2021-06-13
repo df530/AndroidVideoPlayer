@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new VideoByLinkFragment(model);
                 break;
             case R.id.navigation_dashboard:
-                fragment = new LoginFragment();
+                fragment = new LoginFragment(model);
                 break;
         }
         return loadFragment(fragment);

@@ -66,7 +66,7 @@ public class SignInWithDrive extends AppCompatActivity {
 
     private void handleSignInResult(Task<GoogleSignInAccount> task) {
         task.addOnSuccessListener(googleAccount -> {
-            GoogleAccountHolder.setAccount(googleAccount);
+            GoogleAccountHolder.getInstance().setAccount(googleAccount);
             updateUI(googleAccount);
         });
     }
