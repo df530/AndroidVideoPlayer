@@ -68,10 +68,11 @@ public class MainActivity extends AppCompatActivity
         if (model == null) {
             model = new Model(this);
         }
-
         if (savedInstanceState != null) {
             loadPreviousState(savedInstanceState);
         }
+
+        restoreMenuSettings();
 
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -118,9 +119,6 @@ public class MainActivity extends AppCompatActivity
         String jsonModel = gson.toJson(model);
         prefsEditor.putString(APP_PREFERENCES_MODEL, jsonModel);
 
-        String jsonMenu = gson.toJson(menu);
-        prefsEditor.putString(APP_PREFERENCES_MENU, jsonMenu);
-
         prefsEditor.apply();
     }
 
@@ -134,14 +132,14 @@ public class MainActivity extends AppCompatActivity
         prefsEditor.apply();
 
         if (preferences.contains(APP_PREFERENCES_MODEL)) {
-            String jsonModel = preferences.getString(APP_PREFERENCES_MODEL, gson.toJson(new Model(this)));
+            String jsonModel = preferences.getString(APP_PREFERENCES_MODEL, "");
             model = gson.fromJson(jsonModel, Model.class);
         }
+    }
 
-        if (preferences.contains(APP_PREFERENCES_MENU)) {
-            String jsonMenu = preferences.getString(APP_PREFERENCES_MENU, "");
-            menu = gson.fromJson(jsonMenu, Menu.class);
-        }
+    private void restoreMenuSettings() {
+        MenuItem reversedOrderItem = this.findViewById(R.id.reversed_order_sorted_by);
+        reversedOrderItem.setChecked(model.getVideoListSettings().reversedOrder);
     }
 
     @Override
