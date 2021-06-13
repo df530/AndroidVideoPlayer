@@ -51,7 +51,6 @@ public class GDriveWrapper {
 
     public Task<GDriveFile> getFile(String fileID) {
         return Tasks.call(mExecutor, () -> {
-            System.out.println("IN CALL");
              File file = driveService.files().get(fileID).setFields("*").execute();
              System.out.println(file.getName());
              return new GDriveFile(
@@ -66,20 +65,30 @@ public class GDriveWrapper {
 
     public Task<ArrayList<VideoModel>> getVideoList() {
         return Tasks.call(mExecutor, () -> {
-           List<File> files = driveService.files().list().setFields("files(*)").execute().getFiles();
-           ArrayList<VideoModel> videos = new ArrayList<>();
-           for (File file : files) {
-               if (file.getVideoMediaMetadata() != null) {
-                   VideoModel videoModel = new VideoModel();
-                   videoModel.setBooleanSelected(false);
-                   videoModel.setGDriveFile(true);
-                   videoModel.setName(file.getName());
-                   videoModel.setStrPath("drive.google.com/file/d/" + file.getId());
-                   videoModel.setStrThumb(file.getThumbnailLink());
-                   videos.add(videoModel);
-               }
-           }
-           return videos;
+            ArrayList<VideoModel> videos = new ArrayList<>();
+            String pageToken = null;
+            do {
+                FileList files = driveService
+                        .files()
+                        .list()
+                        .setSpaces("drive")
+                        .setFields("nextPageToken, files(id, name, thumbnailLink, videoMediaMetadata)")
+                        .setPageToken(pageToken)
+                        .execute();
+                for (File file : files.getFiles()) {
+                    if (file.getVideoMediaMetadata() != null) {
+                        VideoModel videoModel = new VideoModel();
+                        videoModel.setBooleanSelected(false);
+                        videoModel.setGDriveFile(true);
+                        videoModel.setName(file.getName());
+                        videoModel.setStrPath("drive.google.com/file/d/" + file.getId());
+                        videoModel.setStrThumb(file.getThumbnailLink());
+                        videos.add(videoModel);
+                    }
+                }
+                pageToken = files.getNextPageToken();
+            } while (pageToken != null);
+            return videos;
         });
     }
 }
