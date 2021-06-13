@@ -62,7 +62,8 @@ public class ExoPlayerActivity extends AppCompatActivity {
     private void createSimpleExoPlayer() {
         // Change buffer parameters to decrease loading time
         DefaultLoadControl loadControl = new DefaultLoadControl.Builder().setBufferDurationsMs(
-                15000, 120000, 2500, 5000).build();
+                15000, 90000, 2500, 5000)
+                .build();
 
         // Set audio attributes to make pause when another app start sound (music, for example)
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
