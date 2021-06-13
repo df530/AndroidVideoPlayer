@@ -68,4 +68,6 @@ dependencies {
     api ('com.google.apis:google-api-services-drive:v3-rev110-1.23.0') {
         exclude group:'com.google.guava'
     }
+
+    implementation 'com.google.code.gson:gson:2.8.6'
 }
