@@ -13,6 +13,8 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
+
+import com.google.android.exoplayer2.upstream.ByteArrayDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
@@ -34,6 +36,8 @@ public class ExoPlayerModel {
     private final Context context;
     private final String linkOnVideo;
 
+    public static final int LINK_INCORRECT = 10;
+
     public ExoPlayerModel(Context context, String linkOnVideo) {
         this.context = context;
         this.linkOnVideo = linkOnVideo.isEmpty()
@@ -44,17 +48,23 @@ public class ExoPlayerModel {
 
     public Observable<MediaSource> getMediaSource() {
         Observable<MediaSource> res;
-        if (isYoutubeUrl(linkOnVideo)) {
-            res = getObservableMediaSourceFromYouTube();
-        } else if (GDriveService.isGDriveURL(linkOnVideo)) {
-            res = getObservableMediaSourceFromGDrive();
-        } else {
-            res = getObservableMediaSourceFromUri();
+        try {
+            if (isYoutubeUrl(linkOnVideo)) {
+                res = getObservableMediaSourceFromYouTube();
+            } else if (GDriveFileDownloader.isGDriveURL(linkOnVideo)) {
+                res = getObservableMediaSourceFromGDrive();
+            } else {
+                res = getObservableMediaSourceFromUri();
+            }
+        } catch (Throwable e) {
+            // I know, this is very big clutch, but this is the best solution, that I can do now.
+            e.printStackTrace();
+            res = Observable.fromCallable(() -> {
+                throw e;
+            });
         }
 
-        return res.doOnError(e -> {
-            // TODO: send message to the application, that link is incorrect
-        });
+        return res;
     }
 
     private Observable<MediaSource> getObservableMediaSourceFromUri() {
@@ -96,7 +106,7 @@ public class ExoPlayerModel {
             //AVPMediaMetaData meta = new AVPMediaMetaData(title, author, null, previewURL);
             MediaSource fileSource = new ProgressiveMediaSource
                     .Factory(factory)
-            //        .setTag(meta)
+                    //        .setTag(meta)
                     .createMediaSource(MediaItem.fromUri(dataSource.getUri()));
             resObservable.onNext(fileSource);
         });
@@ -154,9 +164,11 @@ public class ExoPlayerModel {
                                     .build());
                     MediaSource resMediaSource = new MergingMediaSource(true, videoSource, audioSource);
                     resObservable.onNext(resMediaSource);
+                } else {
+                    resObservable.onError(new RuntimeException("Cant load this youtube link: " + linkOnVideo));
                 }
             }
-        }.extract(linkOnVideo, true, true);
+        }.extract(linkOnVideo, false, false);
 
         return resObservable;
     }

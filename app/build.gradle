@@ -78,6 +78,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:extension-mediasession:2.14.0'
     implementation 'com.github.bosphere:android-verticalslider:1.0.3'
     implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
+    //implementation 'com.github.evgenyneu:js-evaluator-for-android:v5.0.0'
     implementation "io.reactivex.rxjava3:rxjava:3.0.13"
     implementation 'com.github.vkay94:DoubleTapPlayerView:1.0.0'
     implementation "io.reactivex.rxjava3:rxjava:3.0.13"
