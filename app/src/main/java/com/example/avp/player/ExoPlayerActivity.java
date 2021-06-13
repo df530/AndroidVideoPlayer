@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.avp.player.ExoPlayerModel.LINK_INCORRECT;
 import static com.google.android.exoplayer2.C.WAKE_MODE_NETWORK;
@@ -37,14 +38,15 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
     public static SimpleExoPlayer player;
 
-    private PlayerView playerView;
+    private ExoPlayerView playerView;
     private ProgressBar progressBar;
     private ImageView lockRotationButton;
     private TextView speedValueTV;
     private LinearLayout speedLL;
-    private VerticalSlider speedVS;
 
     private static final Handler handler = new Handler(); // for making delay for set visibility of progressBar etc
+
+    private final int CONTROLLER_SHOW_TIMEOUT_MS = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,16 +84,19 @@ public class ExoPlayerActivity extends AppCompatActivity {
     private void createSimpleExoPlayerAndPlayVideoByLink() {
         // assign variables
         playerView = findViewById(R.id.player_view);
+        createSimpleExoPlayer();
+        playerView.setSpeedController(
+                new SpeedControllerImpl(0.3f, 3f, 1f, 2f, 1f, this)
+        );
+        playerView.setControllerShowTimeoutMs(CONTROLLER_SHOW_TIMEOUT_MS);
+        speedValueTV = findViewById(R.id.speed_value);
+        playerView.setControllerVisibilityListener(visibility -> speedValueTV.setVisibility(visibility));
         progressBar = findViewById(R.id.progress_bar);
         lockRotationButton = findViewById(R.id.lock_rotation);
-        speedValueTV = findViewById(R.id.speed_value);
         speedLL = findViewById(R.id.speed_linear_layout);
-        speedVS = findViewById(R.id.speed_vertical_slide);
 
-        createSimpleExoPlayer();
 
         // Make speed TextView visibility like controller visibility
-        playerView.setControllerVisibilityListener(visibility -> speedValueTV.setVisibility(visibility));
 
         // activate double tap rewind and fast forward increment
         YouTubeOverlay youTubeOverlay = findViewById(R.id.youtube_overlay);
@@ -161,11 +166,14 @@ public class ExoPlayerActivity extends AppCompatActivity {
         @Override
         public void onPlaybackParametersChanged(@NotNull PlaybackParameters playbackParameters) {
             speedValueTV.setVisibility(View.VISIBLE);
-            handler.postDelayed(() -> {
-                if (!playerView.isControllerVisible()) {
-                    speedValueTV.setVisibility(View.INVISIBLE);
-                }
-            }, 1000);
+            playerView.setControllerShowTimeoutMs(CONTROLLER_SHOW_TIMEOUT_MS);
+            if (!playerView.isControllerVisible()) {
+                handler.postDelayed(() -> {
+                    if (!playerView.isControllerVisible()) {
+                        speedValueTV.setVisibility(View.INVISIBLE);
+                    }
+                }, 1000);
+            }
         }
 
         @Override
@@ -206,30 +214,11 @@ public class ExoPlayerActivity extends AppCompatActivity {
         }
     }
 
-    private class VerticalSliderProgressChangeListener implements VerticalSlider.OnProgressChangeListener {
-        @Override
-        public void onProgress(float progress) {
-            float curSpeed;
-            if (progress <= 0.5f) {
-                curSpeed = 0.5f + progress / 0.5f * 0.5f;
-            } else {
-                curSpeed = 1f + (progress - 0.5f) / 0.5f;
-            }
-            speedValueTV.setText((new DecimalFormat("#.##x").format(curSpeed)));
-            player.setPlaybackParameters(new PlaybackParameters(curSpeed));
-        }
-    }
-
     private void initControllerElements() {
         player.addListener(new ExoPlayerEventListener());
 
         lockRotationButton.setOnClickListener(new LockRotationClickListener());
-
-        speedValueTV.setText("1x");
         speedValueTV.setOnClickListener(new SpeedValueTextViewClickListener());
-
-        speedVS.setProgress(0.5f);
-        speedVS.setOnSliderProgressChangeListener(new VerticalSliderProgressChangeListener());
     }
 
     @Override
@@ -244,7 +233,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AVPMediaMetaData metaData = (AVPMediaMetaData)player.getCurrentMediaItem().playbackProperties.tag;
+        AVPMediaMetaData metaData = (AVPMediaMetaData) player.getCurrentMediaItem().playbackProperties.tag;
         setResult(RESULT_CANCELED, new Intent().putExtra("Metadata", metaData));
         finish();
     }

@@ -56,11 +56,12 @@ public class ExoPlayerModel {
             } else {
                 res = getObservableMediaSourceFromUri();
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             // I know, this is very big clutch, but this is the best solution, that I can do now.
             e.printStackTrace();
-            res = Observable.fromCallable(()-> {throw e;});
+            res = Observable.fromCallable(() -> {
+                throw e;
+            });
         }
 
         return res;
@@ -69,7 +70,7 @@ public class ExoPlayerModel {
     private Observable<MediaSource> getObservableMediaSourceFromUri() {
         AVPMediaMetaData meta = new AVPMediaMetaData(new File(linkOnVideo).getName(), null, linkOnVideo, null);
         return Observable.just(new DefaultMediaSourceFactory(context)
-                        .createMediaSource(new MediaItem.Builder()
+                .createMediaSource(new MediaItem.Builder()
                         .setUri(Uri.parse(linkOnVideo))
                         .setTag(meta)
                         .build()));
@@ -110,7 +111,7 @@ public class ExoPlayerModel {
             //AVPMediaMetaData meta = new AVPMediaMetaData(title, author, null, previewURL);
             MediaSource fileSource = new ProgressiveMediaSource
                     .Factory(factory)
-            //        .setTag(meta)
+                    //        .setTag(meta)
                     .createMediaSource(MediaItem.fromUri(dataSource.getUri()));
             resObservable.onNext(fileSource);
         });
@@ -168,6 +169,8 @@ public class ExoPlayerModel {
                                     .build());
                     MediaSource resMediaSource = new MergingMediaSource(true, videoSource, audioSource);
                     resObservable.onNext(resMediaSource);
+                } else {
+                    resObservable.onError(new RuntimeException("Cant load this youtube link: " + linkOnVideo));
                 }
             }
         }.extract(linkOnVideo, false, false);
