@@ -1,6 +1,7 @@
 package com.gdrive;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
@@ -35,12 +36,8 @@ public class GDriveWrapper {
                 .build();
     }
 
-    public Task<byte[]> getFile(final String fileID) {
-        return Tasks.call(mExecutor, () -> {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            driveService.files().get(fileID).executeMediaAndDownloadTo(outputStream);
-            return outputStream.toByteArray();
-        });
+    public Task<InputStream> getStream(final String fileID) {
+        return Tasks.call(mExecutor, () -> driveService.files().get(fileID).executeMediaAsInputStream());
     }
 
     public Task<FileList> queryFiles() {
@@ -58,5 +55,11 @@ public class GDriveWrapper {
 
     public String getPreviewURL(String fileID) {
         return null;
+    }
+
+    public long getSize(String fileID) {
+        Task<Long> task = Tasks.call(mExecutor, () -> driveService.files().get(fileID).executeMedia().getHeaders().getContentLength());
+        while (!task.isComplete()) {} //TODO: сделать это адекватно
+        return task.getResult();
     }
 }
