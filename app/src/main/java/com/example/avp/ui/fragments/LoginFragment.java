@@ -84,7 +84,7 @@ public class LoginFragment extends Fragment {
         );
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
 
-        model.updateGDriveVideoList(recyclerView);
+        model.updateGDriveVideoList(recyclerView, googleAccount);
         updateUI(googleAccount);
     }
 

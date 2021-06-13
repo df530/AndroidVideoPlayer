@@ -2,10 +2,12 @@ package com.gdrive;
 
 import android.content.Context;
 
+import com.example.avp.model.VideoModel;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,12 +19,12 @@ public class GDriveService {
         driveService = new GDriveWrapper(context, account);
     }
 
-    public Task<InputStream> getDownloadStreamOnFile(String fileURL) {
+    public Task<GDriveFile> getFile(String fileURL) {
         if (!isGDriveURL(fileURL)) {
             throw new IllegalArgumentException("Illegal URL format.");
         }
         String fileID = getGDriveFileIDFromURL(fileURL);
-        return driveService.getStream(fileID);
+        return driveService.getFile(fileID);
     }
 
     public long getSizeOfFile(String fileURL) {
@@ -43,4 +45,7 @@ public class GDriveService {
         return pattern.matcher(fileURL).matches();
     }
 
+    public Task<ArrayList<VideoModel>> getUsersVideosList() {
+        return driveService.getVideoList();
+    }
 }

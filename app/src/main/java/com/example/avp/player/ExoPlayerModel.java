@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.SparseArray;
 
+import com.gdrive.GDriveFile;
 import com.gdrive.GDriveService;
 import com.gdrive.GDriveWrapper;
 import com.gdrive.GoogleAccountHolder;
@@ -80,23 +81,25 @@ public class ExoPlayerModel {
         }
         GDriveService driveService = new GDriveService(context, account);
 
-        Task<InputStream> fileTask = driveService.getDownloadStreamOnFile(linkOnVideo);
-        fileTask.addOnSuccessListener(fileStream -> {
+        Task<GDriveFile> fileTask = driveService.getFile(linkOnVideo);
+        fileTask.addOnSuccessListener(file -> {
+
+            InputStream fileStream = file.getStream();
+            String title = file.getTitle();
+            String author = file.getAuthor();
+            String previewURL = file.getPreviewURL();
+            long size = file.getSize();
+            System.out.println(title + " " + author + " " + previewURL);
 
             DataSpec dataSpec = new DataSpec(Uri.parse(linkOnVideo));
-            GoogleDriveVideoDataSource dataSource = new GoogleDriveVideoDataSource(dataSpec, driveService);
+            GoogleDriveVideoDataSource dataSource = new GoogleDriveVideoDataSource(dataSpec, driveService, fileStream, size);
 
             DataSource.Factory factory = () -> dataSource;
 
-            /*String title = gDriveWrapper.getTitle(fileID);
-            String author = gDriveWrapper.getAuthor(fileID);
-            String previewURL = gDriveWrapper.getPreviewURL(fileID);*/
-
-            //TODO: add metadata from gdrive
-            //AVPMediaMetaData meta = new AVPMediaMetaData(title, author, null, previewURL);
+            AVPMediaMetaData meta = new AVPMediaMetaData(title, author, null, previewURL);
             MediaSource fileSource = new ProgressiveMediaSource
                     .Factory(factory)
-            //        .setTag(meta)
+                    .setTag(meta)
                     .createMediaSource(MediaItem.fromUri(dataSource.getUri()));
             resObservable.onNext(fileSource);
         });

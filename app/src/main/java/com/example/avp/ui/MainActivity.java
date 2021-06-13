@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
 
-        loadFragment(new LoginFragment());
+        loadFragment(new LoginFragment(model));
 
         if (hasPermissions()) {
             loadFragment(new VideoFromDeviceFragment(model));
