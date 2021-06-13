@@ -1,6 +1,6 @@
 package com.gdrive;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
@@ -9,26 +9,24 @@ import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GDriveFileDownloader implements FileDownloader {
+public class GDriveService {
 
     private final GDriveWrapper driveService;
 
-    public GDriveFileDownloader(AppCompatActivity context, GoogleSignInAccount account) {
+    public GDriveService(Context context, GoogleSignInAccount account) {
         driveService = new GDriveWrapper(context, account);
     }
 
-    @Override
-    public Task<byte[]> downloadFullFile(String fileURL) {
+    public Task<InputStream> getDownloadStreamOnFile(String fileURL) {
         if (!isGDriveURL(fileURL)) {
             throw new IllegalArgumentException("Illegal URL format.");
         }
         String fileID = getGDriveFileIDFromURL(fileURL);
-        return driveService.getFile(fileID);
+        return driveService.getStream(fileID);
     }
 
-    @Override
-    public Task<InputStream> downloadPartOfFile(String fileURL, long leftByteBound, long rightByteBound) {
-        throw new UnsupportedOperationException();
+    public long getSizeOfFile(String fileURL) {
+        return driveService.getSize(getGDriveFileIDFromURL(fileURL));
     }
 
     static public String getGDriveFileIDFromURL(String fileURL) {

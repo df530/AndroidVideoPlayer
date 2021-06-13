@@ -61,6 +61,9 @@ public class LoginFragment extends Fragment {
                 .build();
         googleClient = GoogleSignIn.getClient(getActivity(), options);
         googleAccount = GoogleSignIn.getLastSignedInAccount(getActivity());
+        if (googleAccount != null) {
+            GoogleAccountHolder.getInstance().setAccount(googleAccount);
+        }
         updateUI(googleAccount);
     }
 
@@ -70,17 +73,13 @@ public class LoginFragment extends Fragment {
 
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
+            task.addOnSuccessListener(this::handleSignInResult);
         }
     }
 
-    private void handleSignInResult(@NotNull Task<GoogleSignInAccount> task) {
-        googleAccount = null;
-        try {
-            googleAccount = task.getResult(ApiException.class);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+    private void handleSignInResult(@NotNull GoogleSignInAccount account) {
+        googleAccount = account;
+        GoogleAccountHolder.getInstance().setAccount(googleAccount);
         updateUI(googleAccount);
     }
 
