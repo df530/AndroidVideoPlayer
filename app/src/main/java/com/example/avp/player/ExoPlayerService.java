@@ -52,9 +52,8 @@ public class ExoPlayerService extends Service {
              * activity (I wanted to resume old). Moreover, they gave this instruction in io-18 conference. And their solution creates new
              * activity every time!!! On the conference!!!
              * I spend 2-3 hours to find out, what I have to do. Finally, I try to search 'android continue  app on notification click' without
-             * mention of exoplayer. And I found the solution (next line after this comment).
+             * mention of exoplayer. And I found the solution (add in the manifest 'android:launchMode="singleTask"').
              */
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             return PendingIntent.getActivity(
                     ExoPlayerService.this, 0,
                     intent, PendingIntent.FLAG_UPDATE_CURRENT);
