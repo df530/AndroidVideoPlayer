@@ -166,6 +166,6 @@ public class Model implements Serializable {
     }
 
     public AVPMediaMetaData getRecentMetaData(int position) {
-        return lastSeenVideosHolder.getLastSeenMetaDataModelList().get(position).getMetaData();
+        return lastSeenVideosHolder.getLastSeenMetaDataModelList().get(position);
     }
 }

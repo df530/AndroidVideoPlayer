@@ -48,7 +48,7 @@ public class LastSeenMetaDataAdapter extends RecyclerView.Adapter<LastSeenMetaDa
         AVPMediaMetaData metaData = model.getRecentMetaData(position);
         holder.textView.setText(metaData.getLink());
         holder.textViewVideoName.setText(metaData.getTitle());
-        holder.previewImage.setImageBitmap(metaData.getPreviewBM());
+        holder.previewImage.setImageBitmap(metaData.getPreviewBitmap());
         holder.rlSelect.setOnClickListener(v -> {
             Intent intent = new Intent(model.getContext(), ExoPlayerActivity.class);
             intent.putExtra("linkOnVideo", metaData.getLink());
