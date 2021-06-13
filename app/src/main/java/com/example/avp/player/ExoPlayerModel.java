@@ -51,7 +51,7 @@ public class ExoPlayerModel {
         try {
             if (isYoutubeUrl(linkOnVideo)) {
                 res = getObservableMediaSourceFromYouTube();
-            } else if (GDriveFileDownloader.isGDriveURL(linkOnVideo)) {
+            } else if (GDriveService.isGDriveURL(linkOnVideo)) {
                 res = getObservableMediaSourceFromGDrive();
             } else {
                 res = getObservableMediaSourceFromUri();
