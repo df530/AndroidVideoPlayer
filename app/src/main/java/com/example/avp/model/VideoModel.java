@@ -10,6 +10,10 @@ public class VideoModel implements Serializable {
     private String strPath;
     @Getter @Setter
     private String strThumb;
+    @Getter @Setter
+    private String name;
+    @Getter @Setter
+    private boolean isGDriveFile;
     @Setter
     private boolean booleanSelected;
 

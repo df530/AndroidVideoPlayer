@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
 
-        loadFragment(new LoginFragment());
+        loadFragment(new LoginFragment(model));
 
         if (hasPermissions()) {
             loadFragment(new VideoFromDeviceFragment(model));
@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new VideoByLinkFragment(model);
                 break;
             case R.id.navigation_dashboard:
-                fragment = new LoginFragment();
+                fragment = new LoginFragment(model);
                 break;
         }
         return loadFragment(fragment);

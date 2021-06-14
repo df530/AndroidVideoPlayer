@@ -15,6 +15,9 @@ import com.example.avp.adapter.VideoAdapter;
 import com.example.avp.player.AVPMediaMetaData;
 import com.example.avp.ui.LastSeenVideosHolder;
 import com.example.avp.ui.VideoListSettings;
+import com.gdrive.GDriveService;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
 
 import java.io.File;
 import java.io.Serializable;
@@ -72,6 +75,25 @@ public class Model implements Serializable {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
+    public void updateGDriveVideoList(RecyclerView recyclerView, GoogleSignInAccount account) {
+        fetchVideosFromGDrive(recyclerView, account)
+            .addOnSuccessListener(newArrayListVideos -> {
+                VideoAdapter videoAdapter = new VideoAdapter(this);
+                recyclerView.setAdapter(videoAdapter);
+                setArrayListVideos(newArrayListVideos);
+                if (getVideoListSettings().reversedOrder) {
+                    reverseVideoList();
+                }
+            });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private Task<ArrayList<VideoModel>> fetchVideosFromGDrive(RecyclerView recyclerView, GoogleSignInAccount account) {
+        GDriveService driveService = new GDriveService(getActivity().getApplicationContext(), account);
+        return driveService.getUsersVideosList();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void fetchVideosFromGallery(ArrayList<VideoModel> newArrayListVideos, RecyclerView recyclerView) {
         int columnIndexData, thum;
         String absolutePathImage;
@@ -102,6 +124,7 @@ public class Model implements Serializable {
 
             VideoModel videoModel = new VideoModel();
             videoModel.setBooleanSelected(false);
+            videoModel.setGDriveFile(false);
             videoModel.setStrPath(absolutePathImage);
             videoModel.setStrThumb(cursor.getString(thum));
 
@@ -127,11 +150,15 @@ public class Model implements Serializable {
     }
 
     public String getVideoPath(int i) {
-        return arrayListVideos.get(i).getStrThumb();
+        return arrayListVideos.get(i).getStrPath();
     }
 
     public String getVideoThumb(int i) {
-        return arrayListVideos.get(i).getStrThumb();
+        VideoModel video = arrayListVideos.get(i);
+        if (video.isGDriveFile()) {
+            return video.getStrThumb();
+        }
+        return "file://" + video.getStrThumb();
     }
 
     public Context getContext() {
@@ -141,6 +168,15 @@ public class Model implements Serializable {
     public String getFileSizeMegaBytes(String path) {
         File file = new File(path);
         return (double) file.length() / (1024 * 1024) + " mb";
+    }
+
+    public String getVideoNameByPosition(int i) {
+        VideoModel video = arrayListVideos.get(i);
+        if (video.isGDriveFile()) {
+            return video.getName();
+        }
+        String[] parts = video.getStrPath().split(File.separator);
+        return parts[parts.length - 1];
     }
 
     public String getVideoName(String link) {

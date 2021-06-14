@@ -2,6 +2,7 @@ package com.example.avp.player;
 
 import android.net.Uri;
 
+import com.gdrive.GDriveFile;
 import com.gdrive.GDriveService;
 import com.gdrive.GDriveWrapper;
 import com.google.android.exoplayer2.C;
@@ -25,10 +26,11 @@ public class GoogleDriveVideoDataSource implements DataSource {
     private TransferListener transferListener;
     private GDriveService driveService;
 
-    public GoogleDriveVideoDataSource(DataSpec dataSpec, GDriveService driveService) {
+    public GoogleDriveVideoDataSource(DataSpec dataSpec, GDriveService driveService, InputStream stream, long size) {
         this.dataSpec = dataSpec;
         this.driveService = driveService;
-        this.videoSize = driveService.getSizeOfFile(dataSpec.uri.toString());
+        this.inputStream = stream;
+        this.videoSize = size;
     }
 
     @Override
@@ -64,9 +66,9 @@ public class GoogleDriveVideoDataSource implements DataSource {
     }
 
     private InputStream getInputStream(Uri uri) {
-        Task<InputStream> task = driveService.getDownloadStreamOnFile(uri.toString());
+        Task<GDriveFile> task = driveService.getFile(uri.toString());
         while (!task.isComplete()) {} // sorry...
-        return task.getResult();
+        return task.getResult().getStream();
     }
 
     @Override

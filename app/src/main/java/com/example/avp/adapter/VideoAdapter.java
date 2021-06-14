@@ -48,7 +48,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(model.getContext()).load("file://" + model.getVideoThumb(position))
+        Glide.with(model.getContext()).load(model.getVideoThumb(position))
                 .skipMemoryCache(false).into(holder.imageView);
         holder.rlSelect.setBackgroundColor(Color.parseColor("#FFFFFF"));
         holder.rlSelect.setAlpha(0);
@@ -65,7 +65,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
         if ("list".equals(model.getVideoListDisplayMode())) {
             holder.textView.setText(link);
-            holder.textViewVideoName.setText(model.getVideoName(link));
+            holder.textViewVideoName.setText(model.getVideoNameByPosition(position));
+            holder.imageButton.setOnClickListener(v -> showPopupMenu(v, link));
         }
     }
 
