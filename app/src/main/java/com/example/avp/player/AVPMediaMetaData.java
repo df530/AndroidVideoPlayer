@@ -5,45 +5,78 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 
+import androidx.annotation.Nullable;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import lombok.Getter;
 
-public class AVPMediaMetaData {
+public class AVPMediaMetaData implements Serializable {
     @Getter
     private final String title;
     @Getter
     private final String author;
     @Getter
-    private final String uri;
+    private final String link;
     @Getter
-    private final Bitmap previewBM;
+    private final String previewURL;
 
-    public AVPMediaMetaData(String title, String author, String uri, String previewURL) {
+    private transient Bitmap previewBM;
+
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null)
+            return false;
+        if (obj instanceof AVPMediaMetaData) {
+            AVPMediaMetaData other = (AVPMediaMetaData) obj;
+            return Objects.equals(author, other.author) && Objects.equals(title, other.title) && Objects.equals(link, other.link);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(author, title, link);
+    }
+
+    public AVPMediaMetaData(String title, String author, String link, String previewURL) {
         this.title = title;
         this.author = author;
-        this.uri = uri;
-        if (previewURL == null) {
-            // works for local video
-            Bitmap res = ThumbnailUtils.createVideoThumbnail(uri, MediaStore.Video.Thumbnails.MINI_KIND);
-            if (res != null) {
-                this.previewBM = res;
-            }
-            else { // video isn't local
-                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                retriever.setDataSource(uri, new HashMap<String, String>());
-                // this gets frame at 2nd second
-                this.previewBM = retriever.getFrameAtTime(2000000, MediaMetadataRetriever.OPTION_CLOSEST);
+        this.link = link;
+        this.previewURL = previewURL;
+        this.previewBM = getPreviewBitmap();
+    }
+
+    public Bitmap getPreviewBitmap() {
+        if (previewBM == null) {
+            if (previewURL == null) {
+                // works for local video
+                Bitmap res = ThumbnailUtils.createVideoThumbnail(link, MediaStore.Video.Thumbnails.MINI_KIND);
+                if (res != null) {
+                    previewBM = res;
+                } else { // video isn't local
+                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                    retriever.setDataSource(link, new HashMap<String, String>());
+                    // this gets frame at 2nd second
+                    previewBM = retriever.getFrameAtTime(2000000, MediaMetadataRetriever.OPTION_CLOSEST);
+                }
+            } else {
+                previewBM = loadImageFromURL(previewURL);
             }
         }
-        else {
-            this.previewBM = loadImageFromURL(previewURL);
-        }
+
+        return previewBM;
     }
 
     private static class LoadBitmap extends AsyncTask<String, Void, Bitmap> {

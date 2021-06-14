@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 
@@ -13,11 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.avp.R;
-import com.google.android.exoplayer2.ExoPlayer;
+import com.example.avp.ui.MainActivity;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 
 import java.util.Objects;
@@ -31,7 +28,7 @@ public class ExoPlayerService extends Service {
     @Getter
     private static boolean notificationServiceDestroyed = false;
 
-    private static class NotificationMediaDescriptionAdapter implements PlayerNotificationManager.MediaDescriptionAdapter {
+    private class NotificationMediaDescriptionAdapter implements PlayerNotificationManager.MediaDescriptionAdapter {
         @NonNull
         @Override
         public CharSequence getCurrentContentTitle(@NonNull Player player) {
@@ -48,7 +45,18 @@ public class ExoPlayerService extends Service {
         @Nullable
         @Override
         public PendingIntent createCurrentContentIntent(@NonNull Player player) {
-            return null;
+            Intent intent = new Intent(ExoPlayerService.this, ExoPlayerActivity.class);
+            /* KAK YA NENAVISU ETIH ******************* AAAAAAAAAAAAAAAAAAAAAAAA ************** SUUUUUUU ************* AAAAAAAAA
+             * Ok, I calmed down. I wanted to resume player when user tap on notification. In all instructions with mention 'exoplayer'
+             * I found only creation intent like in line upper, and returning 'PendingIntent.getActivity(...)'. And only creates a new
+             * activity (I wanted to resume old). Moreover, they gave this instruction in io-18 conference. And their solution creates new
+             * activity every time!!! On the conference!!!
+             * I spend 2-3 hours to find out, what I have to do. Finally, I try to search 'android continue  app on notification click' without
+             * mention of exoplayer. And I found the solution (add in the manifest 'android:launchMode="singleTask"').
+             */
+            return PendingIntent.getActivity(
+                    ExoPlayerService.this, 0,
+                    intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         @Override
@@ -59,8 +67,8 @@ public class ExoPlayerService extends Service {
             if (meta == null)
                 return "No meta";
             if (meta.getAuthor() == null) {
-                if (meta.getUri() != null)
-                    return meta.getUri();
+                if (meta.getLink() != null)
+                    return meta.getLink();
                 return "No author and URI";
             }
             return meta.getAuthor();
@@ -74,9 +82,9 @@ public class ExoPlayerService extends Service {
             if (player.getCurrentMediaItem() == null)
                 return null;
             AVPMediaMetaData meta = (AVPMediaMetaData) Objects.requireNonNull(player.getCurrentMediaItem().playbackProperties).tag;
-            if (meta == null || meta.getPreviewBM() == null)
+            if (meta == null || meta.getPreviewBitmap() == null)
                 return null;
-            Bitmap previewBM = meta.getPreviewBM();
+            Bitmap previewBM = meta.getPreviewBitmap();
             callback.onBitmap(previewBM);
             return previewBM;
         }

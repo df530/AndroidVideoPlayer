@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,9 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
 import com.example.avp.model.Model;
+import com.example.avp.player.AVPMediaMetaData;
 import com.example.avp.player.ExoPlayerActivity;
 
-import com.example.avp.adapter.LastSeenLinksAdapter;
+import com.example.avp.adapter.LastSeenMetaDataAdapter;
+import com.example.avp.player.ExoPlayerModel;
+
+import static android.app.Activity.RESULT_OK;
 
 public class VideoByLinkFragment extends Fragment {
 
@@ -52,14 +57,27 @@ public class VideoByLinkFragment extends Fragment {
             Intent intent = new Intent(getActivity(), ExoPlayerActivity.class);
             String linkOnVideo = link.getText().toString();
 
-            model.addRecentVideo(linkOnVideo);
-
             intent.putExtra("linkOnVideo", linkOnVideo);
-            startActivity(intent);
-            update();
+            startActivityForResult(intent, 1);
         });
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == ExoPlayerModel.LINK_INCORRECT) {
+            Toast.makeText(getContext(), "Can't load this link", Toast.LENGTH_LONG).show();
+        }
+        else {
+            if (data != null) {
+                AVPMediaMetaData metaData = (AVPMediaMetaData)data.getSerializableExtra("Metadata");
+                if (metaData != null) {
+                    model.addRecentVideo(metaData);
+                    update();
+                }
+            }
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -80,7 +98,7 @@ public class VideoByLinkFragment extends Fragment {
     }
 
     private void update() {
-        LastSeenLinksAdapter adapter = new LastSeenLinksAdapter(model);
+        LastSeenMetaDataAdapter adapter = new LastSeenMetaDataAdapter(model, this);
         recyclerView.setAdapter(adapter);
     }
 }

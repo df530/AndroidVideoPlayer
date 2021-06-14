@@ -60,8 +60,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
         });
 
+        String link = model.getVideoPath(position);
+        holder.imageButton.setOnClickListener(v -> showPopupMenu(v, link));
+
         if ("list".equals(model.getVideoListDisplayMode())) {
-            String link = model.getVideoPath(position);
             holder.textView.setText(link);
             holder.textViewVideoName.setText(model.getVideoNameByPosition(position));
             holder.imageButton.setOnClickListener(v -> showPopupMenu(v, link));
@@ -147,9 +149,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
             super(itemView);
             imageView = itemView.findViewById(R.id.iv_image);
             rlSelect = itemView.findViewById(R.id.rl_select);
+            imageButton = itemView.findViewById(R.id.iv_menu_button);
+
             if (displayMode.equals("list")) {
                 textView = itemView.findViewById(R.id.tv_text);
-                imageButton = itemView.findViewById(R.id.iv_menu_button);
                 textViewVideoName = itemView.findViewById(R.id.tv_video_name);
             }
         }

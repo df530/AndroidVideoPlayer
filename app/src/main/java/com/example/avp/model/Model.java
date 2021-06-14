@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.adapter.VideoAdapter;
+import com.example.avp.player.AVPMediaMetaData;
 import com.example.avp.ui.LastSeenVideosHolder;
 import com.example.avp.ui.VideoListSettings;
 import com.gdrive.GDriveService;
@@ -19,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -26,16 +28,16 @@ import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Model {
-    @Getter
+public class Model implements Serializable {
+    @Getter @Setter
     private VideoListSettings videoListSettings;
-    @Getter
+    @Getter @Setter
     private LastSeenVideosHolder lastSeenVideosHolder;
     @Getter
     @Setter
     private ArrayList<VideoModel> arrayListVideos;
-    @Getter
-    private Activity activity;
+    @Getter @Setter
+    private transient Activity activity;
 
     public Model(Activity activity) {
         videoListSettings = new VideoListSettings();
@@ -54,8 +56,8 @@ public class Model {
         videoListSettings.reversedOrder = newReversedOrder;
     }
 
-    public void addRecentVideo(String linkOnVideo) {
-        lastSeenVideosHolder.addVideo(linkOnVideo);
+    public void addRecentVideo(AVPMediaMetaData metaData) {
+        lastSeenVideosHolder.addVideo(metaData);
     }
 
     private void reverseVideoList() {
@@ -196,10 +198,10 @@ public class Model {
     }
 
     public int getLastSeenVideosListSize() {
-        return getLastSeenVideosHolder().getLastSeenLinkModelList().size();
+        return getLastSeenVideosHolder().getLastSeenMetaDataModelList().size();
     }
 
-    public String getRecentLink(int position) {
-        return lastSeenVideosHolder.getLastSeenLinkModelList().get(position).getLink();
+    public AVPMediaMetaData getRecentMetaData(int position) {
+        return lastSeenVideosHolder.getLastSeenMetaDataModelList().get(position);
     }
 }

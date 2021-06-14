@@ -9,12 +9,16 @@ import android.widget.LinearLayout;
 
 import androidx.core.view.GestureDetectorCompat;
 
-import com.bosphere.verticalslider.VerticalSlider;
 import com.example.avp.R;
 
 import org.jetbrains.annotations.NotNull;
 
+import lombok.Setter;
+
 public class ExoPlayerView extends com.github.vkay94.dtpv.DoubleTapPlayerView {
+    @Setter
+    private SpeedController speedController;
+
     {
         setControllerAutoShow(false);
     }
@@ -34,12 +38,12 @@ public class ExoPlayerView extends com.github.vkay94.dtpv.DoubleTapPlayerView {
     private final GestureDetectorCompat gestureDetector = new GestureDetectorCompat(
             this.getContext(),
             new GestureDetector.SimpleOnGestureListener() {
-
-                private float curVSProgress = 0.5f;
-
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
-                    ((VerticalSlider) findViewById(R.id.speed_vertical_slide)).setProgress(curVSProgress = 1.5f - curVSProgress, true);
+                    if (speedController.getCurSpeed() > speedController.getNORMAL_SPEED())
+                        speedController.setCurSpeedNormal();
+                    else
+                        speedController.setCurSpeedIncreased();
                     return true;
                 }
             });
