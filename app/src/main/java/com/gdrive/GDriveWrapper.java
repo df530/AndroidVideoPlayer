@@ -71,6 +71,7 @@ public class GDriveWrapper {
                 FileList files = driveService
                         .files()
                         .list()
+                        .setQ("mimeType='video/mp4'")
                         .setSpaces("drive")
                         .setFields("nextPageToken, files(id, name, thumbnailLink, videoMediaMetadata)")
                         .setPageToken(pageToken)

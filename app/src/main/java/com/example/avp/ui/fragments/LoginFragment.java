@@ -76,15 +76,8 @@ public class LoginFragment extends Fragment {
         googleAccount = GoogleSignIn.getLastSignedInAccount(getActivity());
         if (googleAccount != null) {
             GoogleAccountHolder.getInstance().setAccount(googleAccount);
+            updateVideoList(googleAccount);
         }
-
-        recyclerView = getActivity().findViewById(R.id.recyclerviewgdrive);
-        recyclerViewLayoutManager = new GridLayoutManager(
-            getActivity().getApplicationContext(), model.getVideoListColumnsNum()
-        );
-        recyclerView.setLayoutManager(recyclerViewLayoutManager);
-
-        model.updateGDriveVideoList(recyclerView, googleAccount);
         updateUI(googleAccount);
     }
 
@@ -98,10 +91,23 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void handleSignInResult(@NotNull GoogleSignInAccount account) {
         googleAccount = account;
         GoogleAccountHolder.getInstance().setAccount(googleAccount);
+        updateVideoList(account);
         updateUI(googleAccount);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void updateVideoList(GoogleSignInAccount account) {
+        recyclerView = getActivity().findViewById(R.id.recyclerviewgdrive);
+        recyclerViewLayoutManager = new GridLayoutManager(
+                getActivity().getApplicationContext(), model.getVideoListColumnsNum()
+        );
+        recyclerView.setLayoutManager(recyclerViewLayoutManager);
+
+        model.updateGDriveVideoList(recyclerView, account);
     }
 
     private void signIn() {
