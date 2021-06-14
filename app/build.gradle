@@ -99,4 +99,6 @@ dependencies {
     implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+
+    implementation 'com.google.code.gson:gson:2.8.6'
 }

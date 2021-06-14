@@ -2,7 +2,9 @@ package com.example.avp.ui;
 
 import android.provider.MediaStore;
 
-public class VideoListSettings {
+import java.io.Serializable;
+
+public class VideoListSettings implements Serializable {
 
     public String sortedBy = MediaStore.Images.Media.DATE_TAKEN;
     public int columnsNum = 2;

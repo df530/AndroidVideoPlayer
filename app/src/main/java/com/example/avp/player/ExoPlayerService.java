@@ -82,9 +82,9 @@ public class ExoPlayerService extends Service {
             if (player.getCurrentMediaItem() == null)
                 return null;
             AVPMediaMetaData meta = (AVPMediaMetaData) Objects.requireNonNull(player.getCurrentMediaItem().playbackProperties).tag;
-            if (meta == null || meta.getPreviewBM() == null)
+            if (meta == null || meta.getPreviewBitmap() == null)
                 return null;
-            Bitmap previewBM = meta.getPreviewBM();
+            Bitmap previewBM = meta.getPreviewBitmap();
             callback.onBitmap(previewBM);
             return previewBM;
         }

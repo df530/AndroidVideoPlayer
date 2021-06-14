@@ -71,7 +71,7 @@ public class VideoByLinkFragment extends Fragment {
         }
         else {
             if (data != null) {
-                AVPMediaMetaData metaData = data.getParcelableExtra("Metadata");
+                AVPMediaMetaData metaData = (AVPMediaMetaData)data.getSerializableExtra("Metadata");
                 if (metaData != null) {
                     model.addRecentVideo(metaData);
                     update();

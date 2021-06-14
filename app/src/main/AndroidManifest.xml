@@ -28,7 +28,9 @@
         <service android:name=".player.ExoPlayerService"
             android:enabled="true">
        </service>
-        <activity android:name="com.example.avp.ui.MainActivity">
+        <activity
+            android:name="com.example.avp.ui.MainActivity"
+            android:screenOrientation="portrait">
             <meta-data android:name="com.google.android.apps.drive.APP_ID" android:value="id=androidvideoplayer-310315" />
 
             <intent-filter>

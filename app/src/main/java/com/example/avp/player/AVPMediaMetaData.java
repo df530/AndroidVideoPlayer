@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Objects;
@@ -20,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 import lombok.Getter;
 
-public class AVPMediaMetaData implements Parcelable {
+public class AVPMediaMetaData implements Serializable {
     @Getter
     private final String title;
     @Getter
@@ -28,7 +29,9 @@ public class AVPMediaMetaData implements Parcelable {
     @Getter
     private final String link;
     @Getter
-    private final Bitmap previewBM;
+    private final String previewURL;
+
+    private transient Bitmap previewBM;
 
 
     @Override
@@ -37,9 +40,7 @@ public class AVPMediaMetaData implements Parcelable {
             return false;
         if (obj instanceof AVPMediaMetaData) {
             AVPMediaMetaData other = (AVPMediaMetaData) obj;
-            return (author == null && other.author == null || author.equals(other.author)) &&
-                    (title == null && other.title == null || title.equals(other.title)) &&
-                    (link == null && other.link == null || link.equals(other.link));
+            return Objects.equals(author, other.author) && Objects.equals(title, other.title) && Objects.equals(link, other.link);
         }
         return false;
     }
@@ -49,31 +50,33 @@ public class AVPMediaMetaData implements Parcelable {
         return Objects.hash(author, title, link);
     }
 
-    private AVPMediaMetaData(String title, String author, String link, Bitmap previewBM) {
-        this.title = title;
-        this.author = author;
-        this.link = link;
-        this.previewBM = previewBM;
-    }
-
     public AVPMediaMetaData(String title, String author, String link, String previewURL) {
         this.title = title;
         this.author = author;
         this.link = link;
-        if (previewURL == null) {
-            // works for local video
-            Bitmap res = ThumbnailUtils.createVideoThumbnail(link, MediaStore.Video.Thumbnails.MINI_KIND);
-            if (res != null) {
-                this.previewBM = res;
-            } else { // video isn't local
-                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                retriever.setDataSource(link, new HashMap<String, String>());
-                // this gets frame at 2nd second
-                this.previewBM = retriever.getFrameAtTime(2000000, MediaMetadataRetriever.OPTION_CLOSEST);
+        this.previewURL = previewURL;
+        this.previewBM = getPreviewBitmap();
+    }
+
+    public Bitmap getPreviewBitmap() {
+        if (previewBM == null) {
+            if (previewURL == null) {
+                // works for local video
+                Bitmap res = ThumbnailUtils.createVideoThumbnail(link, MediaStore.Video.Thumbnails.MINI_KIND);
+                if (res != null) {
+                    previewBM = res;
+                } else { // video isn't local
+                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                    retriever.setDataSource(link, new HashMap<String, String>());
+                    // this gets frame at 2nd second
+                    previewBM = retriever.getFrameAtTime(2000000, MediaMetadataRetriever.OPTION_CLOSEST);
+                }
+            } else {
+                previewBM = loadImageFromURL(previewURL);
             }
-        } else {
-            this.previewBM = loadImageFromURL(previewURL);
         }
+
+        return previewBM;
     }
 
     private static class LoadBitmap extends AsyncTask<String, Void, Bitmap> {
@@ -103,44 +106,5 @@ public class AVPMediaMetaData implements Parcelable {
             e.printStackTrace();
             return null;
         }
-    }
-
-
-    // Parsable implementation
-    public static final Creator<AVPMediaMetaData> CREATOR = new Creator<AVPMediaMetaData>() {
-        @Override
-        public AVPMediaMetaData createFromParcel(Parcel source) {
-            String title = source.readString();
-            String author = source.readString();
-            String uri = source.readString();
-            byte[] bytes = new byte[source.readInt()];
-            source.readByteArray(bytes);
-            Bitmap previewBM = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-            return new AVPMediaMetaData(title, author, uri, previewBM);
-        }
-
-        @Override
-        public AVPMediaMetaData[] newArray(int size) {
-            return new AVPMediaMetaData[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(author);
-        dest.writeString(link);
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        previewBM.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] bytes = stream.toByteArray();
-        dest.writeInt(bytes.length);
-        dest.writeByteArray(bytes);
     }
 }

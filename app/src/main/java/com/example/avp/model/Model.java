@@ -17,6 +17,7 @@ import com.example.avp.ui.LastSeenVideosHolder;
 import com.example.avp.ui.VideoListSettings;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -24,16 +25,16 @@ import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Model {
-    @Getter
+public class Model implements Serializable {
+    @Getter @Setter
     private VideoListSettings videoListSettings;
-    @Getter
+    @Getter @Setter
     private LastSeenVideosHolder lastSeenVideosHolder;
     @Getter
     @Setter
     private ArrayList<VideoModel> arrayListVideos;
-    @Getter
-    private Activity activity;
+    @Getter @Setter
+    private transient Activity activity;
 
     public Model(Activity activity) {
         videoListSettings = new VideoListSettings();
@@ -165,6 +166,6 @@ public class Model {
     }
 
     public AVPMediaMetaData getRecentMetaData(int position) {
-        return lastSeenVideosHolder.getLastSeenMetaDataModelList().get(position).getMetaData();
+        return lastSeenVideosHolder.getLastSeenMetaDataModelList().get(position);
     }
 }

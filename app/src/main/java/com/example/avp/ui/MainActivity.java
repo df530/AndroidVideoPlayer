@@ -7,7 +7,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -22,20 +24,38 @@ import android.widget.Toast;
 
 import com.example.avp.R;
 import com.example.avp.model.Model;
+import com.example.avp.model.VideoModel;
 import com.example.avp.ui.fragments.LoginFragment;
 import com.example.avp.ui.fragments.NoStoragePermissionFragment;
 import com.example.avp.ui.fragments.VideoByLinkFragment;
 import com.example.avp.ui.fragments.VideoFromDeviceFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+
+import static com.example.avp.ui.Constants.APP_PREFERENCES;
+import static com.example.avp.ui.Constants.APP_PREFERENCES_MENU;
+import static com.example.avp.ui.Constants.APP_PREFERENCES_MODEL;
+import static com.example.avp.ui.Constants.GALLERY_MODE;
+import static com.example.avp.ui.Constants.LIST_MODE;
+import static com.example.avp.ui.Constants.PERMISSION_REQUEST_CODE;
+import static com.example.avp.ui.Constants.arrayListVideosVariableKey;
+import static com.example.avp.ui.Constants.hasVisited;
+import static com.example.avp.ui.Constants.lastSeenVideosHolderVariableKey;
+import static com.example.avp.ui.Constants.videoListSettingsVariableKey;
+
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private static final int PERMISSION_REQUEST_CODE = 123;
     private Menu menu;
     private String currentFragment;
     private Model model;
+
+    private SharedPreferences preferences;
+    private final Gson gson = new Gson();
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -43,7 +63,18 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        model = new Model(this);
+        preferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        restoreState();
+
+        if (model == null) {
+            model = new Model(this);
+        }
+        else {
+            model.setActivity(this);
+        }
+        if (savedInstanceState != null) {
+            loadPreviousState(savedInstanceState);
+        }
 
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -62,11 +93,64 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void loadPreviousState(Bundle savedInstanceState) {
+        model.setArrayListVideos(
+                (ArrayList<VideoModel>) savedInstanceState.getSerializable(arrayListVideosVariableKey)
+        );
+        model.setLastSeenVideosHolder(
+                (LastSeenVideosHolder) savedInstanceState.getSerializable(lastSeenVideosHolderVariableKey)
+        );
+        model.setVideoListSettings(
+                (VideoListSettings) savedInstanceState.getSerializable(videoListSettingsVariableKey)
+        );
+    }
+
+    // сохранение состояния
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(videoListSettingsVariableKey, model.getVideoListSettings());
+        outState.putSerializable(lastSeenVideosHolderVariableKey, model.getLastSeenVideosHolder());
+        outState.putSerializable(arrayListVideosVariableKey, model.getArrayListVideos());
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //save current state
+
+        SharedPreferences.Editor prefsEditor = preferences.edit();
+        String jsonModel = gson.toJson(model);
+        prefsEditor.putString(APP_PREFERENCES_MODEL, jsonModel);
+        prefsEditor.putBoolean(hasVisited, true);
+
+        prefsEditor.apply();
+    }
+
+    private void restoreState() {
+        if (!preferences.getBoolean(hasVisited, false)) {
+            return;
+        }
+
+        if (preferences.contains(APP_PREFERENCES_MODEL)) {
+            String jsonModel = preferences.getString(APP_PREFERENCES_MODEL, "");
+            model = gson.fromJson(jsonModel, Model.class);
+        }
+    }
+
+    private void restoreMenuSettings() {
+        MenuItem reversedOrderItem = menu.findItem(R.id.reversed_order_sorted_by);
+        reversedOrderItem.setChecked(model.getVideoListSettings().reversedOrder);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        restoreMenuSettings();
 
         return true;
     }
@@ -84,15 +168,15 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case (R.id.list_view):
-                updateVideoListSettings(1, model.getVideoListSettings().sortedBy, model.getVideoListSettings().reversedOrder);
+                updateVideoListSettings(LIST_MODE, model.getVideoListSettings().sortedBy, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
                 model.getVideoListSettings().displayMode = "list";
                 break;
             case (R.id.gallery_view):
-                updateVideoListSettings(2, model.getVideoListSettings().sortedBy, model.getVideoListSettings().reversedOrder);
+                updateVideoListSettings(GALLERY_MODE, model.getVideoListSettings().sortedBy, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
                 model.getVideoListSettings().displayMode = "gallery";
-            break;
+                break;
             case (R.id.date_taken_sorted_by):
                 updateVideoListSettings(model.getVideoListSettings().columnsNum, MediaStore.Images.Media.DATE_TAKEN, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
@@ -137,12 +221,10 @@ public class MainActivity extends AppCompatActivity
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
             final String message = "Storage permission is needed to show videos";
-            Snackbar snackbar = Snackbar.make(MainActivity.this.findViewById(R.id.activity_view), message, Snackbar.LENGTH_LONG).setAction("GRANT", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    requestPerms();
-                }
-            });
+            Snackbar snackbar = Snackbar.make(
+                    MainActivity.this.findViewById(R.id.activity_view),
+                    message, Snackbar.LENGTH_LONG).setAction("GRANT", v -> requestPerms()
+            );
             View snackbarLayout = snackbar.getView();
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -195,16 +277,13 @@ public class MainActivity extends AppCompatActivity
 
     public void showNoStoragePermissionSnackbar() {
         Snackbar.make(MainActivity.this.findViewById(R.id.activity_view), "Storage permission isn't granted", Snackbar.LENGTH_LONG)
-                .setAction("SETTINGS", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openApplicationSettings();
+                .setAction("SETTINGS", v -> {
+                    openApplicationSettings();
 
-                        Toast.makeText(getApplicationContext(),
-                                "Open Permissions and grant the Storage permission",
-                                Toast.LENGTH_SHORT)
-                                .show();
-                    }
+                    Toast.makeText(getApplicationContext(),
+                            "Open Permissions and grant the Storage permission",
+                            Toast.LENGTH_SHORT)
+                            .show();
                 })
                 .show();
     }
