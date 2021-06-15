@@ -234,7 +234,10 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AVPMediaMetaData metaData = (AVPMediaMetaData) player.getCurrentMediaItem().playbackProperties.tag;
+        AVPMediaMetaData metaData = null;
+        if (player.getCurrentMediaItem() != null) {
+            metaData = (AVPMediaMetaData) player.getCurrentMediaItem().playbackProperties.tag;
+        }
         setResult(RESULT_CANCELED, new Intent().putExtra("Metadata", metaData));
         finish();
     }

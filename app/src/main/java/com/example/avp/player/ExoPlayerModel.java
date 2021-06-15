@@ -84,7 +84,6 @@ public class ExoPlayerModel {
 
     private Observable<MediaSource> getObservableMediaSourceFromGDrive() {
         PublishSubject<MediaSource> resObservable = PublishSubject.create(); // create a list to save result MediaSource
-
         GoogleSignInAccount account = GoogleAccountHolder.getInstance().getAccount();
         if (account == null) {
             throw new IllegalStateException("User is not logged in to the google account.");
@@ -112,7 +111,7 @@ public class ExoPlayerModel {
                     .setTag(meta)
                     .createMediaSource(MediaItem.fromUri(dataSource.getUri()));
             resObservable.onNext(fileSource);
-        });
+        }).addOnFailureListener(e -> e.printStackTrace());
 
         return resObservable;
     }
