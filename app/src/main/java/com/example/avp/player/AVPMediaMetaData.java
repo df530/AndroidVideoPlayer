@@ -11,6 +11,8 @@ import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -19,7 +21,9 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import kotlin.time.Duration;
 import lombok.Getter;
+import lombok.Setter;
 
 public class AVPMediaMetaData implements Serializable {
     @Getter
@@ -30,6 +34,11 @@ public class AVPMediaMetaData implements Serializable {
     private final String link;
     @Getter
     private final String previewURL;
+    @Getter
+    private final String path; // on device or gdrive
+    @Getter
+    @Setter
+    private Long duration;
 
     private transient Bitmap previewBM;
 
@@ -50,12 +59,13 @@ public class AVPMediaMetaData implements Serializable {
         return Objects.hash(author, title, link);
     }
 
-    public AVPMediaMetaData(String title, String author, String link, String previewURL) {
+    public AVPMediaMetaData(String title, String author, String link, String previewURL, String path, Long durationMillis) {
         this.title = title;
         this.author = author;
         this.link = link;
         this.previewURL = previewURL;
-        this.previewBM = getPreviewBitmap();
+        this.path = path;
+        this.duration = durationMillis;
     }
 
     public Bitmap getPreviewBitmap() {
@@ -66,10 +76,14 @@ public class AVPMediaMetaData implements Serializable {
                 if (res != null) {
                     previewBM = res;
                 } else { // video isn't local
-                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                    retriever.setDataSource(link, new HashMap<String, String>());
-                    // this gets frame at 2nd second
-                    previewBM = retriever.getFrameAtTime(2000000, MediaMetadataRetriever.OPTION_CLOSEST);
+                    try {
+                        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                        retriever.setDataSource(link, new HashMap<String, String>());
+                        // this gets frame at 2nd second
+                        previewBM = retriever.getFrameAtTime(2000000, MediaMetadataRetriever.OPTION_CLOSEST);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 previewBM = loadImageFromURL(previewURL);

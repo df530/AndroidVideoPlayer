@@ -44,11 +44,6 @@ public class LoginFragment extends Fragment {
     public LoginFragment(Model model) {
         this.model = model;
     }
-    @NotNull
-    @Contract(" -> new")
-    public static LoginFragment newInstance() {
-        return new LoginFragment(model);
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -103,7 +98,7 @@ public class LoginFragment extends Fragment {
     private void updateVideoList(GoogleSignInAccount account) {
         recyclerView = getActivity().findViewById(R.id.recyclerviewgdrive);
         recyclerViewLayoutManager = new GridLayoutManager(
-                getActivity().getApplicationContext(), model.getVideoListColumnsNum()
+                getActivity().getApplicationContext(), model.getVideoListDisplayMode().getNumOfColumns()
         );
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
 

@@ -1,5 +1,7 @@
 package com.example.avp.player;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -13,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.bosphere.verticalslider.VerticalSlider;
 import com.example.avp.R;
@@ -31,6 +34,7 @@ import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 import static com.example.avp.player.ExoPlayerModel.LINK_INCORRECT;
+import static com.google.android.exoplayer2.C.TIME_UNSET;
 import static com.google.android.exoplayer2.C.WAKE_MODE_NETWORK;
 
 public class ExoPlayerActivity extends AppCompatActivity {
@@ -129,6 +133,10 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
         playerModel.getMediaSource().subscribe(ms -> {
             player.setMediaSource(ms);
+            AVPMediaMetaData meta = (AVPMediaMetaData)ms.getTag();
+            if (meta.getDuration() == null && player.getDuration() != TIME_UNSET) {
+                meta.setDuration(player.getDuration());
+            }
             player.prepare();
             startService(new Intent(this, ExoPlayerService.class));
         }, e -> {
@@ -234,7 +242,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AVPMediaMetaData metaData = (AVPMediaMetaData) player.getCurrentMediaItem().playbackProperties.tag;
+        AVPMediaMetaData metaData = player.getCurrentMediaItem() == null ? null : (AVPMediaMetaData)player.getCurrentMediaItem().playbackProperties.tag;
         setResult(RESULT_CANCELED, new Intent().putExtra("Metadata", metaData));
         finish();
     }
@@ -245,5 +253,31 @@ public class ExoPlayerActivity extends AppCompatActivity {
         player = null;
         stopService(new Intent(this, ExoPlayerService.class));
         super.onDestroy();
+    }
+
+    public static void startExoPlayerFromActivity(Activity parentActivity, String linkOnVideo) {
+        Intent intent = new Intent(parentActivity, ExoPlayerActivity.class);
+        intent.putExtra("linkOnVideo", linkOnVideo);
+        parentActivity.startActivity(intent);
+    }
+
+    public static void startExoPlayerFromFragment(Fragment parentFragment, String linkOnVideo) {
+        Intent intent = new Intent(parentFragment.getContext(), ExoPlayerActivity.class);
+        intent.putExtra("linkOnVideo", linkOnVideo);
+        parentFragment.startActivity(intent);
+    }
+
+    // you can use requestCode == 1, if you don't know what is it and how it can be used
+    public static void startExoPlayerFromActivityForResult(Activity parentActivity, String linkOnVideo, int requestCode) {
+        Intent intent = new Intent(parentActivity, ExoPlayerActivity.class);
+        intent.putExtra("linkOnVideo", linkOnVideo);
+        parentActivity.startActivityForResult(intent, requestCode);
+    }
+
+    // you can use requestCode == 1, if you don't know what is it and how it can be used
+    public static void startExoPlayerFromFragmentForResult(Fragment parentFragment, String linkOnVideo, int requestCode) {
+        Intent intent = new Intent(parentFragment.getContext(), ExoPlayerActivity.class);
+        intent.putExtra("linkOnVideo", linkOnVideo);
+        parentFragment.startActivityForResult(intent, requestCode);
     }
 }

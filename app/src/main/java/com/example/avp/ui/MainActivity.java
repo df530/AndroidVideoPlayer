@@ -7,14 +7,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,28 +21,19 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.avp.R;
+import com.example.avp.lists.VideoListSettings;
 import com.example.avp.model.Model;
 import com.example.avp.model.VideoModel;
 import com.example.avp.ui.fragments.LoginFragment;
 import com.example.avp.ui.fragments.NoStoragePermissionFragment;
 import com.example.avp.ui.fragments.VideoByLinkFragment;
 import com.example.avp.ui.fragments.VideoFromDeviceFragment;
+import com.example.avp.utils.JsonStateSaveLoader;
+import com.example.avp.utils.StateSaveLoader;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
 
-import java.util.ArrayList;
-
-import static com.example.avp.ui.Constants.APP_PREFERENCES;
-import static com.example.avp.ui.Constants.APP_PREFERENCES_MENU;
-import static com.example.avp.ui.Constants.APP_PREFERENCES_MODEL;
-import static com.example.avp.ui.Constants.GALLERY_MODE;
-import static com.example.avp.ui.Constants.LIST_MODE;
 import static com.example.avp.ui.Constants.PERMISSION_REQUEST_CODE;
-import static com.example.avp.ui.Constants.arrayListVideosVariableKey;
-import static com.example.avp.ui.Constants.hasVisited;
-import static com.example.avp.ui.Constants.lastSeenVideosHolderVariableKey;
-import static com.example.avp.ui.Constants.videoListSettingsVariableKey;
 
 
 public class MainActivity extends AppCompatActivity
@@ -54,8 +43,7 @@ public class MainActivity extends AppCompatActivity
     private String currentFragment;
     private Model model;
 
-    private SharedPreferences preferences;
-    private final Gson gson = new Gson();
+    private StateSaveLoader stateSaveLoader;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -63,18 +51,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        preferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        restoreState();
-
-        if (model == null) {
-            model = new Model(this);
-        }
-        else {
-            model.setActivity(this);
-        }
-        if (savedInstanceState != null) {
-            loadPreviousState(savedInstanceState);
-        }
+        stateSaveLoader = new JsonStateSaveLoader(this);
+        model = new Model(this);
+        loadState();
 
         BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -93,50 +72,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void loadPreviousState(Bundle savedInstanceState) {
-        model.setArrayListVideos(
-                (ArrayList<VideoModel>) savedInstanceState.getSerializable(arrayListVideosVariableKey)
-        );
-        model.setLastSeenVideosHolder(
-                (LastSeenVideosHolder) savedInstanceState.getSerializable(lastSeenVideosHolderVariableKey)
-        );
-        model.setVideoListSettings(
-                (VideoListSettings) savedInstanceState.getSerializable(videoListSettingsVariableKey)
-        );
-    }
-
-    // сохранение состояния
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(videoListSettingsVariableKey, model.getVideoListSettings());
-        outState.putSerializable(lastSeenVideosHolderVariableKey, model.getLastSeenVideosHolder());
-        outState.putSerializable(arrayListVideosVariableKey, model.getArrayListVideos());
-
-        super.onSaveInstanceState(outState);
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
         //save current state
-
-        SharedPreferences.Editor prefsEditor = preferences.edit();
-        String jsonModel = gson.toJson(model);
-        prefsEditor.putString(APP_PREFERENCES_MODEL, jsonModel);
-        prefsEditor.putBoolean(hasVisited, true);
-
-        prefsEditor.apply();
+        model.saveState(stateSaveLoader);
     }
 
-    private void restoreState() {
-        if (!preferences.getBoolean(hasVisited, false)) {
-            return;
-        }
+    private void loadState() {
 
-        if (preferences.contains(APP_PREFERENCES_MODEL)) {
-            String jsonModel = preferences.getString(APP_PREFERENCES_MODEL, "");
-            model = gson.fromJson(jsonModel, Model.class);
-        }
+        model.loadSavedState(stateSaveLoader);
     }
 
     private void restoreMenuSettings() {
@@ -155,8 +100,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void updateVideoListSettings(int newColumnsNum, String newSortedBy, boolean newReversedOrder) {
-        model.updateVideoListSettings(newColumnsNum, newSortedBy, newReversedOrder);
+    private void updateVideoListSettings(Constants.DisplayMode displayMode, Constants.SortParam newSortParam, boolean newReversedOrder) {
+        model.updateVideoListSettings(displayMode, newSortParam, newReversedOrder);
 
         if (currentFragment.equals(VideoFromDeviceFragment.class.getSimpleName())) {
             loadFragment(new VideoFromDeviceFragment(model));
@@ -168,25 +113,25 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case (R.id.list_view):
-                updateVideoListSettings(LIST_MODE, model.getVideoListSettings().sortedBy, model.getVideoListSettings().reversedOrder);
+                updateVideoListSettings(Constants.DisplayMode.LIST, model.getVideoListSettings().sortParam, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
-                model.getVideoListSettings().displayMode = "list";
+                model.getVideoListSettings().displayMode = Constants.DisplayMode.LIST;
                 break;
             case (R.id.gallery_view):
-                updateVideoListSettings(GALLERY_MODE, model.getVideoListSettings().sortedBy, model.getVideoListSettings().reversedOrder);
+                updateVideoListSettings(Constants.DisplayMode.GALLERY, model.getVideoListSettings().sortParam, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
-                model.getVideoListSettings().displayMode = "gallery";
+                model.getVideoListSettings().displayMode = Constants.DisplayMode.GALLERY;
                 break;
             case (R.id.date_taken_sorted_by):
-                updateVideoListSettings(model.getVideoListSettings().columnsNum, MediaStore.Images.Media.DATE_TAKEN, model.getVideoListSettings().reversedOrder);
+                updateVideoListSettings(model.getVideoListSettings().displayMode, Constants.SortParam.DATE_TAKEN, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
                 break;
             case (R.id.display_name_sorted_by):
-                updateVideoListSettings(model.getVideoListSettings().columnsNum, MediaStore.Images.Media.DISPLAY_NAME, model.getVideoListSettings().reversedOrder);
+                updateVideoListSettings(model.getVideoListSettings().displayMode, Constants.SortParam.NAME, model.getVideoListSettings().reversedOrder);
                 item.setChecked(true);
                 break;
             case (R.id.reversed_order_sorted_by):
-                updateVideoListSettings(model.getVideoListSettings().columnsNum, model.getVideoListSettings().sortedBy, !model.getVideoListSettings().reversedOrder);
+                updateVideoListSettings(model.getVideoListSettings().displayMode, model.getVideoListSettings().sortParam, !model.getVideoListSettings().reversedOrder);
                 item.setChecked(model.getVideoListSettings().reversedOrder);
                 break;
         }

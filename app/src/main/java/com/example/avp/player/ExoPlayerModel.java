@@ -69,12 +69,20 @@ public class ExoPlayerModel {
     }
 
     private Observable<MediaSource> getObservableMediaSourceFromUri() {
-        AVPMediaMetaData meta = new AVPMediaMetaData(new File(linkOnVideo).getName(), null, linkOnVideo, null);
-        return Observable.just(new DefaultMediaSourceFactory(context)
-                .createMediaSource(new MediaItem.Builder()
-                        .setUri(Uri.parse(linkOnVideo))
-                        .setTag(meta)
-                        .build()));
+        AVPMediaMetaData meta = new AVPMediaMetaData(new File(linkOnVideo).getName(),
+                null,
+                linkOnVideo,
+                null,
+                null,
+                null);
+        return Observable.fromCallable(() -> {
+            MediaSource res = new DefaultMediaSourceFactory(context)
+                    .createMediaSource(new MediaItem.Builder()
+                            .setUri(Uri.parse(linkOnVideo))
+                            .setTag(meta)
+                            .build());
+            return res;
+        });
     }
 
     private static boolean isYoutubeUrl(String youTubeURl) {
@@ -106,7 +114,7 @@ public class ExoPlayerModel {
 
             DataSource.Factory factory = () -> dataSource;
 
-            AVPMediaMetaData meta = new AVPMediaMetaData(title, author, null, previewURL);
+            AVPMediaMetaData meta = new AVPMediaMetaData(title, author, linkOnVideo, previewURL, null, null);
             MediaSource fileSource = new ProgressiveMediaSource
                     .Factory(factory)
                     .setTag(meta)
@@ -150,7 +158,7 @@ public class ExoPlayerModel {
                     int audioTag = 140; // audio tag for m4a
 
                     AVPMediaMetaData mediaMetadata = new AVPMediaMetaData(videoMeta.getTitle(), videoMeta.getAuthor(), linkOnVideo,
-                            videoMeta.getMqImageUrl());
+                            videoMeta.getMqImageUrl(), null, null);
 
                     MediaSource audioSource = new ProgressiveMediaSource
                             .Factory(new DefaultHttpDataSource.Factory())
@@ -168,10 +176,10 @@ public class ExoPlayerModel {
                     MediaSource resMediaSource = new MergingMediaSource(true, videoSource, audioSource);
                     resObservable.onNext(resMediaSource);
                 } else {
-                    resObservable.onError(new RuntimeException("Cant load this youtube link: " + linkOnVideo));
+                    resObservable.onError(new RuntimeException("Can't load this youtube link: " + linkOnVideo));
                 }
             }
-        }.extract(linkOnVideo, false, false);
+        }.extract(linkOnVideo, true, true);
 
         return resObservable;
     }

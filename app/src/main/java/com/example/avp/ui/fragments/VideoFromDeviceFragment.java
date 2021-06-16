@@ -28,14 +28,9 @@ public class VideoFromDeviceFragment extends Fragment {
         this.model = model;
     }
 
-    public static VideoFromDeviceFragment newInstance() {
-        return new VideoFromDeviceFragment(model);
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.video_from_device_fragment, container, false);
     }
 
@@ -51,9 +46,9 @@ public class VideoFromDeviceFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void init() {
-        recyclerView = (RecyclerView) getActivity().findViewById(R.id.recyclerviewVideo);
+        recyclerView = getActivity().findViewById(R.id.recyclerviewVideo);
         recyclerViewLayoutManager = new GridLayoutManager(
-                getActivity().getApplicationContext(), model.getVideoListColumnsNum()
+                getActivity().getApplicationContext(), model.getVideoListDisplayMode().getNumOfColumns()
         );
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
 
