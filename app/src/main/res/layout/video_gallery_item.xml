@@ -25,8 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:background="@color/black_background"
-        android:textColor="@color/white"
-        android:text="9:99:99"/>
+        android:textColor="@color/white"/>
 
     <ImageButton
         android:id="@+id/ib_menu"

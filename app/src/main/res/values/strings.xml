@@ -2,11 +2,11 @@
     <string name="app_name">AndroidVideoPlayer</string>
     <string name="app_description">Java spring semester project</string>
     <string name="title_activity_main2">MainActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">Local</string>
+    <string name="title_dashboard">GDrive</string>
+    <string name="title_notifications">Stream</string>
     <string name="search_by_link">search by link</string>
-    <string name="login">Login</string>
+    <string name="login">Local</string>
     <string name="password">Password</string>
     <string name="register">Register</string>
     <string name="email_address">Email address</string>
