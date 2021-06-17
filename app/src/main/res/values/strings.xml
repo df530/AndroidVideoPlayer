@@ -3,7 +3,7 @@
     <string name="app_description">Java spring semester project</string>
     <string name="title_activity_main2">MainActivity</string>
     <string name="title_home">Local</string>
-    <string name="title_dashboard">Gdrive</string>
+    <string name="title_dashboard">GDrive</string>
     <string name="title_notifications">Stream</string>
     <string name="search_by_link">search by link</string>
     <string name="login">Login</string>
