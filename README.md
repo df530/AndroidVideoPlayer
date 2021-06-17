@@ -22,8 +22,8 @@ AndroidVideoPlayer -- приложение для устройств на пла
 - [RxJava 3.0.13](https://github.com/ReactiveX/RxJava)
 - [Lombok 1.18.20](https://github.com/projectlombok/lombok)
 - [Android-Vertical-Slider](https://github.com/bosphere/Android-VerticalSlider)
-- [Android based YouTube url extractor](https://github.com/HaarigerHarald/android-youtubeExtractor)
-- [DoubleTapPlayerView](https://github.com/vkay94/DoubleTapPlayerView)
+- [Android based YouTube url extractor 2.1.0](https://github.com/HaarigerHarald/android-youtubeExtractor)
+- [DoubleTapPlayerView 1.0.2](https://github.com/vkay94/DoubleTapPlayerView)
 
 ### Установка
 
