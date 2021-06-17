@@ -3,11 +3,12 @@ package com.gdrive;
 import android.content.Context;
 
 import com.example.avp.model.VideoModel;
+import com.example.avp.player.AVPMediaMetaData;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +46,11 @@ public class GDriveService {
         return pattern.matcher(fileURL).matches();
     }
 
-    public Task<ArrayList<VideoModel>> getUsersVideosList() {
+    public Task<List<AVPMediaMetaData>> getUserVideosListTask() {
+        return driveService.getVideoListTask();
+    }
+
+    public List<AVPMediaMetaData> getUserVideosList() {
         return driveService.getVideoList();
     }
 }

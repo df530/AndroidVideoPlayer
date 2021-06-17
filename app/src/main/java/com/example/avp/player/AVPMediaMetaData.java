@@ -126,4 +126,24 @@ public class AVPMediaMetaData implements Serializable {
             return null;
         }
     }
+
+    public String getDurationString() {
+        if (duration != null) {
+            String format;
+            if (duration >= 60 * 60 * 1000) {
+                format = "HH:mm:ss";
+            } else {
+                format = "mm:ss";
+            }
+            return DurationFormatUtils.formatDuration(duration, format, true);
+        }
+        return null;
+    }
+
+    public String getDateTakenString() {
+        if (dateTaken != null)
+            return dateTaken.toString();
+        else
+            return null;
+    }
 }

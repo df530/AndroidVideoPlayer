@@ -12,11 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.lists.VideoList;
+import com.example.avp.lists.impls.gdrive.GDriveVideosHolder;
+import com.example.avp.lists.impls.gdrive.GdriveVideoList;
 import com.example.avp.model.Model;
+import com.example.avp.ui.Constants;
 import com.gdrive.GoogleAccountHolder;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -26,11 +29,11 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public class LoginFragment extends Fragment {
+import java.util.Set;
 
+public class LoginFragment extends Fragment {
     private static final int RC_SIGN_IN = 1337;
     private GoogleSignInClient googleClient;
     private GoogleSignInAccount googleAccount;
@@ -40,6 +43,7 @@ public class LoginFragment extends Fragment {
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
     private TextView statusText;
     private static Model model;
+    private static VideoList gdriveVideoList = null;
 
     public LoginFragment(Model model) {
         this.model = model;
@@ -96,13 +100,22 @@ public class LoginFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void updateVideoList(GoogleSignInAccount account) {
-        recyclerView = getActivity().findViewById(R.id.recyclerviewgdrive);
-        recyclerViewLayoutManager = new GridLayoutManager(
-                getActivity().getApplicationContext(), model.getVideoListDisplayMode().getNumOfColumns()
-        );
-        recyclerView.setLayoutManager(recyclerViewLayoutManager);
+        RecyclerView gdriveVideoRV = getActivity().findViewById(R.id.rv_gdrive);
+        if (gdriveVideoList == null) {
+            gdriveVideoList = new GdriveVideoList(
+                    gdriveVideoRV,
+                    GDriveVideosHolder.getInstance(),
+                    model.getVideoListSettings(),
+                    Set.of(Constants.DisplayMode.GALLERY, Constants.DisplayMode.LIST),
+                    this,
+                    account);
 
-        model.updateGDriveVideoList(recyclerView, account);
+            model.addVideoList(gdriveVideoList);
+            gdriveVideoList.fetchVideosAndUpdate();
+        }
+        else {
+            gdriveVideoList.setVideoListRV(gdriveVideoRV);
+        }
     }
 
     private void signIn() {

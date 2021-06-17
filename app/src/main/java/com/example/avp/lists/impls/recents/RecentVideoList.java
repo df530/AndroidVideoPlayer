@@ -28,14 +28,9 @@ import lombok.NonNull;
 import static com.example.avp.ui.Constants.videoListSettingsVariableKey;
 
 public class RecentVideoList extends VideoList {
-    private final Fragment parentFragment;
-
-    public RecentVideoList(RecyclerView videoListRV, RecentVideosHolder videosHolder, VideoListSettings listSettings,
+    public RecentVideoList(RecyclerView videoListRV, VideosHolder videosHolder, VideoListSettings listSettings,
                            Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment) {
-        super(videoListRV, videosHolder, parentFragment.getContext(), listSettings, possibleDisplayModes);
-        this.parentFragment = parentFragment;
-        // not forget update:
-        updateRecycleView();
+        super(videoListRV, videosHolder, listSettings, possibleDisplayModes, parentFragment);
     }
 
     @Override
@@ -57,7 +52,6 @@ public class RecentVideoList extends VideoList {
                 (VideosHolder)stateSaveLoader.readSerializable(videosHolder.getSerializationKey(), RecentVideosHolder.class);
         if (loadVideoHolder != null) {
             videosHolder = loadVideoHolder;
-            updateRecycleView();
         }
     }
 

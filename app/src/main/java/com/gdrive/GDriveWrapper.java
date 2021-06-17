@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.example.avp.model.VideoModel;
+import com.example.avp.player.AVPMediaMetaData;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -63,9 +65,47 @@ public class GDriveWrapper {
         });
     }
 
-    public Task<ArrayList<VideoModel>> getVideoList() {
-        return Tasks.call(mExecutor, () -> {
-            ArrayList<VideoModel> videos = new ArrayList<>();
+    private String getFilePath(File file) throws IOException {
+        String folderPath = "";
+        String fullFilePath = null;
+
+        List<String> parentIdList = file.getParents();
+        List<String> folderList = new ArrayList<String>();
+
+        List<String> finalFolderList = getFoldersList(driveService, parentIdList, folderList);
+        Collections.reverse(finalFolderList);
+
+        for (String folder : finalFolderList) {
+            folderPath += "/" + folder;
+        }
+
+        fullFilePath = folderPath + "/" + file.getName();
+
+        return fullFilePath;
+    }
+
+    private List<String> getFoldersList(Drive drive, List<String> parentIdList, List<String> folderList) throws IOException {
+        for (int i = 0; i < parentIdList.size(); i++) {
+            String id = parentIdList.get(i);
+
+            File file = drive.files().get(id).execute();
+            folderList.add(file.getName());
+
+            if (!(file.getParents().isEmpty())) {
+                List<String> parentReferenceslist2 = file.getParents();
+                getFoldersList(drive, parentReferenceslist2, folderList);
+            }
+        }
+        return folderList;
+    }
+
+    public Task<List<AVPMediaMetaData>> getVideoListTask() {
+        return Tasks.call(mExecutor, () -> getVideoList());
+    }
+
+    public List<AVPMediaMetaData> getVideoList() {
+        try {
+            List<AVPMediaMetaData> videos = new ArrayList<>();
             String pageToken = null;
             do {
                 FileList files = driveService
@@ -73,23 +113,30 @@ public class GDriveWrapper {
                         .list()
                         .setQ("mimeType='video/mp4'")
                         .setSpaces("drive")
-                        .setFields("nextPageToken, files(id, name, thumbnailLink, videoMediaMetadata)")
+                        .setFields("nextPageToken, files(id, createdTime, name, thumbnailLink, videoMediaMetadata)")
                         .setPageToken(pageToken)
                         .execute();
                 for (File file : files.getFiles()) {
                     if (file.getVideoMediaMetadata() != null) {
-                        VideoModel videoModel = new VideoModel();
-                        videoModel.setBooleanSelected(false);
-                        videoModel.setGDriveFile(true);
-                        videoModel.setName(file.getName());
-                        videoModel.setStrPath("drive.google.com/file/d/" + file.getId());
-                        videoModel.setStrThumb(file.getThumbnailLink());
-                        videos.add(videoModel);
+                        AVPMediaMetaData metaData = new AVPMediaMetaData(
+                                file.getName(),
+                                null,
+                                "https://drive.google.com/file/d/" + file.getId(),
+                                file.getThumbnailLink(),
+                                null, //getFilePath(file),
+                                null,
+                                file.getCreatedTime() == null ? null : new Date(file.getCreatedTime().getValue())
+                        );
+                        videos.add(metaData);
                     }
                 }
                 pageToken = files.getNextPageToken();
             } while (pageToken != null);
             return videos;
-        });
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

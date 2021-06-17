@@ -87,25 +87,6 @@ public class Model implements Serializable {
         Collections.reverse(getArrayListVideos());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    public void updateGDriveVideoList(RecyclerView recyclerView, GoogleSignInAccount account) {
-        fetchVideosFromGDrive(recyclerView, account)
-                .addOnSuccessListener(newArrayListVideos -> {
-                    VideoAdapter videoAdapter = new VideoAdapter(this);
-                    recyclerView.setAdapter(videoAdapter);
-                    setArrayListVideos(newArrayListVideos);
-                    if (getVideoListSettings().reversedOrder) {
-                        reverseVideoList();
-                    }
-                });
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    private Task<ArrayList<VideoModel>> fetchVideosFromGDrive(RecyclerView recyclerView, GoogleSignInAccount account) {
-        GDriveService driveService = new GDriveService(getActivity().getApplicationContext(), account);
-        return driveService.getUsersVideosList();
-    }
-
     public Constants.DisplayMode getVideoListDisplayMode() {
         return videoListSettings.displayMode;
     }
@@ -128,11 +109,6 @@ public class Model implements Serializable {
 
     public Context getContext() {
         return activity.getApplicationContext();
-    }
-
-    public String getFileSizeMegaBytes(String path) {
-        File file = new File(path);
-        return (double) file.length() / (1024 * 1024) + " mb";
     }
 
     public String getVideoNameByPosition(int i) {

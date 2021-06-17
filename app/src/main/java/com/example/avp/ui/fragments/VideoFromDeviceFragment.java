@@ -53,8 +53,6 @@ public class VideoFromDeviceFragment extends Fragment {
                     Set.of(Constants.DisplayMode.GALLERY, Constants.DisplayMode.LIST),
                     this);
 
-            // without resetting of recycler view it doesn't work correct, I couldn't find error
-            deviceVideoList.setVideoListRV(deviceVideoRV); // try delete
             model.addVideoList(deviceVideoList);
             deviceVideoList.fetchVideosAndUpdate();
         }

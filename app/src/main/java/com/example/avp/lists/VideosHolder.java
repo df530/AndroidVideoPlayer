@@ -4,6 +4,7 @@ import com.example.avp.player.AVPMediaMetaData;
 import com.example.avp.ui.Constants;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 public interface VideosHolder extends Serializable {
     AVPMediaMetaData getVideoMetaDataByPositionInList(int position);
@@ -11,6 +12,11 @@ public interface VideosHolder extends Serializable {
     int getSize();
 
     void add(AVPMediaMetaData metaData);
+
+    default void addAll(Collection<AVPMediaMetaData> collectionOfVideo) {
+        for (AVPMediaMetaData metaData : collectionOfVideo)
+            add(metaData);
+    }
 
     /* if you want never reverse, do nothing there
      * returns: true if holder changed, false otherwise

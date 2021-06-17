@@ -9,7 +9,7 @@
     tools:context=".ui.fragments.VideoByLinkFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerviewgdrive"
+        android:id="@+id/rv_gdrive"
         android:layout_width="match_parent"
         android:layout_height="551dp"
         android:layout_marginLeft="10dp"

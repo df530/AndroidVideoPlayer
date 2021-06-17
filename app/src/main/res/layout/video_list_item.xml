@@ -18,7 +18,6 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@id/iv_preview"
         android:background="@color/black_background"
-        android:text="9:99:99"
         android:textColor="@color/white" />
 
     <RelativeLayout

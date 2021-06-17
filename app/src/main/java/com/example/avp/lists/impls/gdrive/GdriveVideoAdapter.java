@@ -1,6 +1,5 @@
-package com.example.avp.lists.impls.recents;
+package com.example.avp.lists.impls.gdrive;
 
-import android.content.Context;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
@@ -12,20 +11,20 @@ import com.example.avp.player.AVPMediaMetaData;
 import com.example.avp.player.ExoPlayerActivity;
 import com.example.avp.ui.Constants;
 
-public class RecentVideoAdapter extends VideoAdapter {
-    public RecentVideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder,
+public class GdriveVideoAdapter extends VideoAdapter {
+    public GdriveVideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder,
                               VideosHolder videosHolder, Fragment parentFragment) {
         super(displayMode, popupMenuBuilder, videosHolder, parentFragment);
     }
 
     @Override
     protected void onClickItemListener(View v, AVPMediaMetaData metaData) {
-        ExoPlayerActivity.startExoPlayerFromFragmentForResult(parentFragment, metaData.getLink(), 1);
+        ExoPlayerActivity.startExoPlayerFromFragment(parentFragment, metaData.getLink());
     }
 
     @Override
     protected String getTextForPathTV(AVPMediaMetaData metaData) {
-        return null;
+        return metaData.getPath();
     }
 
     @Override

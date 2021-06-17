@@ -12,14 +12,13 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
 import com.example.avp.R;
 import com.example.avp.player.AVPMediaMetaData;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
-
-import lombok.Getter;
 
 public final class InfoMenuItem implements MenuItem {
     private static PopupWindow lastOpenedInfoPW = null;
@@ -29,11 +28,11 @@ public final class InfoMenuItem implements MenuItem {
      * Earlier we gave there 'model.getActivity().findViewById(R.id.fragment_container)' -- the fragment layout
      * of mainActivity. But now, I think, we have to give there recyclerView. I will test it.
      */
-    private final View parentView;
+    private final Fragment parentFragment;
 
-    public InfoMenuItem(List<InfoElement> infoElements, View parentView) {
+    public InfoMenuItem(List<InfoElement> infoElements, Fragment parentFragment) {
         this.infoElements = infoElements;
-        this.parentView = parentView;
+        this.parentFragment = parentFragment;
     }
 
     @Override
@@ -45,7 +44,7 @@ public final class InfoMenuItem implements MenuItem {
     @Override
     public void onClickItem(Context context, AVPMediaMetaData metaData) {
         LinearLayout infoElementsLL =
-                (LinearLayout) LayoutInflater.from(parentView.getContext()).inflate(R.layout.popup_info, null);
+                (LinearLayout) LayoutInflater.from(parentFragment.getContext()).inflate(R.layout.popup_info, null);
         //new LinearLayout(context);
         infoElementsLL.setOrientation(LinearLayout.VERTICAL);
         infoElementsLL.setBackgroundColor(Color.WHITE);
@@ -97,7 +96,7 @@ public final class InfoMenuItem implements MenuItem {
             lastOpenedInfoPW.dismiss();
         }
         lastOpenedInfoPW = popupWindow;
-        popupWindow.showAtLocation(parentView, Gravity.CENTER_VERTICAL, x, y);
+        popupWindow.showAtLocation(parentFragment.getView(), Gravity.CENTER_VERTICAL, x, y);
     }
 
     public static class InfoElement {

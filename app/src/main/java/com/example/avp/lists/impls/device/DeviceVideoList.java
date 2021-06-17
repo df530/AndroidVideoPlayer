@@ -32,27 +32,21 @@ import java.util.Set;
 import lombok.NonNull;
 
 public class DeviceVideoList extends VideoList {
-    private final Fragment parentFragment;
-
-    public DeviceVideoList(RecyclerView videoListRV, DeviceVideosHolder videosHolder, VideoListSettings listSettings,
+    public DeviceVideoList(RecyclerView videoListRV, VideosHolder videosHolder, VideoListSettings listSettings,
                            Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment) {
-        super(videoListRV, videosHolder, parentFragment.getContext(), listSettings, possibleDisplayModes);
-        this.parentFragment = parentFragment;
+        super(videoListRV, videosHolder, listSettings, possibleDisplayModes, parentFragment);
     }
 
     @Override
     protected VideoAdapter createVideoAdapter() {
         List<InfoMenuItem.InfoElement> infoElements = List.of(
                 new InfoMenuItem.InfoElement("Name", AVPMediaMetaData::getTitle),
+                new InfoMenuItem.InfoElement("Path", AVPMediaMetaData::getPath),
                 new InfoMenuItem.InfoElement("Size", meta -> AVPUtils.getFileSizeMegaBytes(meta.getPath())),
-                new InfoMenuItem.InfoElement("Date taken", meta -> {
-                    if (meta.getDateTaken() != null)
-                        return meta.getDateTaken().toString();
-                    else
-                        return "unknown";
-                })
+                new InfoMenuItem.InfoElement("Duration", AVPMediaMetaData::getDurationString),
+                new InfoMenuItem.InfoElement("Date taken", AVPMediaMetaData::getDurationString)
         );
-        InfoMenuItem infoMenuItem = new InfoMenuItem(infoElements, parentFragment.getView());
+        InfoMenuItem infoMenuItem = new InfoMenuItem(infoElements, parentFragment);
         return new DeviceVideoAdapter(listSettings.displayMode,
                 new CustomPopupMenuBuilder(List.of(infoMenuItem)),
                 videosHolder,

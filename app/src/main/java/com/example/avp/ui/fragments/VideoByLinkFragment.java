@@ -79,8 +79,6 @@ public class VideoByLinkFragment extends Fragment {
                     Set.of(Constants.DisplayMode.LIST),
                     this);
 
-            // without resetting of recycler view it doesn't work correct, I couldn't find error
-            recentVideoList.setVideoListRV(recentVideoRV);
             model.addVideoList(recentVideoList);
             recentVideoList.loadSavedState(model.getStateSaveLoader());
         }

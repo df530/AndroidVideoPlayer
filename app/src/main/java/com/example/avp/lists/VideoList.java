@@ -2,6 +2,7 @@ package com.example.avp.lists;
 
 import android.content.Context;
 
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,26 +27,26 @@ import lombok.NonNull;
 public abstract class VideoList {
     protected RecyclerView videoListRV;
     protected VideosHolder videosHolder;
-    protected final Context context;
     protected VideoListSettings listSettings;
     private final Set<Constants.DisplayMode> possibleDisplayModes;
+    protected final Context context;
+    protected final Fragment parentFragment;
 
     private static final Executor executor = Executors.newFixedThreadPool(2);
 
-    public VideoList(RecyclerView videoListRV, VideosHolder videosHolder, Context context, VideoListSettings listSettings,
-                     Set<Constants.DisplayMode> possibleDisplayModes) {
+    public VideoList(RecyclerView videoListRV, VideosHolder videosHolder, VideoListSettings listSettings,
+                     Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment) {
         if (possibleDisplayModes.isEmpty())
             throw new IllegalArgumentException("No possible display modes");
         this.videoListRV = videoListRV;
         this.videosHolder = videosHolder;
-        this.context = context;
-        this.listSettings = new VideoListSettings(listSettings);
+        this.listSettings = listSettings;
         this.possibleDisplayModes = possibleDisplayModes;
         if (!possibleDisplayModes.contains(listSettings.displayMode)) {
             this.listSettings.displayMode = possibleDisplayModes.iterator().next();
         }
-
-        videoListRV.setLayoutManager(new GridLayoutManager(context, listSettings.displayMode.getNumOfColumns()));
+        this.context = parentFragment.getContext();
+        this.parentFragment = parentFragment;
     }
 
     public void setVideoListRV(@NonNull RecyclerView videoListRV) {
@@ -55,12 +56,14 @@ public abstract class VideoList {
     }
 
     protected void updateRecycleView() {
+        videoListRV.setLayoutManager(new GridLayoutManager(context, listSettings.displayMode.getNumOfColumns()));
         videoListRV.setAdapter(createVideoAdapter());
     }
 
     protected abstract VideoAdapter createVideoAdapter();
 
     /* If you need some params, you can add relevant fields and set them in constructor
+     * use current thread, it will be called not in main thread
      */
     protected abstract @NonNull void fetchVideos();
 

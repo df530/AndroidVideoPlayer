@@ -12,12 +12,9 @@ import com.example.avp.player.ExoPlayerActivity;
 import com.example.avp.ui.Constants;
 
 public class DeviceVideoAdapter extends VideoAdapter {
-    private final Fragment parentFragment;
-
-    public DeviceVideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder, VideosHolder videosHolder,
-                              Fragment parentFragment) {
-        super(displayMode, popupMenuBuilder, videosHolder);
-        this.parentFragment = parentFragment;
+    public DeviceVideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder,
+                              VideosHolder videosHolder, Fragment parentFragment) {
+        super(displayMode, popupMenuBuilder, videosHolder, parentFragment);
     }
 
     @Override

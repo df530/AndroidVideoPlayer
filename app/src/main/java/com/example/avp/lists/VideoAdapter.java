@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
@@ -32,12 +33,14 @@ public abstract class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Vie
     private final Constants.DisplayMode displayMode;
     private final CustomPopupMenuBuilder popupMenuBuilder;
     private final VideosHolder videosHolder;
+    protected final Fragment parentFragment;
     private static final Executor mExecutor = Executors.newSingleThreadExecutor();
 
-    public VideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder, VideosHolder videosHolder) {
+    public VideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder, VideosHolder videosHolder, Fragment parentFragment) {
         this.displayMode = displayMode;
         this.popupMenuBuilder = popupMenuBuilder;
         this.videosHolder = videosHolder;
+        this.parentFragment = parentFragment;
     }
 
     @NonNull
@@ -65,15 +68,9 @@ public abstract class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Vie
         Tasks.call(mExecutor, metaData::getPreviewBitmap).addOnSuccessListener(holder.previewIV::setImageBitmap);
 
         holder.titleTV.setText(metaData.getTitle());
-        if (metaData.getDuration() != null) {
-            String format;
-            if (metaData.getDuration() >= 60 * 60 * 1000) {
-                format = "HH:mm:ss";
-            }
-            else {
-                format = "mm:ss";
-            }
-            holder.durationTV.setText(DurationFormatUtils.formatDuration(metaData.getDuration(), format, true));
+        String durationString = metaData.getDurationString();
+        if (durationString != null) {
+            holder.durationTV.setText(durationString);
         }
 
         holder.menuIB.setOnClickListener(v -> {
