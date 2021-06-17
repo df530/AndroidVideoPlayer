@@ -74,6 +74,7 @@ public class ExoPlayerModel {
                 linkOnVideo,
                 null,
                 null,
+                null,
                 null);
         return Observable.fromCallable(() -> {
             MediaSource res = new DefaultMediaSourceFactory(context)
@@ -114,7 +115,7 @@ public class ExoPlayerModel {
 
             DataSource.Factory factory = () -> dataSource;
 
-            AVPMediaMetaData meta = new AVPMediaMetaData(title, author, linkOnVideo, previewURL, null, null);
+            AVPMediaMetaData meta = new AVPMediaMetaData(title, author, linkOnVideo, previewURL, null, null, null);
             MediaSource fileSource = new ProgressiveMediaSource
                     .Factory(factory)
                     .setTag(meta)
@@ -158,7 +159,7 @@ public class ExoPlayerModel {
                     int audioTag = 140; // audio tag for m4a
 
                     AVPMediaMetaData mediaMetadata = new AVPMediaMetaData(videoMeta.getTitle(), videoMeta.getAuthor(), linkOnVideo,
-                            videoMeta.getMqImageUrl(), null, videoMeta.getVideoLength());
+                            videoMeta.getMqImageUrl(), null, videoMeta.getVideoLength(), null);
 
                     MediaSource audioSource = new ProgressiveMediaSource
                             .Factory(new DefaultHttpDataSource.Factory())

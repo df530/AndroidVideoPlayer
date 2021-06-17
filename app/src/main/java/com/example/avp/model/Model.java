@@ -54,10 +54,6 @@ public class Model implements Serializable {
         stateSaveLoader = new JsonStateSaveLoader(activity);
     }
 
-    public void initTransientFields(Activity activity) {
-        this.activity = activity;
-        videoLists = new ArrayList<>();
-    }
     public void updateVideoListSettings(@NonNull Constants.DisplayMode displayMode, @NonNull Constants.SortParam newSortParam, boolean newReversedOrder) {
         // need refactoring
         if (displayMode != videoListSettings.displayMode) {
@@ -92,16 +88,6 @@ public class Model implements Serializable {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    public void updateVideoList(RecyclerView recyclerView) {
-        ArrayList<VideoModel> newArrayListVideos = new ArrayList<>();
-        fetchVideosFromGallery(newArrayListVideos, recyclerView);
-        setArrayListVideos(newArrayListVideos);
-        if (getVideoListSettings().reversedOrder) {
-            reverseVideoList();
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     public void updateGDriveVideoList(RecyclerView recyclerView, GoogleSignInAccount account) {
         fetchVideosFromGDrive(recyclerView, account)
                 .addOnSuccessListener(newArrayListVideos -> {
@@ -118,48 +104,6 @@ public class Model implements Serializable {
     private Task<ArrayList<VideoModel>> fetchVideosFromGDrive(RecyclerView recyclerView, GoogleSignInAccount account) {
         GDriveService driveService = new GDriveService(getActivity().getApplicationContext(), account);
         return driveService.getUsersVideosList();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    private void fetchVideosFromGallery(ArrayList<VideoModel> newArrayListVideos, RecyclerView recyclerView) {
-        int columnIndexData, thum;
-        String absolutePathImage;
-
-        Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {
-                MediaStore.MediaColumns.DATA,
-                MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Video.Media._ID,
-                MediaStore.Video.Thumbnails.DATA
-        };
-
-        Cursor cursor = activity.getApplicationContext().getContentResolver().query(
-                uri,
-                projection,
-                null,
-                null,
-                getVideoListSettings().sortParam.getForDeviceSort() //+ "DESC"
-        );
-
-        columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        thum = cursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails.DATA);
-
-        while (cursor.moveToNext()) {
-            absolutePathImage = cursor.getString(columnIndexData);
-
-            VideoModel videoModel = new VideoModel();
-            videoModel.setBooleanSelected(false);
-            videoModel.setGDriveFile(false);
-            videoModel.setStrPath(absolutePathImage);
-            videoModel.setStrThumb(cursor.getString(thum));
-
-            newArrayListVideos.add(videoModel);
-        }
-
-        //call the com.example.avp.adapter class and set it to recyclerview
-
-        VideoAdapter videoAdapter = new VideoAdapter(this);
-        recyclerView.setAdapter(videoAdapter);
     }
 
     public Constants.DisplayMode getVideoListDisplayMode() {
@@ -198,24 +142,6 @@ public class Model implements Serializable {
         }
         String[] parts = video.getStrPath().split(File.separator);
         return parts[parts.length - 1];
-    }
-
-    public String getVideoName(String link) {
-        String[] parts = link.split(File.separator);
-        return parts[parts.length - 1];
-    }
-
-    public String getVideoDuration(String path) {
-        Uri uri = Uri.parse(path);
-        MediaPlayer mp = MediaPlayer.create(activity.getApplicationContext(), uri);
-        int duration = mp.getDuration();
-        mp.release();
-        //TODO: move formating to a separate function, add hours
-        return String.format("%d min, %d sec",
-                TimeUnit.MILLISECONDS.toMinutes(duration),
-                TimeUnit.MILLISECONDS.toSeconds(duration) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
-        );
     }
 
     public void addVideoList(VideoList videoList) {

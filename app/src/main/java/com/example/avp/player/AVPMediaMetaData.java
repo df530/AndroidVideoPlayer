@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -39,7 +40,10 @@ public class AVPMediaMetaData implements Serializable {
     @Getter
     @Setter
     private Long duration;
+    @Getter
+    private final Date dateTaken;
 
+    @Setter
     private transient Bitmap previewBM;
 
 
@@ -59,13 +63,14 @@ public class AVPMediaMetaData implements Serializable {
         return Objects.hash(author, title, link);
     }
 
-    public AVPMediaMetaData(String title, String author, String link, String previewURL, String path, Long durationMillis) {
+    public AVPMediaMetaData(String title, String author, String link, String previewURL, String path, Long durationMillis, Date dateTaken) {
         this.title = title;
         this.author = author;
         this.link = link;
         this.previewURL = previewURL;
         this.path = path;
         this.duration = durationMillis;
+        this.dateTaken = dateTaken;
     }
 
     public Bitmap getPreviewBitmap() {

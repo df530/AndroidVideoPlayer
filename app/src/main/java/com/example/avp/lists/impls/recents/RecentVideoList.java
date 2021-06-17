@@ -48,8 +48,7 @@ public class RecentVideoList extends VideoList {
     }
 
     @Override
-    protected @NonNull Task<Void> fetchVideos() {
-        return Tasks.forResult(null);
+    protected @NonNull void fetchVideos() {
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -43,8 +44,15 @@ public final class InfoMenuItem implements MenuItem {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onClickItem(Context context, AVPMediaMetaData metaData) {
-        LinearLayout infoElementsLL = new LinearLayout(context);
+        LinearLayout infoElementsLL =
+                (LinearLayout) LayoutInflater.from(parentView.getContext()).inflate(R.layout.popup_info, null);
+        //new LinearLayout(context);
         infoElementsLL.setOrientation(LinearLayout.VERTICAL);
+        infoElementsLL.setBackgroundColor(Color.WHITE);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(10, 10, 0, 0);
+        infoElementsLL.setLayoutParams(layoutParams);
 
         for (InfoElement infoElement : infoElements) {
             TextView titleTV = new TextView(context);
@@ -54,16 +62,16 @@ public final class InfoMenuItem implements MenuItem {
             titleTV.setTextColor(Color.BLACK);
             LinearLayout.LayoutParams titleLP = new LinearLayout.LayoutParams
                     (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            titleLP.setMargins(100, 100, 0, 0);
+            titleLP.setMargins(10, 10, 0, 0);
             titleTV.setLayoutParams(titleLP);
 
             TextView valueTV = new TextView(context);
-            titleTV.setText(infoElement.getValue.apply(metaData));
-            titleTV.setTextColor(Color.GRAY);
+            valueTV.setText(infoElement.getValue.apply(metaData));
+            valueTV.setTextColor(Color.GRAY);
             LinearLayout.LayoutParams valueLP = new LinearLayout.LayoutParams
                     (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            titleLP.setMargins(100, 100, 0, 0);
-            titleTV.setLayoutParams(valueLP);
+            valueLP.setMargins(10, 10, 0, 0);
+            valueTV.setLayoutParams(valueLP);
 
             infoElementsLL.addView(titleTV);
             infoElementsLL.addView(valueTV);

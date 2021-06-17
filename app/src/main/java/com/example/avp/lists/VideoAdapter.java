@@ -52,10 +52,10 @@ public abstract class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Vie
     protected abstract void onClickItemListener(View v, AVPMediaMetaData metaData);
 
     // you can return null to make path TextView invisible, or return path, or link or something else
-    protected abstract String getTextForPathTV(AVPMediaMetaData mediaMetaData);
+    protected abstract String getTextForPathTV(AVPMediaMetaData metaData);
 
     // you can return null to make link TextView invisible, or return path, or link or something else
-    protected abstract String getTextForLinkTV(AVPMediaMetaData mediaMetaData);
+    protected abstract String getTextForLinkTV(AVPMediaMetaData metaData);
 
     @Override
     public void onBindViewHolder(@NonNull VideoAdapter.ViewHolder holder, int position) {

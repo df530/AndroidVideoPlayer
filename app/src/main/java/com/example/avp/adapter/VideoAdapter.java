@@ -81,6 +81,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         View popupView = LayoutInflater.from(model.getActivity()).inflate(R.layout.popup_info, null);
         popupView.setFocusable(true);
 
+        /*
         TextView videoNameTextView = popupView.findViewById(R.id.tv_video_title);
         videoNameTextView.setText(model.getVideoName(currentVideoLink));
 
@@ -89,7 +90,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
 
         TextView videoDurationTextView = popupView.findViewById(R.id.tv_video_duration);
         videoDurationTextView.setText(model.getVideoDuration(currentVideoLink));
-
+*/
         PopupWindow popupWindow = new PopupWindow(
                 popupView,
                 WindowManager.LayoutParams.MATCH_PARENT,

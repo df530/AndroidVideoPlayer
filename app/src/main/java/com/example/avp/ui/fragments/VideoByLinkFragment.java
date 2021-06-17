@@ -30,11 +30,8 @@ import com.example.avp.ui.Constants;
 import java.util.Set;
 
 public class VideoByLinkFragment extends Fragment {
-    private EditText link;
-    private static VideoList recentVideoList = null;
-    private RecyclerView.LayoutManager recyclerViewLayoutManager;
-
-    private static Model model; // this helps not make reload
+    private static VideoList recentVideoList = null; // this helps not make reload
+    private static Model model;
 
     public VideoByLinkFragment(Model model) {
         this.model = model;
@@ -45,7 +42,7 @@ public class VideoByLinkFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.video_by_link_fragment, container, false);
         Button playButton = view.findViewById(R.id.play_button);
-        link = view.findViewById(R.id.edit_text_link);
+        EditText link = view.findViewById(R.id.edit_text_link);
 
         playButton.setOnClickListener(v ->
                 ExoPlayerActivity.startExoPlayerFromFragmentForResult(this, link.getText().toString(), 1));
@@ -73,7 +70,7 @@ public class VideoByLinkFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        RecyclerView recentVideoRV = (RecyclerView) getActivity().findViewById(R.id.recyclerviewLastSeen);
+        RecyclerView recentVideoRV = (RecyclerView) getActivity().findViewById(R.id.rv_recent_videos);
         if (recentVideoList == null) {
             recentVideoList = new RecentVideoList(
                     recentVideoRV,
@@ -82,6 +79,7 @@ public class VideoByLinkFragment extends Fragment {
                     Set.of(Constants.DisplayMode.LIST),
                     this);
 
+            // without resetting of recycler view it doesn't work correct, I couldn't find error
             recentVideoList.setVideoListRV(recentVideoRV);
             model.addVideoList(recentVideoList);
             recentVideoList.loadSavedState(model.getStateSaveLoader());

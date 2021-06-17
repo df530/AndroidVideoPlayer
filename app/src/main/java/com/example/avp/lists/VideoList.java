@@ -1,14 +1,12 @@
 package com.example.avp.lists;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.player.AVPMediaMetaData;
 import com.example.avp.ui.Constants;
-import com.example.avp.utils.JsonStateSaveLoader;
 import com.example.avp.utils.StateSaveLoader;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -17,9 +15,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import io.reactivex.rxjava3.core.Observable;
 import lombok.NonNull;
-import lombok.Setter;
 
 /* Instruction for implementation:
  * 1) Implement VideoHolder
@@ -28,13 +24,13 @@ import lombok.Setter;
  * Not forget to add your VideoListImplementation in model.videoLists (for getting update of list settings)
  */
 public abstract class VideoList {
-    protected  RecyclerView videoListRV;
+    protected RecyclerView videoListRV;
     protected VideosHolder videosHolder;
     protected final Context context;
     protected VideoListSettings listSettings;
     private final Set<Constants.DisplayMode> possibleDisplayModes;
 
-    private static final Executor mExecutor = Executors.newSingleThreadExecutor();
+    private static final Executor executor = Executors.newFixedThreadPool(2);
 
     public VideoList(RecyclerView videoListRV, VideosHolder videosHolder, Context context, VideoListSettings listSettings,
                      Set<Constants.DisplayMode> possibleDisplayModes) {
@@ -66,10 +62,13 @@ public abstract class VideoList {
 
     /* If you need some params, you can add relevant fields and set them in constructor
      */
-    protected abstract @NonNull Task<Void> fetchVideos();
+    protected abstract @NonNull void fetchVideos();
 
     public final void fetchVideosAndUpdate() {
-        fetchVideos().addOnSuccessListener((voidResult) -> {
+        Tasks.call(executor, () -> {
+            fetchVideos();
+            return null;
+        }).addOnSuccessListener((voidResult) -> {
             videosHolder.sortBy(listSettings.sortParam);
             if (listSettings.reversedOrder) {
                 videosHolder.reverse();
@@ -97,9 +96,12 @@ public abstract class VideoList {
     public final void onSortedByChange(Constants.SortParam newSortParam) {
         if (listSettings.sortParam != newSortParam) {
             listSettings.sortParam = newSortParam;
-            if (videosHolder.sortBy(newSortParam)) {
-                updateRecycleView();
-            }
+            Tasks.call(executor, () -> videosHolder.sortBy(newSortParam))
+                    .addOnSuccessListener(wasSorted -> {
+                        if (wasSorted) {
+                            updateRecycleView();
+                        }
+                    });
         }
     }
 

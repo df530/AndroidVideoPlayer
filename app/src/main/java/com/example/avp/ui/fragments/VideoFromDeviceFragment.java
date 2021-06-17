@@ -15,13 +15,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avp.R;
+import com.example.avp.lists.VideoList;
+import com.example.avp.lists.impls.device.DeviceVideoList;
+import com.example.avp.lists.impls.device.DeviceVideosHolder;
+import com.example.avp.lists.impls.recents.RecentVideoList;
+import com.example.avp.lists.impls.recents.RecentVideosHolder;
 import com.example.avp.model.Model;
+import com.example.avp.ui.Constants;
+
+import java.util.Set;
 
 public class VideoFromDeviceFragment extends Fragment {
-
-    private VideoFromDeviceViewModel mViewModel;
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager recyclerViewLayoutManager;
+    private static VideoList deviceVideoList = null;
     private static Model model;
 
     public VideoFromDeviceFragment(Model model) {
@@ -38,20 +43,23 @@ public class VideoFromDeviceFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(VideoFromDeviceViewModel.class);
-        // TODO: Use the ViewModel
 
-        init();
-    }
+        RecyclerView deviceVideoRV = getActivity().findViewById(R.id.rv_device_videos);
+        if (deviceVideoList == null) {
+            deviceVideoList = new DeviceVideoList(
+                    deviceVideoRV,
+                    DeviceVideosHolder.getInstance(),
+                    model.getVideoListSettings(),
+                    Set.of(Constants.DisplayMode.GALLERY, Constants.DisplayMode.LIST),
+                    this);
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    private void init() {
-        recyclerView = getActivity().findViewById(R.id.recyclerviewVideo);
-        recyclerViewLayoutManager = new GridLayoutManager(
-                getActivity().getApplicationContext(), model.getVideoListDisplayMode().getNumOfColumns()
-        );
-        recyclerView.setLayoutManager(recyclerViewLayoutManager);
-
-        model.updateVideoList(recyclerView);
+            // without resetting of recycler view it doesn't work correct, I couldn't find error
+            deviceVideoList.setVideoListRV(deviceVideoRV); // try delete
+            model.addVideoList(deviceVideoList);
+            deviceVideoList.fetchVideosAndUpdate();
+        }
+        else {
+            deviceVideoList.setVideoListRV(deviceVideoRV);
+        }
     }
 }
