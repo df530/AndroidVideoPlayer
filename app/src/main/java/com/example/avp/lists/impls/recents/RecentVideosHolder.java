@@ -24,7 +24,7 @@ public class RecentVideosHolder implements VideosHolder {
 
     @Override
     public AVPMediaMetaData getVideoMetaDataByPositionInList(int position) {
-        return recentVideoLinkedList.get(recentVideoLinkedList.size() - 1 - position);
+        return recentVideoLinkedList.get(position);
     }
 
     @Override

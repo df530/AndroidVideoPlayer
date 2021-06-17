@@ -34,6 +34,8 @@ public class RecentVideoList extends VideoList {
                            Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment) {
         super(videoListRV, videosHolder, parentFragment.getContext(), listSettings, possibleDisplayModes);
         this.parentFragment = parentFragment;
+        // not forget update:
+        updateRecycleView();
     }
 
     @Override

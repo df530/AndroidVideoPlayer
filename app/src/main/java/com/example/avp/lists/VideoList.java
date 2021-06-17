@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 
 import io.reactivex.rxjava3.core.Observable;
 import lombok.NonNull;
+import lombok.Setter;
 
 /* Instruction for implementation:
  * 1) Implement VideoHolder
@@ -27,7 +28,7 @@ import lombok.NonNull;
  * Not forget to add your VideoListImplementation in model.videoLists (for getting update of list settings)
  */
 public abstract class VideoList {
-    protected final RecyclerView videoListRV;
+    protected  RecyclerView videoListRV;
     protected VideosHolder videosHolder;
     protected final Context context;
     protected VideoListSettings listSettings;
@@ -49,6 +50,12 @@ public abstract class VideoList {
         }
 
         videoListRV.setLayoutManager(new GridLayoutManager(context, listSettings.displayMode.getNumOfColumns()));
+    }
+
+    public void setVideoListRV(@NonNull RecyclerView videoListRV) {
+        this.videoListRV = videoListRV;
+        videoListRV.setLayoutManager(new GridLayoutManager(context, listSettings.displayMode.getNumOfColumns()));
+        updateRecycleView();
     }
 
     protected void updateRecycleView() {

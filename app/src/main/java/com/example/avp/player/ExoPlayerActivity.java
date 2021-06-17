@@ -52,6 +52,8 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
     private final int CONTROLLER_SHOW_TIMEOUT_MS = 2000;
 
+    private AVPMediaMetaData currentVideoMetaData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,11 +135,9 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
         playerModel.getMediaSource().subscribe(ms -> {
             player.setMediaSource(ms);
-            AVPMediaMetaData meta = (AVPMediaMetaData)ms.getTag();
-            if (meta.getDuration() == null && player.getDuration() != TIME_UNSET) {
-                meta.setDuration(player.getDuration());
-            }
             player.prepare();
+            currentVideoMetaData = player.getCurrentMediaItem() == null ? null :
+                    (AVPMediaMetaData)player.getCurrentMediaItem().playbackProperties.tag;;
             startService(new Intent(this, ExoPlayerService.class));
         }, e -> {
             setResult(LINK_INCORRECT, new Intent().putExtra("ErrorMsg", e.getMessage()));
@@ -169,6 +169,9 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 }, 500);
             } else if (state == Player.STATE_READY) {
                 progressBar.setVisibility(View.GONE);
+                // set current video metadata duration
+                if (currentVideoMetaData != null && player.getDuration() != TIME_UNSET)
+                    currentVideoMetaData.setDuration(player.getDuration());
             }
         }
 
@@ -242,8 +245,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AVPMediaMetaData metaData = player.getCurrentMediaItem() == null ? null : (AVPMediaMetaData)player.getCurrentMediaItem().playbackProperties.tag;
-        setResult(RESULT_CANCELED, new Intent().putExtra("Metadata", metaData));
+        setResult(RESULT_CANCELED, new Intent().putExtra("Metadata", currentVideoMetaData));
         finish();
     }
 

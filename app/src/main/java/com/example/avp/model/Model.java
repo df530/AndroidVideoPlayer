@@ -43,7 +43,7 @@ public class Model implements Serializable {
     private ArrayList<VideoModel> arrayListVideos;
     @Getter
     private final transient StateSaveLoader stateSaveLoader;
-    @Getter
+    @Getter@Setter
     private transient Activity activity;
     private transient List<VideoList> videoLists;
 

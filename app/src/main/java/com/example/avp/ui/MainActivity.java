@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     private Menu menu;
     private String currentFragment;
-    private Model model;
+    private static Model model = null; // this helps not make reload
 
     private StateSaveLoader stateSaveLoader;
 
@@ -52,7 +52,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         stateSaveLoader = new JsonStateSaveLoader(this);
-        model = new Model(this);
+        if (model == null) {
+            model = new Model(this);
+        }
+        else {
+            model.setActivity(this);
+        }
         loadState();
 
         BottomNavigationView navigation = findViewById(R.id.nav_view);

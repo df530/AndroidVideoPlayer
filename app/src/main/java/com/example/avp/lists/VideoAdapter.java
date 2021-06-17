@@ -66,10 +66,21 @@ public abstract class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Vie
 
         holder.titleTV.setText(metaData.getTitle());
         if (metaData.getDuration() != null) {
-            holder.durationTV.setText(DurationFormatUtils.formatDuration(metaData.getDuration(), "**H:mm:ss**", true));
+            String format;
+            if (metaData.getDuration() >= 60 * 60 * 1000) {
+                format = "HH:mm:ss";
+            }
+            else {
+                format = "mm:ss";
+            }
+            holder.durationTV.setText(DurationFormatUtils.formatDuration(metaData.getDuration(), format, true));
         }
 
-        holder.menuIB.setOnClickListener(v -> popupMenuBuilder.build().show());
+        holder.menuIB.setOnClickListener(v -> {
+            popupMenuBuilder.setAnchorView(v);
+            popupMenuBuilder.setAnchorVideoMetaData(metaData);
+            popupMenuBuilder.build().show();
+        });
 
         if (displayMode == Constants.DisplayMode.LIST) {
             holder.linkTV.setText(getTextForLinkTV(metaData));

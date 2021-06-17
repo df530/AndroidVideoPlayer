@@ -31,10 +31,10 @@ import java.util.Set;
 
 public class VideoByLinkFragment extends Fragment {
     private EditText link;
-    private VideoList recentVideoList;
+    private static VideoList recentVideoList = null;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
 
-    private static Model model;
+    private static Model model; // this helps not make reload
 
     public VideoByLinkFragment(Model model) {
         this.model = model;
@@ -74,15 +74,21 @@ public class VideoByLinkFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         RecyclerView recentVideoRV = (RecyclerView) getActivity().findViewById(R.id.recyclerviewLastSeen);
-        recentVideoList = new RecentVideoList(
-                recentVideoRV,
-                RecentVideosHolder.getInstance(),
-                model.getVideoListSettings(),
-                Set.of(Constants.DisplayMode.LIST),
-                this);
+        if (recentVideoList == null) {
+            recentVideoList = new RecentVideoList(
+                    recentVideoRV,
+                    RecentVideosHolder.getInstance(),
+                    model.getVideoListSettings(),
+                    Set.of(Constants.DisplayMode.LIST),
+                    this);
 
-        model.addVideoList(recentVideoList);
-        recentVideoList.loadSavedState(model.getStateSaveLoader());
+            recentVideoList.setVideoListRV(recentVideoRV);
+            model.addVideoList(recentVideoList);
+            recentVideoList.loadSavedState(model.getStateSaveLoader());
+        }
+        else {
+            recentVideoList.setVideoListRV(recentVideoRV);
+        }
     }
 
     @Override
