@@ -27,7 +27,7 @@ AndroidVideoPlayer -- приложение для устройств на пла
 
 ### Установка
 
- [Ссылка для скачивания]()
+ [Ссылка для скачивания](https://github.com/DF5HSE/AndroidVideoPlayer/releases/download/1.0/AVP.apk)
 
 ### Авторы
 * [Vladislav Nosivskoy](https://github.com/vladnosiv)
