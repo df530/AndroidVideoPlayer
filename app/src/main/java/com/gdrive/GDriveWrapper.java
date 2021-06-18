@@ -53,8 +53,7 @@ public class GDriveWrapper {
 
     public Task<GDriveFile> getFile(String fileID) {
         return Tasks.call(mExecutor, () -> {
-             File file = driveService.files().get(fileID).setFields("*").execute();
-             System.out.println(file.getName());
+             File file = driveService.files().get(fileID).setFields("id, name, thumbnailLink, size").execute();
              return new GDriveFile(
                      driveService.files().get(fileID).executeMediaAsInputStream(),
                      file.getName(),
