@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -21,9 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.avp.R;
-import com.example.avp.lists.VideoListSettings;
 import com.example.avp.model.Model;
-import com.example.avp.model.VideoModel;
 import com.example.avp.ui.fragments.LoginFragment;
 import com.example.avp.ui.fragments.NoStoragePermissionFragment;
 import com.example.avp.ui.fragments.VideoByLinkFragment;

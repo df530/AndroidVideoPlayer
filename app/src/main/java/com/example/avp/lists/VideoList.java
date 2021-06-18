@@ -35,17 +35,17 @@ public abstract class VideoList {
     private static final Executor executor = Executors.newFixedThreadPool(2);
 
     public VideoList(RecyclerView videoListRV, VideosHolder videosHolder, VideoListSettings listSettings,
-                     Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment) {
+                     Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment, Context context) {
         if (possibleDisplayModes.isEmpty())
             throw new IllegalArgumentException("No possible display modes");
         this.videoListRV = videoListRV;
         this.videosHolder = videosHolder;
-        this.listSettings = listSettings;
+        this.listSettings = new VideoListSettings(listSettings);
         this.possibleDisplayModes = possibleDisplayModes;
         if (!possibleDisplayModes.contains(listSettings.displayMode)) {
             this.listSettings.displayMode = possibleDisplayModes.iterator().next();
         }
-        this.context = parentFragment.getContext();
+        this.context = context;
         this.parentFragment = parentFragment;
     }
 

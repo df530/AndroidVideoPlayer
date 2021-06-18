@@ -1,5 +1,6 @@
 package com.example.avp.lists;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,12 +36,15 @@ public abstract class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Vie
     private final VideosHolder videosHolder;
     protected final Fragment parentFragment;
     private static final Executor mExecutor = Executors.newSingleThreadExecutor();
+    private final Context context;
 
-    public VideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder, VideosHolder videosHolder, Fragment parentFragment) {
+    public VideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder, VideosHolder videosHolder,
+                        Fragment parentFragment, Context context) {
         this.displayMode = displayMode;
         this.popupMenuBuilder = popupMenuBuilder;
         this.videosHolder = videosHolder;
         this.parentFragment = parentFragment;
+        this.context = context;
     }
 
     @NonNull
@@ -76,7 +80,7 @@ public abstract class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Vie
         holder.menuIB.setOnClickListener(v -> {
             popupMenuBuilder.setAnchorView(v);
             popupMenuBuilder.setAnchorVideoMetaData(metaData);
-            popupMenuBuilder.build().show();
+            popupMenuBuilder.build(context).show();
         });
 
         if (displayMode == Constants.DisplayMode.LIST) {

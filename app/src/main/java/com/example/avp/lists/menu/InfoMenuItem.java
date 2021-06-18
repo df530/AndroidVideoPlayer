@@ -12,8 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
-
 import com.example.avp.R;
 import com.example.avp.player.AVPMediaMetaData;
 
@@ -28,11 +26,11 @@ public final class InfoMenuItem implements MenuItem {
      * Earlier we gave there 'model.getActivity().findViewById(R.id.fragment_container)' -- the fragment layout
      * of mainActivity. But now, I think, we have to give there recyclerView. I will test it.
      */
-    private final Fragment parentFragment;
+    private final View parentView;
 
-    public InfoMenuItem(List<InfoElement> infoElements, Fragment parentFragment) {
+    public InfoMenuItem(List<InfoElement> infoElements, View parentView) {
         this.infoElements = infoElements;
-        this.parentFragment = parentFragment;
+        this.parentView = parentView;
     }
 
     @Override
@@ -43,8 +41,9 @@ public final class InfoMenuItem implements MenuItem {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onClickItem(Context context, AVPMediaMetaData metaData) {
+        // I don't know why, parentFragment.getContext() == null sometimes
         LinearLayout infoElementsLL =
-                (LinearLayout) LayoutInflater.from(parentFragment.getContext()).inflate(R.layout.popup_info, null);
+                (LinearLayout) LayoutInflater.from(context).inflate(R.layout.popup_info, null);
         //new LinearLayout(context);
         infoElementsLL.setOrientation(LinearLayout.VERTICAL);
         infoElementsLL.setBackgroundColor(Color.WHITE);
@@ -96,7 +95,7 @@ public final class InfoMenuItem implements MenuItem {
             lastOpenedInfoPW.dismiss();
         }
         lastOpenedInfoPW = popupWindow;
-        popupWindow.showAtLocation(parentFragment.getView(), Gravity.CENTER_VERTICAL, x, y);
+        popupWindow.showAtLocation(parentView, Gravity.CENTER_VERTICAL, x, y);
     }
 
     public static class InfoElement {

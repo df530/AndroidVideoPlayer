@@ -2,10 +2,8 @@ package com.example.avp.lists.impls.device;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
-import android.net.Uri;
 import android.provider.MediaStore;
+import android.view.View;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,16 +12,12 @@ import com.example.avp.lists.VideoAdapter;
 import com.example.avp.lists.VideoList;
 import com.example.avp.lists.VideoListSettings;
 import com.example.avp.lists.VideosHolder;
-import com.example.avp.lists.impls.recents.RecentVideoAdapter;
 import com.example.avp.lists.menu.CustomPopupMenuBuilder;
 import com.example.avp.lists.menu.InfoMenuItem;
-import com.example.avp.lists.menu.MenuItem;
-import com.example.avp.model.VideoModel;
 import com.example.avp.player.AVPMediaMetaData;
 import com.example.avp.ui.Constants;
 import com.example.avp.utils.AVPUtils;
 import com.example.avp.utils.StateSaveLoader;
-import com.google.android.gms.tasks.Task;
 
 import java.sql.Date;
 import java.util.List;
@@ -32,9 +26,12 @@ import java.util.Set;
 import lombok.NonNull;
 
 public class DeviceVideoList extends VideoList {
+    private final View parentView;
     public DeviceVideoList(RecyclerView videoListRV, VideosHolder videosHolder, VideoListSettings listSettings,
-                           Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment) {
-        super(videoListRV, videosHolder, listSettings, possibleDisplayModes, parentFragment);
+                           Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment, Context context,
+                           View parentView) {
+        super(videoListRV, videosHolder, listSettings, possibleDisplayModes, parentFragment, context);
+        this.parentView = parentView;
     }
 
     @Override
@@ -44,13 +41,14 @@ public class DeviceVideoList extends VideoList {
                 new InfoMenuItem.InfoElement("Path", AVPMediaMetaData::getPath),
                 new InfoMenuItem.InfoElement("Size", meta -> AVPUtils.getFileSizeMegaBytes(meta.getPath())),
                 new InfoMenuItem.InfoElement("Duration", AVPMediaMetaData::getDurationString),
-                new InfoMenuItem.InfoElement("Date taken", AVPMediaMetaData::getDurationString)
+                new InfoMenuItem.InfoElement("Date taken", AVPMediaMetaData::getDateTakenString)
         );
-        InfoMenuItem infoMenuItem = new InfoMenuItem(infoElements, parentFragment);
+        InfoMenuItem infoMenuItem = new InfoMenuItem(infoElements, parentView);
         return new DeviceVideoAdapter(listSettings.displayMode,
                 new CustomPopupMenuBuilder(List.of(infoMenuItem)),
                 videosHolder,
-                parentFragment
+                parentFragment,
+                context
         );
     }
 

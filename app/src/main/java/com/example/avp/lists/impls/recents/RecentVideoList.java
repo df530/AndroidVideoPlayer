@@ -29,8 +29,8 @@ import static com.example.avp.ui.Constants.videoListSettingsVariableKey;
 
 public class RecentVideoList extends VideoList {
     public RecentVideoList(RecyclerView videoListRV, VideosHolder videosHolder, VideoListSettings listSettings,
-                           Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment) {
-        super(videoListRV, videosHolder, listSettings, possibleDisplayModes, parentFragment);
+                           Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment, Context context) {
+        super(videoListRV, videosHolder, listSettings, possibleDisplayModes, parentFragment, context);
     }
 
     @Override
@@ -38,7 +38,8 @@ public class RecentVideoList extends VideoList {
         return new RecentVideoAdapter(listSettings.displayMode,
                 new CustomPopupMenuBuilder(List.of(MenuItem.copyLink)),
                 videosHolder,
-                parentFragment
+                parentFragment,
+                context
         );
     }
 

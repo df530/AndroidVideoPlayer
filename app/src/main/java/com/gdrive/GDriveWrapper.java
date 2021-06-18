@@ -1,9 +1,8 @@
 package com.gdrive;
 
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.Bitmap;
 
-import com.example.avp.model.VideoModel;
 import com.example.avp.player.AVPMediaMetaData;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
@@ -16,7 +15,6 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ import java.util.concurrent.Executors;
 public class GDriveWrapper {
 
     private final Drive driveService;
-    private final Executor mExecutor = Executors.newSingleThreadExecutor();
+    private final Executor mExecutor = Executors.newFixedThreadPool(2);
 
     public GDriveWrapper(Context context, GoogleSignInAccount account) {
         GoogleAccountCredential credential =
@@ -46,9 +44,11 @@ public class GDriveWrapper {
     }
 
     public long getSize(String fileID) {
-        Task<Long> task = Tasks.call(mExecutor, () -> driveService.files().get(fileID).executeMedia().getHeaders().getContentLength());
+        Task<Long> task = Tasks.call(mExecutor, () -> driveService.files().get(fileID).setFields("size").execute().getSize());
         while (!task.isComplete()) {} //TODO: сделать это адекватно
         return task.getResult();
+
+        //return driveService. setFields("
     }
 
     public Task<GDriveFile> getFile(String fileID) {
@@ -123,10 +123,12 @@ public class GDriveWrapper {
                                 null,
                                 "https://drive.google.com/file/d/" + file.getId(),
                                 file.getThumbnailLink(),
-                                null, //getFilePath(file),
-                                null,
+                                null,//getFilePath(file),
+                                file.getVideoMediaMetadata().getDurationMillis(),
                                 file.getCreatedTime() == null ? null : new Date(file.getCreatedTime().getValue())
                         );
+                        //metaData.getPreviewBitmap();
+                        //Tasks.call(mExecutor, metaData::getPreviewBitmap).addOnSuccessListener(metaData::setPreviewBM);
                         videos.add(metaData);
                     }
                 }

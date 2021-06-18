@@ -2,32 +2,20 @@ package com.example.avp.model;
 
 import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.avp.adapter.VideoAdapter;
 import com.example.avp.lists.VideoList;
 import com.example.avp.ui.Constants;
 import com.example.avp.lists.VideoListSettings;
 import com.example.avp.utils.JsonStateSaveLoader;
 import com.example.avp.utils.StateSaveLoader;
-import com.gdrive.GDriveService;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.Task;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,13 +27,10 @@ public class Model implements Serializable {
     @Setter
     private VideoListSettings videoListSettings;
     @Getter
-    @Setter
-    private ArrayList<VideoModel> arrayListVideos;
-    @Getter
     private final transient StateSaveLoader stateSaveLoader;
     @Getter@Setter
     private transient Activity activity;
-    private transient List<VideoList> videoLists;
+    private final transient List<VideoList> videoLists;
 
     public Model(Activity activity) {
         videoListSettings = new VideoListSettings();
@@ -83,44 +68,11 @@ public class Model implements Serializable {
         videoListSettings = (VideoListSettings)stateSaveLoader.readSerializable(videoListSettingsVariableKey, VideoListSettings.class);
     }
 
-    private void reverseVideoList() {
-        Collections.reverse(getArrayListVideos());
-    }
-
-    public Constants.DisplayMode getVideoListDisplayMode() {
-        return videoListSettings.displayMode;
-    }
-
-    public int getArrayListVideosSize() {
-        return arrayListVideos.size();
-    }
-
-    public String getVideoPath(int i) {
-        return arrayListVideos.get(i).getStrPath();
-    }
-
-    public String getVideoThumb(int i) {
-        VideoModel video = arrayListVideos.get(i);
-        if (video.isGDriveFile()) {
-            return video.getStrThumb();
-        }
-        return "file://" + video.getStrThumb();
+    public void addVideoList(VideoList videoList) {
+        videoLists.add(videoList);
     }
 
     public Context getContext() {
-        return activity.getApplicationContext();
-    }
-
-    public String getVideoNameByPosition(int i) {
-        VideoModel video = arrayListVideos.get(i);
-        if (video.isGDriveFile()) {
-            return video.getName();
-        }
-        String[] parts = video.getStrPath().split(File.separator);
-        return parts[parts.length - 1];
-    }
-
-    public void addVideoList(VideoList videoList) {
-        videoLists.add(videoList);
+        return getActivity();
     }
 }

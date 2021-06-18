@@ -77,7 +77,9 @@ public class VideoByLinkFragment extends Fragment {
                     RecentVideosHolder.getInstance(),
                     model.getVideoListSettings(),
                     Set.of(Constants.DisplayMode.LIST),
-                    this);
+                    this,
+                    model.getContext()
+            );
 
             model.addVideoList(recentVideoList);
             recentVideoList.loadSavedState(model.getStateSaveLoader());

@@ -51,7 +51,9 @@ public class VideoFromDeviceFragment extends Fragment {
                     DeviceVideosHolder.getInstance(),
                     model.getVideoListSettings(),
                     Set.of(Constants.DisplayMode.GALLERY, Constants.DisplayMode.LIST),
-                    this);
+                    this,
+                    model.getContext(),
+                    getView());
 
             model.addVideoList(deviceVideoList);
             deviceVideoList.fetchVideosAndUpdate();

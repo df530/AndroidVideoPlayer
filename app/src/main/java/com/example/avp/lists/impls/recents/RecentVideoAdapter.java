@@ -14,8 +14,8 @@ import com.example.avp.ui.Constants;
 
 public class RecentVideoAdapter extends VideoAdapter {
     public RecentVideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder,
-                              VideosHolder videosHolder, Fragment parentFragment) {
-        super(displayMode, popupMenuBuilder, videosHolder, parentFragment);
+                              VideosHolder videosHolder, Fragment parentFragment, Context context) {
+        super(displayMode, popupMenuBuilder, videosHolder, parentFragment, context);
     }
 
     @Override

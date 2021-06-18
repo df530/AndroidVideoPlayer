@@ -23,13 +23,13 @@ public final class CustomPopupMenuBuilder {
         this.menuItems = menuItems;
     }
 
-    public PopupMenu build() {
-        PopupMenu popupMenu = new PopupMenu(anchorView.getContext(), anchorView);
+    public PopupMenu build(Context context) {
+        PopupMenu popupMenu = new PopupMenu(context, anchorView);
 
         for (MenuItem menuItem : menuItems) {
             popupMenu.getMenu().add(menuItem.getTitle());
         }
-        popupMenu.setOnMenuItemClickListener(item -> onOptionsItemSelected(anchorView.getContext(), item, anchorVideoMetaData));
+        popupMenu.setOnMenuItemClickListener(item -> onOptionsItemSelected(context, item, anchorVideoMetaData));
 
         return popupMenu;
     }

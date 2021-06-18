@@ -1,5 +1,7 @@
 package com.example.avp.ui.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -108,6 +110,8 @@ public class LoginFragment extends Fragment {
                     model.getVideoListSettings(),
                     Set.of(Constants.DisplayMode.GALLERY, Constants.DisplayMode.LIST),
                     this,
+                    model.getContext(),
+                    getView(),
                     account);
 
             model.addVideoList(gdriveVideoList);

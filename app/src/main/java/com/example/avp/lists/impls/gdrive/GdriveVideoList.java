@@ -1,5 +1,8 @@
 package com.example.avp.lists.impls.gdrive;
 
+import android.content.Context;
+import android.view.View;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,12 +27,15 @@ import lombok.NonNull;
 public class GdriveVideoList extends VideoList {
     private GoogleSignInAccount account;
     private GDriveService gDriveService;
+    private View parentView;
 
     public GdriveVideoList(RecyclerView videoListRV, GDriveVideosHolder videosHolder, VideoListSettings listSettings,
-                           Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment, GoogleSignInAccount account) {
-        super(videoListRV, videosHolder, listSettings, possibleDisplayModes, parentFragment);
+                           Set<Constants.DisplayMode> possibleDisplayModes, Fragment parentFragment, Context context,
+                           View parentView, GoogleSignInAccount account) {
+        super(videoListRV, videosHolder, listSettings, possibleDisplayModes, parentFragment, context);
         this.account = account;
         gDriveService = new GDriveService(parentFragment.getActivity().getApplicationContext(), account);
+        this.parentView = parentView;
     }
 
     @Override
@@ -37,24 +43,25 @@ public class GdriveVideoList extends VideoList {
         List<InfoMenuItem.InfoElement> infoElements = List.of(
                 new InfoMenuItem.InfoElement("Name", AVPMediaMetaData::getTitle),
                 new InfoMenuItem.InfoElement("Link", AVPMediaMetaData::getLink),
-                new InfoMenuItem.InfoElement("Path", AVPMediaMetaData::getPath),
-                new InfoMenuItem.InfoElement("Size", meta ->
+                //new InfoMenuItem.InfoElement("Path", AVPMediaMetaData::getPath),
+                /*new InfoMenuItem.InfoElement("Size", meta ->
                         AVPUtils.sizeInMBToString(
                                 AVPUtils.sizeFromBytesToMB(
-                                        gDriveService.getSizeOfFile(
+                                        gDriveService.getFile(me)
                                                 meta.getLink()
                                         )
                                 )
                         )
-                ),
+                ),*/
                 new InfoMenuItem.InfoElement("Duration", AVPMediaMetaData::getDurationString),
-                new InfoMenuItem.InfoElement("Date taken", AVPMediaMetaData::getDurationString)
+                new InfoMenuItem.InfoElement("Date taken", AVPMediaMetaData::getDateTakenString)
         );
-        InfoMenuItem infoMenuItem = new InfoMenuItem(infoElements, parentFragment);
+        InfoMenuItem infoMenuItem = new InfoMenuItem(infoElements, parentView);
         return new DeviceVideoAdapter(listSettings.displayMode,
                 new CustomPopupMenuBuilder(List.of(infoMenuItem)),
                 videosHolder,
-                parentFragment
+                parentFragment,
+                context
         );
     }
 
