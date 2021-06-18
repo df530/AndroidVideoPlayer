@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class VideoListSettings implements Serializable {
     public Constants.SortParam sortParam = Constants.SortParam.DATE_TAKEN;
     public Constants.DisplayMode displayMode = Constants.DisplayMode.GALLERY;
-    public boolean reversedOrder = false;
+    public boolean reversedOrder = true;
 
     public VideoListSettings() {}
 

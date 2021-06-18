@@ -89,6 +89,20 @@ public class MainActivity extends AppCompatActivity
     private void restoreMenuSettings() {
         MenuItem reversedOrderItem = menu.findItem(R.id.reversed_order_sorted_by);
         reversedOrderItem.setChecked(model.getVideoListSettings().reversedOrder);
+
+        if (model.getVideoListSettings().displayMode == Constants.DisplayMode.GALLERY) {
+            menu.findItem(R.id.gallery_view).setChecked(true);
+        }
+        else {
+            menu.findItem(R.id.list_view).setChecked(true);
+        }
+
+        if (model.getVideoListSettings().sortParam == Constants.SortParam.NAME) {
+            menu.findItem(R.id.display_name_sorted_by).setChecked(true);
+        }
+        else {
+            menu.findItem(R.id.date_taken_sorted_by).setChecked(true);
+        }
     }
 
     @Override

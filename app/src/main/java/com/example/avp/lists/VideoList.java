@@ -102,6 +102,8 @@ public abstract class VideoList {
             Tasks.call(executor, () -> videosHolder.sortBy(newSortParam))
                     .addOnSuccessListener(wasSorted -> {
                         if (wasSorted) {
+                            if (listSettings.reversedOrder)
+                                videosHolder.reverse();
                             updateRecycleView();
                         }
                     });
