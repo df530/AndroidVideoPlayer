@@ -45,7 +45,7 @@ public class VideoByLinkFragment extends Fragment {
         EditText link = view.findViewById(R.id.edit_text_link);
 
         playButton.setOnClickListener(v ->
-                ExoPlayerActivity.startExoPlayerFromFragmentForResult(this, link.getText().toString(), 1));
+                ExoPlayerActivity.startExoPlayerFromFragmentForResult(model.getContext(),this, link.getText().toString(), 1));
 
         return view;
     }

@@ -20,7 +20,7 @@ public class DeviceVideoAdapter extends VideoAdapter {
 
     @Override
     protected void onClickItemListener(View v, AVPMediaMetaData metaData) {
-        ExoPlayerActivity.startExoPlayerFromFragment(parentFragment, metaData.getLink());
+        ExoPlayerActivity.startExoPlayerFromFragment(context, parentFragment, metaData.getLink());
     }
 
     @Override

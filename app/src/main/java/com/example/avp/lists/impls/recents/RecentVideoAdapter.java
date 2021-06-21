@@ -20,7 +20,7 @@ public class RecentVideoAdapter extends VideoAdapter {
 
     @Override
     protected void onClickItemListener(View v, AVPMediaMetaData metaData) {
-        ExoPlayerActivity.startExoPlayerFromFragmentForResult(parentFragment, metaData.getLink(), 1);
+        ExoPlayerActivity.startExoPlayerFromFragmentForResult(context, parentFragment, metaData.getLink(), 1);
     }
 
     @Override

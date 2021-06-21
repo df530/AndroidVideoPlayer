@@ -36,7 +36,7 @@ public abstract class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Vie
     private final VideosHolder videosHolder;
     protected final Fragment parentFragment;
     private static final Executor mExecutor = Executors.newSingleThreadExecutor();
-    private final Context context;
+    protected final Context context;
 
     public VideoAdapter(Constants.DisplayMode displayMode, CustomPopupMenuBuilder popupMenuBuilder, VideosHolder videosHolder,
                         Fragment parentFragment, Context context) {

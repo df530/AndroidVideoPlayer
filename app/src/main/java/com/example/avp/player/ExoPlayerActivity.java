@@ -263,8 +263,8 @@ public class ExoPlayerActivity extends AppCompatActivity {
         parentActivity.startActivity(intent);
     }
 
-    public static void startExoPlayerFromFragment(Fragment parentFragment, String linkOnVideo) {
-        Intent intent = new Intent(parentFragment.getContext(), ExoPlayerActivity.class);
+    public static void startExoPlayerFromFragment(Context context, Fragment parentFragment, String linkOnVideo) {
+        Intent intent = new Intent(context, ExoPlayerActivity.class);
         intent.putExtra("linkOnVideo", linkOnVideo);
         parentFragment.startActivity(intent);
     }
@@ -277,8 +277,8 @@ public class ExoPlayerActivity extends AppCompatActivity {
     }
 
     // you can use requestCode == 1, if you don't know what is it and how it can be used
-    public static void startExoPlayerFromFragmentForResult(Fragment parentFragment, String linkOnVideo, int requestCode) {
-        Intent intent = new Intent(parentFragment.getContext(), ExoPlayerActivity.class);
+    public static void startExoPlayerFromFragmentForResult(Context context, Fragment parentFragment, String linkOnVideo, int requestCode) {
+        Intent intent = new Intent(context, ExoPlayerActivity.class);
         intent.putExtra("linkOnVideo", linkOnVideo);
         parentFragment.startActivityForResult(intent, requestCode);
     }
