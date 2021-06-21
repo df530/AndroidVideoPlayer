@@ -23,6 +23,7 @@
             android:name=".player.ExoPlayerActivity"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:launchMode="singleTask"
             />
         <service android:name=".player.ExoPlayerService"
             android:enabled="true">
